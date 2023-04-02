@@ -1,10 +1,6 @@
 import { Table } from 'react-bootstrap';
 import './Table.css';
 
-function createData(name, symbol, price, change) {
-  return { name, symbol, price, change };
-}
-
 const stocks = [
   { name: "Apple Inc.", symbol: "AAPL", price: 128.47, change: -1.23 },
   { name: "Tesla, Inc.", symbol: "TSLA", price: 716.56, change: 0.78 },

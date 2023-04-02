@@ -1,6 +1,6 @@
 // Bootstrap Icons
 import {
-  HouseExclamation, Search, Newspaper, FileBarGraph,
+  Search, Newspaper, FileBarGraph,
   PersonCircle, Apple, Microsoft, CurrencyDollar, Grid1x2
 } from 'react-bootstrap-icons';
 
