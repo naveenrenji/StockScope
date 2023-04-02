@@ -10,11 +10,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/market-news" element={<MarketNews />} />
-        <Route path="/stocks" element={<Stocks />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route key="home" path="/" element={<Home />} />
+        <Route key="search" path="/search" element={<Search />} />
+        <Route key="market-news" path="/market-news" element={<MarketNews />} />
+        <Route key="stocks" path="/stocks" element={<Stocks />} />
+        <Route key="profile" path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );
