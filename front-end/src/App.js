@@ -5,6 +5,8 @@ import Search from './pages/Search';
 import MarketNews from './pages/MarketNews';
 import Stocks from './pages/Stocks';
 import Profile from './pages/Profile';
+import Signup from '../../../Authentication/Signup';
+import Login from '../../../Authentication/Login';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route key="market-news" path="/market-news" element={<MarketNews />} />
         <Route key="stocks" path="/stocks" element={<Stocks />} />
         <Route key="profile" path="/profile" element={<Profile />} />
+        <Route key="signup" path="/signup" element={<Signup />} />
+        <Route key="login" path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
