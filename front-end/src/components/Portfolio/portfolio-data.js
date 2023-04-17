@@ -8,22 +8,30 @@ export const temp = {
             ]
         },
 
-
         {
 
             "name": "Tech Portfolio",
             "stocks": [
                 {
-                    "symbols": "AAPL",
-                    "Nnameame": "Apple Inc",
-                    "shares": 100,
-                    "avg-buy-price": 165
+                    "symbol": "AAPL",
+                    "name": "Apple Inc",
+                    "lots": [
+                        {
+                            "shares": 100,
+                            "price": 165
+                        }
+                    ]
                 },
                 {
-                    "symbols": "TESLA",
+                    "symbol": "TESLA",
                     "name": "Tesla Inc",
-                    "shares": 500,
-                    "avg-buy-price": 186
+                    "lots": [
+                        {
+                            "shares": 500,
+                            "price": 186
+                        }
+                    ]
+
                 }
             ]
         },
@@ -31,28 +39,46 @@ export const temp = {
             "name": "Miscelaneous",
             "stocks": [
                 {
-                    "symbols": "COKE",
+                    "symbol": "COKE",
                     "name": "Coca-Cola Consolidated Inc",
-                    "shares": 500,
-                    "avg-buy-price": 500
+                    "lots": [
+                        {
+                            "shares": 500,
+                            "price": 500
+                        }
+                    ]
                 },
                 {
-                    "symbols": "GOOGL",
+                    "symbol": "GOOGL",
                     "name": "Alphabet Inc",
-                    "shares": 100,
-                    "avg-buy-price": 100
+                    "lots": [
+                        {
+                            "shares": 100,
+                            "price": 100
+                        }
+                    ]
                 },
                 {
-                    "symbols": "NVDA",
+                    "symbol": "NVDA",
                     "name": "NVIDIA Corporation",
-                    "shares": 300,
-                    "avg-buy-price": 275
+                    "lots": [
+                        {
+                            "shares": 300,
+                            "price": 275
+                        }
+                    ]
+
                 },
                 {
-                    "symbols": "AMZN",
+                    "symbol": "AMZN",
                     "name": "Amazon.com, Inc. ",
-                    "shares": 400,
-                    "avg-buy-price": 150
+                    "lots": [
+                        {
+                            "shares": 400,
+                            "price": 150
+                        }
+                    ]
+
                 }
             ]
         },
@@ -60,10 +86,14 @@ export const temp = {
             "name": "Stonks",
             "stocks": [
                 {
-                    "symbols": "SNOW",
+                    "symbol": "SNOW",
                     "name": "Snowflake Inc. (SNOW)",
-                    "shares": 413,
-                    "avg-buy-price": 120
+                    "lots": [
+                        {
+                            "shares": 413,
+                            "price": 120
+                        }
+                    ]
                 }
 
             ]
