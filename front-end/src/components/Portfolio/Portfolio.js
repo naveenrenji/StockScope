@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Form, ListGroup, Button, Modal, InputGroup, FormControl, FormLabel, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Container, Row, Col, Form, ListGroup, Button } from 'react-bootstrap';
 import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
