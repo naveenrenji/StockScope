@@ -60,7 +60,7 @@ const Sidebar = () => {
             );
           })}
           <div className="menuItem">
-            <p>Logout</p><Power size="20px" />
+            <button className="authButton btn-semi-transparent">Logout <Power size="18px" /></button>
           </div>
         </div>
       </motion.div>

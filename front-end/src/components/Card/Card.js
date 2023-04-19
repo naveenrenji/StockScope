@@ -31,7 +31,7 @@ function CompactCard({ param, setExpanded }) {
         background: param.color.backGround,
         boxShadow: param.color.boxShadow,
       }}
-      layoutId="expandableCard"
+      layoutId={`expandableCard-${param.id}`}
       onClick={setExpanded}
     >
       <div className="radialBar">
@@ -49,6 +49,7 @@ function CompactCard({ param, setExpanded }) {
     </motion.div>
   );
 }
+
 
 // Expanded Card
 function ExpandedCard({ param, setExpanded }) {

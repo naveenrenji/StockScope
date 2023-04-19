@@ -1,6 +1,11 @@
 .Table {
   width: 100%;
   border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.38);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.55);
 }
 
 .Table td,
@@ -8,6 +13,10 @@
   padding: 10px;
   text-align: left;
   border: none !important;
+}
+
+.change {
+  border-radius: 10px;
 }
 
 .Table:first-child {
@@ -33,7 +42,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .Table{
+  .Table {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -46,11 +55,11 @@
   box-shadow: 0px 13px 20px 0px #80808029;
 }
 
-.table > :not(caption) > * > *,
-.table > :not(caption) > * > * > * {
+.table> :not(caption)>*>*,
+.table> :not(caption)>*>*>* {
   padding: 10px;
 }
 
-.table > :not(caption) > thead > tr > th {
+.table> :not(caption)>thead>tr>th {
   font-weight: bold !important;
 }

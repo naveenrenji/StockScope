@@ -124,8 +124,6 @@ export default function Portfolio() {
         <>
             <Container>
 
-
-
                 <Row>
                     <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
                         <Form onSubmit={handleClick}>

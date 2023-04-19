@@ -5,8 +5,9 @@
   padding-top: 4rem;
   transition: all 300ms ease;
 }
+
 /* logo */
-.bars{
+.bars {
   display: none;
 }
 
@@ -20,15 +21,15 @@
   justify-content: center;
   height: 4%;
 }
-.logo > span > span {
+
+.logo>span>span {
   color: var(--pink);
 }
 
-.logo > img {
+.logo>img {
   width: 3rem;
   height: 3rem;
 }
-
 
 /* menu */
 .menu {
@@ -37,6 +38,7 @@
   flex-direction: column;
   gap: 2rem;
 }
+
 .menuItem {
   display: flex;
   align-items: center;
@@ -46,7 +48,9 @@
   position: relative;
   transition: all 300ms ease;
   border-radius: 0.7rem;
-  font-size: 14px;
+  font-size: 16px;
+  color: rgb(34, 46, 89);
+  text-decoration: none;
 }
 
 .menuItem:hover {
@@ -63,6 +67,7 @@
   background: var(--activeItem);
   margin-left: 0;
 }
+
 .active::before {
   content: "";
   width: 8px;
@@ -71,19 +76,37 @@
   margin-right: calc(1rem - 8px);
 }
 
+.authButton {
+  font-size: 18px;
+  padding: 8px 10px;
+  margin: 1rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.38);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6.7px);
+  -webkit-backdrop-filter: blur(6.7px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  transition: all 0.3s ease;
+}
+
+.authButton:hover {
+  transition: all 0.3s ease;
+}
 
 /* Tablets */
 @media screen and (max-width: 1200px) {
-  .menuItem>span{
+  .menuItem>span {
     display: none;
   }
-  .logo{
+
+  .logo {
     display: none;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .sidebar{
+  .sidebar {
     position: fixed;
     z-index: 9;
     background: #ffe0e0;
@@ -91,28 +114,32 @@
     padding-right: 1rem;
     height: 100%;
   }
-  .menuItem>span{
+
+  .menuItem>span {
     display: block;
   }
-  .logo{
+
+  .logo {
     display: flex;
   }
+
   .menu .menuItem:last-child {
     position: relative;
     margin-top: 6rem;
   }
-  .bars{
+
+  .bars {
     display: flex;
     position: fixed;
     top: 2rem;
-    left:60%;
-    background:#ffe0e0;
-    padding:10px;
+    left: 60%;
+    background: #ffe0e0;
+    padding: 10px;
     border-radius: 10px;
     z-index: 9;
   }
-  .close{
+
+  .close {
     left: -60%;
   }
 }
-
