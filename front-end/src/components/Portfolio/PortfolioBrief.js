@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 
 
-export default function Portfoio_Brief() {
+export default function PortfoioBrief() {
 
     return (
         <>

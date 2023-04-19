@@ -1,7 +1,7 @@
 // Bootstrap Icons
 import {
-  Search, Newspaper, FileBarGraph,
-  PersonCircle, Apple, Microsoft, CurrencyDollar, Grid1x2
+  Newspaper, FileBarGraph, PersonCircle, 
+  Apple, Microsoft, CurrencyDollar, Grid1x2
 } from 'react-bootstrap-icons';
 
 // Recent Card Imports
@@ -17,19 +17,14 @@ export const SidebarData = [
     link: "/"
   },
   {
-    icon: <Search />,
-    heading: "Search",
-    link: "/search"
-  },
-  {
     icon: <Newspaper />,
     heading: "Market News",
     link: "/market-news"
   },
   {
     icon: <FileBarGraph />,
-    heading: 'Stocks',
-    link: "/stocks"
+    heading: 'Portfolio',
+    link: "/portfolio"
   },
   {
     icon: <PersonCircle />,
