@@ -83,18 +83,26 @@ export default function Portfolio() {
                     {bestResults && bestResults.length > 0 ? (
                         <ListGroup className="mt-3 liststyle">
                             {bestResults.map((item) => {
-
                                 let type = item["3. type"];
                                 let region = item["4. region"];
 
                                 if (type === "Equity" && region === "United States") {
-
                                     let symbol = item["1. symbol"];
                                     let name = item["2. name"];
-                                    return <ListGroup.Item key={symbol} action onClick={showModal} className="liststyleItem">{symbol} - {name} </ListGroup.Item>
+                                    return (
+                                        <ListGroup.Item
+                                            key={symbol}
+                                            action
+                                            onClick={showModal}
+                                            className="liststyleItem"
+                                        >
+                                            {symbol} - {name}
+                                        </ListGroup.Item>
+                                    );
+                                } else {
+                                    return null;
                                 }
-                            }
-                            )}
+                            })}
                         </ListGroup>
                     ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
                         <p className='mt-3 label text-center'>No stock of that symbol found. Please try again</p> :
