@@ -38,11 +38,11 @@ const Sidebar = () => {
         variants={sidebarVariants}
         animate={window.innerWidth <= 768 ? `${expanded}` : ''} >
         {/* logo */}
-        <div className="logo">
+        <Link to="/" className="logo" aria-label="logo">
           <span>
             St<span>ocks</span>Scope
           </span>
-        </div>
+        </Link>
 
         {/* SideBar Section */}
         <div className="menu">
@@ -53,6 +53,7 @@ const Sidebar = () => {
                 to={item.link}
                 key={index}
                 onClick={() => setSelected(index)}
+                aria-label={index}
               >
                 {item.icon}
                 <span>{item.heading}</span>
