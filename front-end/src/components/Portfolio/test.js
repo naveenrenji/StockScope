@@ -1,5 +1,22 @@
-const str = "AAPL - Apple - Inc";
+const WebSocket = require('ws');
+const socket = new WebSocket('wss://streamer.finance.yahoo.com');
 
-const after = str.slice(0, str.indexOf('-'));
+// Connection opened -> Subscribe
+socket.addEventListener('open', function (event) {
 
-console.log(after);
+    console.log("Connected");
+
+    socket.send(JSON.stringify({
+        subscribe: ['MSFT']
+    }));
+});
+
+// Listen for messages
+socket.addEventListener('message', function (event) {
+    console.log('Message from server ', event.data);
+});
+
+// Unsubscribe
+var unsubscribe = function (symbol) {
+    socket.send(JSON.stringify({ 'type': 'unsubscribe', 'symbol': symbol }))
+}

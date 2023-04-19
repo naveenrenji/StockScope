@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Form, ListGroup, Button, Modal, InputGroup, FormControl, FormLabel, Dropdown, DropdownButton } from 'react-bootstrap';
 import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
+import protobuf from 'protobufjs';
+const { Buffer } = require('buffer/');
 
 
 export default function Portfolio() {
@@ -22,6 +24,50 @@ export default function Portfolio() {
 
     //State used to pass the symbol & stockName in the Modal Component
     const [modalStock, setModalStock] = useState({});
+
+    //This state is used to save all the stocks that user has subscribed
+    const [allStocks, setAllStocks] = useState([]);
+
+
+    //This useEffect is used to get the live data
+    useEffect(() => {
+
+        const ws = new WebSocket('wss://streamer.finance.yahoo.com');
+        protobuf.load('./YPricingData.proto', (error, root) => {
+
+            if (error) {
+
+                return console.log(error);
+            }
+
+            const Yaticker = root.lookupType("yaticker");
+
+            ws.onopen = function open() {
+                console.log('connected');
+
+                // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
+                const symbols = ['AAPL', 'TSLA', 'NVDA', 'GOOGL', 'AMZN', 'SNOW', 'COKE']
+
+                ws.send(JSON.stringify({
+                    subscribe: symbols
+                }));
+            };
+
+            ws.onclose = function close() {
+                console.log('disconnected');
+            };
+
+            ws.onmessage = function incoming(message) {
+                console.log('coming message');
+                let data = Yaticker.decode(new Buffer(message.data, 'base64'));
+
+                console.log(data);
+            };
+        });
+
+    })
+
+
 
     //Function to make the value of the input search and the useState value consistent
     function handleStockChange(e) {
@@ -77,6 +123,8 @@ export default function Portfolio() {
     return (
         <>
             <Container>
+
+
 
                 <Row>
                     <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
@@ -139,7 +187,7 @@ export default function Portfolio() {
                 </div>
 
                 <h2 className="mt-3">
-                    MY PORTFOLIOS
+                    My Portfolios
                 </h2>
                 <div className='mt-3'>
                     <div className='d-flex justify-content-between'>

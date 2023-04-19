@@ -1,6 +1,7 @@
 export const temp = {
     "name": "John Smith",
     "Address": "Sessame Streeet P town",
+
     "Portfolios": [
         {
             "name": "My Wishlist",
@@ -15,15 +16,20 @@ export const temp = {
                 {
                     "symbol": "AAPL",
                     "name": "Apple Inc",
+
                     "lots": [
                         {
                             "shares": 100,
                             "price": 165
+                        },
+                        {
+                            "shares": 200,
+                            "price": 200
                         }
                     ]
                 },
                 {
-                    "symbol": "TESLA",
+                    "symbol": "TSLA",
                     "name": "Tesla Inc",
                     "lots": [
                         {
@@ -31,7 +37,6 @@ export const temp = {
                             "price": 186
                         }
                     ]
-
                 }
             ]
         },
