@@ -16,7 +16,7 @@ function Login() {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!username || !password) {
       setError('Please enter both username and password.');
@@ -24,6 +24,11 @@ function Login() {
       setError('Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number.');
     } else {
       // Add code to submit the login form
+      try {
+        await doSignInWithEmailAndPassword(email.value, password.value);
+      } catch (error) {
+        alert(error);
+      }
     }
   };
 
@@ -47,6 +52,8 @@ function Login() {
               Login
             </Button>
           </Form>
+          <br></br>
+          <SocialSignIn />
         </Card.Body>
       </Card>
     </div>

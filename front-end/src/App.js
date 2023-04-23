@@ -5,8 +5,8 @@ import Search from './pages/Search';
 import MarketNews from './pages/MarketNews';
 import Stocks from './pages/Stocks';
 import Profile from './pages/Profile';
-import Signup from '../../../Authentication/Signup';
-import Login from '../../../Authentication/Login';
+import Signup from './pages/Authentication/Signup'
+import Login from './pages/Authentication/Login';
 
 function App() {
   return (

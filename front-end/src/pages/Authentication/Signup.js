@@ -23,7 +23,7 @@ function Signup() {
     setConfirmPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Reset errors
@@ -68,6 +68,15 @@ function Signup() {
     }
 
     // Add code to submit the signup form
+    try {
+      await doCreateUserWithEmailAndPassword(
+        email.value,
+        passwordOne.value,
+        displayName
+      );
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (
@@ -110,11 +119,13 @@ function Signup() {
                 {confirmPasswordError}
               </Form.Text>
             </Form.Group>
-<br></br>
+            <br></br>
             <Button variant="primary" type="submit">
               Signup
             </Button>
           </Form>
+          <br></br>
+          <SocialSignIn />
         </Card.Body>
       </Card>
     </div>
