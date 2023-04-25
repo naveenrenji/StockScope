@@ -1,4 +1,4 @@
-.PortfolioDash {
+.MarketNewsDash {
     /* padding-top: 1rem; */
     display: flex;
     flex-direction: column;
@@ -65,35 +65,15 @@
     border: 1px solid rgba(255, 255, 255, 0.55);
 }
 
-.list-group-item {
-    background-color: transparent;
-    border: none;
-    font-size: 14px;
-}
-
-th {
-    font-size: 20px;
-}
-
-tbody, td, tfoot, th, thead, tr {
-    border-style: none;
-}
-
-.formControl {
-    background: rgba(255, 255, 255, 0.307);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.899);
-    border-radius: 10px;
-}
 @media screen and (max-width: 1200px) {
-    .PortfolioDash {
+    .MarketNewsDash {
         justify-content: flex-start;
         margin-top: 2rem;
     }
 }
 
 @media screen and (max-width: 768px) {
-    .PortfolioDash {
+    .MarketNewsDash {
         align-items: center;
     }
 }
