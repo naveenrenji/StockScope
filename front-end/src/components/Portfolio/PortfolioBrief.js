@@ -1,13 +1,14 @@
 import React from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
-
 
 export default function PortfoioBrief() {
 
+    console.log("Inside portfolio brief");
+
     return (
         <>
-            <Container>
+
+            <h1>Portfolio Brief page is rendered</h1>
+            {/* <Container>
                 <div className="d-flex justify-content-between">
 
                     <DropdownButton
@@ -21,7 +22,7 @@ export default function PortfoioBrief() {
                     </DropdownButton>
 
                 </div>
-            </Container>
+            </Container> */}
 
         </>
     )

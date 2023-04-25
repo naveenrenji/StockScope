@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Form, ListGroup, Button, Modal, InputGroup, FormControl, FormLabel, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Container, Row, Col, Form, ListGroup, Button } from 'react-bootstrap';
 import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
@@ -32,6 +33,7 @@ export default function Portfolio() {
     //This useEffect is used to get the live data
     useEffect(() => {
 
+
         const ws = new WebSocket('wss://streamer.finance.yahoo.com');
         protobuf.load('./YPricingData.proto', (error, root) => {
 
@@ -51,6 +53,7 @@ export default function Portfolio() {
                 ws.send(JSON.stringify({
                     subscribe: symbols
                 }));
+
             };
 
             ws.onclose = function close() {
@@ -59,19 +62,16 @@ export default function Portfolio() {
 
             ws.onmessage = function incoming(message) {
                 console.log('coming message');
-                let data = Yaticker.decode(new Buffer(message.data, 'base64'));
 
+                let data = Yaticker.decode(new Buffer(message.data, 'base64'));
                 console.log(data);
             };
         });
 
     })
 
-
-
     //Function to make the value of the input search and the useState value consistent
     function handleStockChange(e) {
-
 
         console.log("handlechange triggered");
         setSearchStatus(false);
@@ -115,7 +115,6 @@ export default function Portfolio() {
 
     //Event Triggered when user press escape button or when user hits close button in the modal
     function hideModal(e) {
-
 
         setModalShow(false);
     }
@@ -189,7 +188,7 @@ export default function Portfolio() {
                 </h2>
                 <div className='mt-3'>
                     <div className='d-flex justify-content-between'>
-                        <h3>Portfolio  1</h3>
+                        <h3> <Link to="/portfolio/Portfolio1">Portfolio 1</Link></h3>
                         <h3>(-1.92%)</h3>
                     </div>
                     <div className='d-flex justify-content-between'>
@@ -199,7 +198,7 @@ export default function Portfolio() {
                     <hr />
 
                     <div className='d-flex justify-content-between'>
-                        <h3>Portfolio 2</h3>
+                        <h3><Link to="/portfolio/Portfolio2">Portfolio 2</Link></h3>
                         <h3>(-1.92%)</h3>
                     </div>
                     <div className='d-flex justify-content-between'>

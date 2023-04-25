@@ -6,8 +6,10 @@ import Stocks from './pages/Stocks';
 import Profile from './pages/Profile';
 import Signup from './pages/Authentication/Signup';
 import Login from './pages/Authentication/Login';
+import Portfolio from './components/Portfolio/Portfolio'
 import PortfolioBrief from './components/Portfolio/PortfolioBrief';
-import PortfolioDetails from './components/Portfolio/PortfolioDetails';
+import Error from './components/Error/Error'
+
 
 function App() {
   return (
@@ -20,8 +22,10 @@ function App() {
         <Route key="profile" path="/profile" element={<Profile />} />
         <Route key="signup" path="/signup" element={<Signup />} />
         <Route key="login" path="/login" element={<Login />} />
-        <Route key="portfolio_brief" path="/portfolio/:name" element={<PortfolioBrief />} />
-        <Route key="portfolio_detaiils" path="/portfolio/:name/v1" element={<PortfolioDetails />} />
+        <Route key="portfolio" path="/portfolio" element={<Portfolio />} />
+        <Route path="/portfolio/:name" element={<PortfolioBrief />} />
+        <Route path="*" element={<Error />} />
+
       </Routes>
     </Router>
   );
