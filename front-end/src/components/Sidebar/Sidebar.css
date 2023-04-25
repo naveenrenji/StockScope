@@ -20,6 +20,8 @@
   align-items: center;
   justify-content: center;
   height: 4%;
+  text-decoration: none;
+  color: var(--black);
 }
 
 .logo>span>span {

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Form, ListGroup, Button } from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
 import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
 import protobuf from 'protobufjs';
 const { Buffer } = require('buffer/');
+import './Portfolio.css';
+import { Search } from 'react-bootstrap-icons';
 
 
 export default function Portfolio() {
@@ -119,96 +121,131 @@ export default function Portfolio() {
         setModalShow(false);
     }
 
+    const stocks = [
+        { name: "Portfolio 1", change: 1.92, symbol: 2, gain: -34399.06 },
+        { name: "Portfolio 2", change: -1.92, symbol: 1, gain: 34399.06 },
+    ];
+
+    //Styling for Percent Change
+    const makeStyle = (change) => {
+        if (change > 0) {
+            return {
+                background: 'rgb(145 254 159 / 47%)',
+                color: 'green',
+            }
+        }
+        else if (change < 0) {
+            return {
+                background: '#ffadad8f',
+                color: 'red',
+            }
+        }
+        else {
+            return {
+                background: '#59bfff',
+                color: 'white',
+            }
+        }
+    }
+
     return (
         <>
-            <Container>
 
-                <Row>
-                    <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
-                        <Form onSubmit={handleClick}>
-                            <Form.Group controlId="formSearch">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Search for Stock"
-                                    onChange={handleStockChange}
-                                    value={stockName}
-                                />
-                            </Form.Group>
-
-                        </Form>
-
+            <div className='PortfolioDash'>
+                <Container>
+                    <h1>Portfolio</h1>
+                    <div class="wrapper">
+                        <div class="searchBar">
+                            <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} />
+                            <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick}>
+                                <Search color='#FF919D' />
+                            </button>
+                        </div>
                         {bestResults && bestResults.length > 0 ? (
-                            <ListGroup className="mt-3">
+                            <ListGroup className="mt-3 liststyle">
                                 {bestResults.map((item) => {
-
                                     let type = item["3. type"];
                                     let region = item["4. region"];
 
-
                                     if (type === "Equity" && region === "United States") {
-
                                         let symbol = item["1. symbol"];
                                         let name = item["2. name"];
-                                        return <ListGroup.Item key={symbol} action onClick={showModal} >{symbol} - {name} </ListGroup.Item>
+                                        return (
+                                            <ListGroup.Item
+                                                key={symbol}
+                                                action
+                                                onClick={showModal}
+                                                className="liststyleItem"
+                                            >
+                                                {symbol} - {name}
+                                            </ListGroup.Item>
+                                        );
+                                    } else {
+                                        return null;
                                     }
-                                }
-                                )}
+                                })}
                             </ListGroup>
-                        ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ? <p className='mt-3'>No stock of that symbol found. Please try again</p> : <p className='mt-3'>Search to add the stock in your portfolio</p>}
-
-                        <PortfolioModal
-                            name={modalStock}
-                            show={modalShow}
-                            onHide={hideModal}
-                        />
-                    </Col>
-                    <Col xs={{ span: 1 }} md={{ span: 1 }} className="mt-5">
-                        <Button variant="secondary" onClick={handleClick}>
-                            <Search />
-                        </Button>
-                    </Col>
-                </Row>
-
-                <div className='mt-3'>
-                    <h2>Total Market Value</h2>
-                    <h2>$16,146.00</h2>
-                    <div className='d-flex justify-content-between'>
-                        <h3>Day Gain</h3>
-                        <h3>-319.00(-1.92%)</h3>
+                        ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
+                            <p className='mt-3 label text-center'>No stock of that symbol found. Please try again</p> :
+                            <p className='mt-3 label text-center'>Search to add the stock in your portfolio</p>}
                     </div>
+                    <Row>
+                        <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
+                            <PortfolioModal
+                                name={modalStock}
+                                show={modalShow}
+                                onHide={hideModal}
+                            />
+                        </Col>
+                    </Row>
 
-                    <div className='d-flex justify-content-between'>
-                        <h3>Total Gain</h3>
-                        <h3>+4150.00(+33.54%)</h3>
-                    </div>
-                </div>
+                    <h3 className="mt-3">
+                        MY PORTFOLIOS
+                    </h3>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <th>Portfolio Name</th>
+                                <th>Change (in %)</th>
+                                <th>No. of Symbols</th>
+                                <th>Total Gain</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {stocks.map((stock) => (
+                                <tr key={stock.symbol}>
+                                    <td style={{ padding: "15px" }}>{stock.name}</td>
+                                    <td style={{ padding: "15px" }}>
+                                        <span className="change" style={makeStyle(stock.change)}>{stock.change}%</span>
+                                    </td>
+                                    <td style={{ padding: "15px" }}>{stock.symbol}</td>
+                                    <td style={{ padding: "15px" }}>
+                                        <span className="change" style={makeStyle(stock.gain)}>${stock.gain.toLocaleString("en-US")}</span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
 
-                <h2 className="mt-3">
-                    My Portfolios
-                </h2>
-                <div className='mt-3'>
-                    <div className='d-flex justify-content-between'>
-                        <h3> <Link to="/portfolio/Portfolio1">Portfolio 1</Link></h3>
-                        <h3>(-1.92%)</h3>
-                    </div>
-                    <div className='d-flex justify-content-between'>
-                        <h3>2 Symbols</h3>
-                        <h3>+$34,399.06</h3>
-                    </div>
-                    <hr />
+                    <div className='mt-3 container'>
+                        <div className='d-flex justify-content-between'>
+                            <h3>Total Market Value</h3>
+                            <h5>$16,146.00</h5>
+                        </div>
+                        <div className='d-flex justify-content-between'>
+                            <h3>Day Gain</h3>
+                            <h5>-319.00(-1.92%)</h5>
+                        </div>
 
-                    <div className='d-flex justify-content-between'>
-                        <h3><Link to="/portfolio/Portfolio2">Portfolio 2</Link></h3>
-                        <h3>(-1.92%)</h3>
+                        <div className='d-flex justify-content-between'>
+                            <h3>Total Gain</h3>
+                            <h5>+4150.00(+33.54%)</h5>
+                        </div>
                     </div>
-                    <div className='d-flex justify-content-between'>
-                        <h3>1 Symbol</h3>
-                        <h3>+$34,399.06</h3>
-                    </div>
-                    <hr />
-                </div>
+                </Container >
+            </div>
 
-            </Container >
+
         </>
     )
 }

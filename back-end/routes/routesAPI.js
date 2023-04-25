@@ -1,9 +1,8 @@
 //require express, express router and bcrypt as shown in lecture code
 const express = require("express");
 const router = express.Router();
-const helpers = require("../helpers");
-const data = require("../data");
-const recipes = data.recipes;
+// const helpers = require("../helpers");
+// const data = require("../data");
 const { ObjectId } = require("mongodb");
 
 router.route("/recipes").get(async (req, res) => {

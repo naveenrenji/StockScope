@@ -3,9 +3,14 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
+import { doCreateUserWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
+import { AuthContext } from "../../firebase/Auth";
+import SocialSignIn from "./SocialSignIn";
+
 function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -23,7 +28,7 @@ function Signup() {
     setConfirmPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Reset errors
@@ -68,6 +73,11 @@ function Signup() {
     }
 
     // Add code to submit the signup form
+    try {
+      await doCreateUserWithEmailAndPassword(email, password, username);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (
@@ -110,11 +120,14 @@ function Signup() {
                 {confirmPasswordError}
               </Form.Text>
             </Form.Group>
-<br></br>
+            <br></br>
             <Button variant="primary" type="submit">
               Signup
             </Button>
           </Form>
+          <br></br>
+          <SocialSignIn />
+          <div>Create an account instead</div>
         </Card.Body>
       </Card>
     </div>
