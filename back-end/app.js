@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const session = require("express-session");
 const configRoutes = require("./routes");
+const mongoCollections = require("./config/mongoCollections");
 
 let count = {};
 
@@ -18,7 +19,6 @@ app.use(
         cookie: { maxAge: 86400000 },
     })
 );
-
 
 configRoutes(app);
 

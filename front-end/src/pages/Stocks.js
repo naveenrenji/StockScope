@@ -2,13 +2,14 @@ import React from 'react';
 import RightSide from '../components/RigtSide/RightSide';
 import Sidebar from '../components/Sidebar/Sidebar';
 import '../assets/css/style.css';
+import Portfolio from '../components/Portfolio/Portfolio';
 
 function Stocks() {
   return (
     <div className="Home">
       <div className="HomeGlass">
         <Sidebar />
-        <h1>Stocks Page</h1>
+        <Portfolio />
         <RightSide />
       </div>
     </div>

@@ -43,7 +43,7 @@ export default function BasicTable() {
             <th>Change</th>
           </tr>
         </thead>
-        <tbody style={{ color: "#30292A93", padding: "25px"}}>
+        <tbody>
           {stocks.map((stock) => (
             <tr key={stock.symbol}>
               <td style={{padding: "15px"}}>{stock.name}</td>
