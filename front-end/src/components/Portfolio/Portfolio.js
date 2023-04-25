@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
 import axios from 'axios'
 import PortfolioModal from './PortfolioModal';
 import './Portfolio.css';
+import { Search } from 'react-bootstrap-icons';
 
 
 export default function Portfolio() {
@@ -65,6 +66,33 @@ export default function Portfolio() {
         setModalShow(false);
     }
 
+    const stocks = [
+        { name: "Portfolio 1", change: 1.92, symbol: 2, gain: -34399.06 },
+        { name: "Portfolio 2", change: -1.92, symbol: 1, gain: 34399.06 },
+    ];
+
+    //Styling for Percent Change
+    const makeStyle = (change) => {
+        if (change > 0) {
+            return {
+                background: 'rgb(145 254 159 / 47%)',
+                color: 'green',
+            }
+        }
+        else if (change < 0) {
+            return {
+                background: '#ffadad8f',
+                color: 'red',
+            }
+        }
+        else {
+            return {
+                background: '#59bfff',
+                color: 'white',
+            }
+        }
+    }
+
     return (
         <div className='PortfolioDash'>
             <Container>
@@ -73,11 +101,7 @@ export default function Portfolio() {
                     <div class="searchBar">
                         <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} />
                         <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick}>
-                            <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24"><path fill="#FF919D" d="M9.5,3A6.5,6.5
-                             0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,
-                             20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,
-                             1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
-                            </svg>
+                            <Search color='#FF919D' />
                         </button>
                     </div>
                     {bestResults && bestResults.length > 0 ? (
@@ -118,43 +142,48 @@ export default function Portfolio() {
                     </Col>
                 </Row>
 
-                <div className='mt-3'>
-                    <h2>Total Market Value</h2>
-                    <h2>$16,146.00</h2>
+                <h3 className="mt-3">
+                    MY PORTFOLIOS
+                </h3>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Portfolio Name</th>
+                            <th>Change (in %)</th>
+                            <th>No. of Symbols</th>
+                            <th>Total Gain</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {stocks.map((stock) => (
+                            <tr key={stock.symbol}>
+                                <td style={{ padding: "15px" }}>{stock.name}</td>
+                                <td style={{ padding: "15px" }}>
+                                    <span className="change" style={makeStyle(stock.change)}>{stock.change}%</span>
+                                </td>
+                                <td style={{ padding: "15px" }}>{stock.symbol}</td>
+                                <td style={{ padding: "15px" }}>
+                                    <span className="change" style={makeStyle(stock.gain)}>${stock.gain.toLocaleString("en-US")}</span>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+
+                <div className='mt-3 container'>
+                    <div className='d-flex justify-content-between'>
+                        <h3>Total Market Value</h3>
+                        <h5>$16,146.00</h5>
+                    </div>
                     <div className='d-flex justify-content-between'>
                         <h3>Day Gain</h3>
-                        <h3>-319.00(-1.92%)</h3>
+                        <h5>-319.00(-1.92%)</h5>
                     </div>
 
                     <div className='d-flex justify-content-between'>
                         <h3>Total Gain</h3>
-                        <h3>+4150.00(+33.54%)</h3>
+                        <h5>+4150.00(+33.54%)</h5>
                     </div>
-                </div>
-
-                <h2 className="mt-3">
-                    MY PORTFOLIOS
-                </h2>
-                <div className='mt-3'>
-                    <div className='d-flex justify-content-between'>
-                        <h3>Portfolio  1</h3>
-                        <h3>(-1.92%)</h3>
-                    </div>
-                    <div className='d-flex justify-content-between'>
-                        <h3>2 Symbols</h3>
-                        <h3>+$34,399.06</h3>
-                    </div>
-                    <hr />
-
-                    <div className='d-flex justify-content-between'>
-                        <h3>Portfolio 2</h3>
-                        <h3>(-1.92%)</h3>
-                    </div>
-                    <div className='d-flex justify-content-between'>
-                        <h3>1 Symbol</h3>
-                        <h3>+$34,399.06</h3>
-                    </div>
-                    <hr />
                 </div>
             </Container >
         </div>

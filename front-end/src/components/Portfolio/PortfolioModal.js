@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Row, Col, Button, Modal, InputGroup, FormControl, FormLabel, Dropdown } from 'react-bootstrap';
+import { Row, Col, Modal, Dropdown, Form } from 'react-bootstrap';
 import { temp } from './portfolio-data';
 import { checkNumberOfShares, checkBuyingPrice } from '../../helpers';
 
@@ -26,7 +25,6 @@ export default function PortfolioModal(props) {
     const handleModalData = (e) => {
 
         setmodalData(prevData => {
-
             return {
                 ...prevData,
                 [e.target.name]: e.target.value
@@ -54,7 +52,6 @@ export default function PortfolioModal(props) {
 
             //Iterate over all the portfolios to get the index of the portfolio
             for (let i = 0; i < temp.Portfolios.length; i++) {
-
                 if (temp.Portfolios[i].name === portfolioValue) {
 
                     let alreadyExist = false;
@@ -62,12 +59,10 @@ export default function PortfolioModal(props) {
                     for (let j = 0; j < temp.Portfolios[i].stocks.length && !alreadyExist; j++) {
 
                         if (temp.Portfolios[i].stocks[j].symbol === stockSymbol) {
-
                             let lotData = {
                                 shares: modalData.shares,
                                 price: modalData.price
                             }
-
                             temp.Portfolios[i].stocks[j].lots.push(lotData);
                             alreadyExist = true;
                         }
@@ -102,73 +97,49 @@ export default function PortfolioModal(props) {
     }
 
     return (
-        <Modal
-            {...props}
-            size="xs"
-            centered
-        >
+        <Modal {...props} size="xs" centered >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
                     Add a Stock
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-
-
                 <Dropdown onSelect={handleSelect}>
                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         {portfolioValue}
                     </Dropdown.Toggle>
-
                     <Dropdown.Menu>
-
                         {temp.Portfolios.map((data) => {
                             return (
-
                                 <Dropdown.Item eventKey={data.name} key={data.name}>{data.name}</Dropdown.Item>
                             )
                         })}
                     </Dropdown.Menu>
-
-
                 </Dropdown>
-
 
                 <h4 className="mt-3">Name: {props.name}</h4>
 
-
                 <Row>
                     <Col>
-                        <InputGroup className="mt-3">
-                            <FormLabel className="mt-3">Number of Shares:</FormLabel>
-                            <FormControl
-                                name="shares"
-                                placeholder="Shares"
-                                value={modalData.shares}
-                                onChange={handleModalData}
-                            />
-                        </InputGroup>
-
+                        <Form.Group className="mb-3">
+                            <Form.Label>No. of Shares: </Form.Label>
+                            <Form.Control type="text" name="shares" placeholder="Shares" value={modalData.shares} onChange={handleModalData} />
+                        </Form.Group>
                     </Col>
-
                     <Col>
-                        <InputGroup className="mt-3">
-                            <FormLabel className="mt-3">Avg Buying Price: </FormLabel>
-                            <FormControl
-                                name="price"
+                        <Form.Group className="mb-3">
+                            <Form.Label>Avg Buying Price: </Form.Label>
+                            <Form.Control type="text" name="price"
                                 placeholder="Price"
                                 value={modalData.price}
-                                onChange={handleModalData}
-                            />
-                        </InputGroup>
+                                onChange={handleModalData} />
+                        </Form.Group>
                     </Col>
                 </Row>
-
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={handleSubmit} >Submit</Button>
-                <Button onClick={props.onHide}>Close</Button>
-
+                <button className='authButton btn-semi-transparent' onClick={handleSubmit}>Submit</button>
+                <button className='authButton btn-semi-transparent' onClick={props.onHide}>Cancel</button>
             </Modal.Footer>
         </Modal>
     );
