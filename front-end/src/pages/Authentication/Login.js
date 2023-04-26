@@ -10,6 +10,8 @@ import {
 import SocialSignIn from "./SocialSignIn";
 import SignUp from "./Signup";
 
+export let isLoggedIn = false;
+
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -38,6 +40,7 @@ function Login() {
       // Add code to submit the login form
       try {
         await doSignInWithEmailAndPassword(email.value, password.value);
+        isLoggedIn = true; // set isLoggedIn to true upon successful login
       } catch (error) {
         alert(error);
       }

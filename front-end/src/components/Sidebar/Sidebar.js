@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
-import { Power } from "react-bootstrap-icons";
+import { PersonCircle, Power } from "react-bootstrap-icons";
 import { SidebarData } from "../../config/config";
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
 import { Link, useLocation } from 'react-router-dom';
+import { isLoggedIn } from "../../pages/Authentication/Login"; 
+//Use this above line once user authentication code is 
+//complete and modify below accordingly
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
   const { pathname } = useLocation();
+  const [isLoggedIn, setUserLogin] = useState(false)
 
   useEffect(() => {
     const selectedIndex = SidebarData.findIndex(item => item.link === pathname);
@@ -19,6 +23,16 @@ const Sidebar = () => {
   const toggleSidebar = () => {
     setExpanded(prevState => !prevState);
   };
+
+  const handleLogin = () => {
+    /* Add login code here */
+    setUserLogin(true);
+  }
+
+  const handleLogout = () => {
+    /* Add logout code here */
+    setUserLogin(false);
+  }
 
   const sidebarVariants = {
     true: {
@@ -61,7 +75,9 @@ const Sidebar = () => {
             );
           })}
           <div className="menuItem">
-            <button className="authButton btn-semi-transparent">Logout <Power size="18px" /></button>
+            {isLoggedIn ?
+              <button className="authButton btn-semi-transparent" onClick={handleLogout}>Logout <Power size="18px" /></button> :
+              <button className="authButton btn-semi-transparent" onClick={handleLogin}>Login <PersonCircle size="18px" /></button>}
           </div>
         </div>
       </motion.div>

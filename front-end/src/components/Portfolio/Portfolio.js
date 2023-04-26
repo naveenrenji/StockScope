@@ -9,8 +9,6 @@ import protobuf from 'protobufjs';
 const { Buffer } = require('buffer/');
 
 
-
-
 export default function Portfolio() {
 
     //This state is used to store the value of the input search
