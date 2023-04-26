@@ -8,7 +8,7 @@ import Signup from './pages/Authentication/Signup';
 import Login from './pages/Authentication/Login';
 import Portfolio from './components/Portfolio/Portfolio'
 import PortfolioBrief from './components/Portfolio/PortfolioBrief';
-import PortfolioDetails from './components/Portfolio/PortfolioDetails';
+import StockSummary from './components/Stock/Summary';
 import NotFoundPage from './pages/404';
 
 
@@ -24,7 +24,7 @@ function App() {
         <Route key="signup" path="/signup" element={<Signup />} />
         <Route key="login" path="/login" element={<Login />} />
         <Route key="portfolio_brief" path="/portfolio/:name" element={<PortfolioBrief />} />
-        <Route key="portfolio_details" path="/portfolio/:name/v1" element={<PortfolioDetails />} />
+        <Route key="stock_summary" path="/stock/summary" element={<StockSummary />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
