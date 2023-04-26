@@ -154,8 +154,8 @@ export default function Portfolio() {
             <div className='PortfolioDash'>
                 <Container>
                     <h1>Portfolio</h1>
-                    <div class="wrapper">
-                        <div class="searchBar">
+                    <div className="wrapper">
+                        <div className="searchBar">
                             <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} />
                             <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick}>
                                 <Search color='#FF919D' />
