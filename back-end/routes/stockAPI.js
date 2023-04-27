@@ -93,7 +93,7 @@ router.route("/news/:name").get(async (req, res) => {
             console.log("data fetched from redis");
             let stringData = await client.get(`news:${stockName}`);
             newsData = JSON.parse(stringData);
-            return res.status(200).json(stockData);
+            return res.status(200).json(newsData);
         }
 
         // current date
@@ -105,7 +105,7 @@ router.route("/news/:name").get(async (req, res) => {
 
         // last week date
         const lastWeek = new Date();
-        lastWeek.setDate(lastWeek.getDate() - 7);
+        lastWeek.setDate(lastWeek.getDate() - 3);
         const lastWeekYear = lastWeek.getFullYear();
         const lastWeekMonth = String(lastWeek.getMonth() + 1).padStart(2, '0');
         const lastWeekDay = String(lastWeek.getDate()).padStart(2, '0');

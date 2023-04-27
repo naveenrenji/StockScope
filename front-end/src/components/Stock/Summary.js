@@ -55,7 +55,7 @@ export default function Summary(props) {
                 let data = Yaticker.decode(new Buffer(message.data, 'base64'));
                 console.log(data);
                 setLatestStockInfo(data);
-                if (currentHour >= 9 && currentHour <= 20 && currentDay !== 0 && currentDay !== 6) {
+                if (currentHour >= 9 && currentHour <= 16 && currentDay !== 0 && currentDay !== 6) {
 
                     //Set the price of the stock and the change percentage from the websocket;
                     setStockPrice(data.price);
@@ -76,7 +76,7 @@ export default function Summary(props) {
                 console.log(data);
                 setStockDetails(data);
 
-                if (currentHour >= 20 || currentHour < 9 || currentDay === 0 || currentDay === 6) {
+                if (currentHour >= 16 || currentHour < 9 || currentDay === 0 || currentDay === 6) {
 
                     setStockPrice(data["Current Price"]);
                     setChangePrice(data["Change"])
