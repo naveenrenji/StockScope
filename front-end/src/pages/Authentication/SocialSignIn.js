@@ -16,7 +16,9 @@ const SocialSignIn = () => {
       <img className = "signin-img"
         onClick={() => socialSignOn('google')}
         alt='Google signin'
-        src="../../assets/imgs/google-signup-img.png"
+        src={google_img}
+        height={50}
+        width={50}
       />
     </div>
   );
