@@ -24,7 +24,7 @@ function App() {
         <Route key="signup" path="/signup" element={<Signup />} />
         <Route key="login" path="/login" element={<Login />} />
         <Route key="portfolio_brief" path="/portfolio/:name" element={<PortfolioBrief />} />
-        <Route key="stock_summary" path="/stock/summary" element={<StockSummary />} />
+        <Route key="stock_summary" path="/stock/summary" element={<StockSummary symbol="TSLA" name="Tesla, Inc" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>

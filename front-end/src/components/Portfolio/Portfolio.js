@@ -1,5 +1,6 @@
 import './Portfolio.css';
 import "bootstrap/dist/css/bootstrap.min.css";
+import protoFile from '../../config/YPricingData.proto';
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
 import axios from 'axios'
@@ -7,6 +8,7 @@ import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
 import protobuf from 'protobufjs';
 const { Buffer } = require('buffer/');
+
 
 
 
@@ -37,7 +39,7 @@ export default function Portfolio() {
 
 
         const ws = new WebSocket('wss://streamer.finance.yahoo.com');
-        protobuf.load('./YPricingData.proto', (error, root) => {
+        protobuf.load(protoFile, (error, root) => {
 
             if (error) {
 
