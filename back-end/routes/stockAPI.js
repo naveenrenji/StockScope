@@ -61,7 +61,9 @@ router.route("/:name").get(async (req, res) => {
             error: error.message
         })
     }
-    return res.status(200).json(stockData);
+    return res.status(200).json({
+        stockData
+    });
 });
 
 module.exports = router;

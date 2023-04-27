@@ -3,11 +3,13 @@ const express = require("express");
 const app = express();
 const session = require("express-session");
 const configRoutes = require("./routes");
+const cors = require('cors');
 
 let count = {};
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use(
     session({

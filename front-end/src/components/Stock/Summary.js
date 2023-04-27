@@ -5,38 +5,36 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import protobuf from 'protobufjs';
 const { Buffer } = require('buffer/');
+const axios = require("axios");
 
 
 export default function Summary(props) {
 
     //This useEffect is used to get the live data
 
-
+    const [stockName, setStockName] = useState(props.symbol);
     const [stockPrice, setStockPrice] = useState({});
     const [stockDetails, setStockDetails] = useState({});
 
+    //This useEffect is used to get the live data price of the stock
     useEffect(() => {
 
         const ws = new WebSocket('wss://streamer.finance.yahoo.com');
         protobuf.load(protoFile, (error, root) => {
-
             if (error) {
 
                 return console.log(error);
             }
 
             const Yaticker = root.lookupType("yaticker");
-
             ws.onopen = function open() {
                 console.log('connected');
 
-                // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
                 let symbol = [];
                 symbol.push(props.symbol);
                 ws.send(JSON.stringify({
                     subscribe: symbol
                 }));
-
             };
 
             ws.onclose = function close() {
@@ -47,17 +45,44 @@ export default function Summary(props) {
                 console.log('coming message');
 
                 let data = Yaticker.decode(new Buffer(message.data, 'base64'));
+                console.log(data);
                 setStockPrice(data);
                 console.log(data);
             };
         });
-
     })
 
+    //This useEffect is used to get the fundamental details of the stock
     useEffect(() => {
 
+        async function fetchData() {
+            try {
 
-    })
+                fetch(`http://localhost:3001/stock/${stockName}`, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    method: "GET",
+                }).then((response) => {
+
+                    return response.json();
+                }).then((data) => {
+
+                    console.log("Printing data");
+                    console.log(data);
+                })
+                // console.log(data);
+                // const data = await axios.get(
+                //     `http://localhost:3001/stock/${stockName}`
+                // );
+
+                //setStockDetails(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        fetchData();
+    }, [stockName])
 
     return (
         <>

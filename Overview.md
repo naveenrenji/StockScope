@@ -4,11 +4,11 @@
 
 |Members| CWID | Github Username
 |--|--|--|
-| **Naveen Mathews Renji** | 20016323 |[naveenrenji](https://github.com/naveenrenji)|
+|**Naveen Mathews Renji** | 20016323 |[naveenrenji](https://github.com/naveenrenji)|
 |**Sagar Chakravarthy Mathada Veera**|||
-| **Manudeep Reddy**|||
+|**Manudeep Reddy**|||
 |**Chaitanya Pawar**|20008880|[ChaitanyaP22](https://github.com/Chaitanyap22)|
-|**Akshay Patade**|20009092||
+|**Akshay Pradeep Patade**|20009092||
 
 ## Project Overview
 
