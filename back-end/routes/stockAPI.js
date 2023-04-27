@@ -131,6 +131,8 @@ router.route("/news/:name").get(async (req, res) => {
 
     catch (error) {
 
+        console.log(error);
+
         return res.status(error.statusCode).json({
             error: error.message
         });

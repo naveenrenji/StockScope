@@ -1,12 +1,14 @@
 import protoFile from '../../config/YPricingData.proto';
 import { React, useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
-import { Tab, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import protobuf from 'protobufjs';
+import axios from 'axios'
 const { Buffer } = require('buffer/');
-const axios = require("axios");
+
+
 
 
 export default function Summary(props) {
@@ -51,6 +53,7 @@ export default function Summary(props) {
                 console.log('coming message');
 
                 let data = Yaticker.decode(new Buffer(message.data, 'base64'));
+                console.log(data);
                 setLatestStockInfo(data);
                 if (currentHour >= 9 && currentHour <= 20 && currentDay !== 0 && currentDay !== 6) {
 
@@ -69,26 +72,20 @@ export default function Summary(props) {
         async function fetchData() {
             try {
 
-                fetch(`http://localhost:3001/stock/${props.symbol}`, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    method: "GET",
-                }).then(response => response.json()
-                ).then((data) => {
+                let { data } = await axios.get(`http://localhost:3001/stock/${props.symbol}`);
+                console.log(data);
+                setStockDetails(data);
 
-                    setStockDetails(data);
+                if (currentHour >= 20 || currentHour < 9 || currentDay === 0 || currentDay === 6) {
 
-                    if (currentHour >= 20 || currentHour < 9 || currentDay === 0 || currentDay === 6) {
+                    setStockPrice(data["Current Price"]);
+                    setChangePrice(data["Change"])
+                    setChangePercentange(data["Percent Change"]);
 
-                        setStockPrice(data["Current Price"]);
-                        setChangePrice(data["Change"])
-                        setChangePercentange(data["Percent Change"]);
+                }
+            }
 
-                    }
-                })
-
-            } catch (e) {
+            catch (e) {
                 console.log(e);
             }
         }
@@ -104,7 +101,7 @@ export default function Summary(props) {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Link href="/stock/summary">Summary</Nav.Link>
-                            <Nav.Link href="/stock/statistics">Statistics</Nav.Link>
+                            <Nav.Link href="/stock/news">News</Nav.Link>
                             <Nav.Link href="/stock/statistics">Historical Data</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
@@ -153,11 +150,6 @@ export default function Summary(props) {
 
                             else
                                 formattedNumber = number;
-
-
-                            { console.log(`Formated Number is ${formattedNumber}`) }
-
-
 
                             return (
                                 <tr key={index}>
