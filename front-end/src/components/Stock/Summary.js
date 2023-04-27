@@ -11,8 +11,6 @@ const axios = require("axios");
 export default function Summary(props) {
 
     //This useEffect is used to get the live data
-
-    const [stockName, setStockName] = useState(props.symbol);
     const [stockPrice, setStockPrice] = useState({});
     const [stockDetails, setStockDetails] = useState({});
 
@@ -58,7 +56,7 @@ export default function Summary(props) {
         async function fetchData() {
             try {
 
-                fetch(`http://localhost:3001/stock/${stockName}`, {
+                fetch(`http://localhost:3001/stock/${props.symbol}`, {
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -69,20 +67,16 @@ export default function Summary(props) {
                 }).then((data) => {
 
                     console.log("Printing data");
+                    setStockDetails(data);
                     console.log(data);
                 })
-                // console.log(data);
-                // const data = await axios.get(
-                //     `http://localhost:3001/stock/${stockName}`
-                // );
 
-                //setStockDetails(data);
             } catch (e) {
                 console.log(e);
             }
         }
         fetchData();
-    }, [stockName])
+    }, [])
 
     return (
         <>
