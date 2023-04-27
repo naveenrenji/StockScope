@@ -10,6 +10,7 @@ require("dotenv").config();
 
 router.route("/:name").get(async (req, res) => {
     let stockData, temp, temp1;
+    let updatedTemp1 = {};
 
     try {
 
@@ -41,12 +42,25 @@ router.route("/:name").get(async (req, res) => {
 
         temp = { ...data };
 
+
         let finhubb_data = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${stockName}&token=${process.env.FINNHUB_API_KEY}`);
         temp1 = finhubb_data.data;
+
+        updatedTemp1["Current Price"] = temp1["c"];
+        updatedTemp1["Change"] = temp1["d"];
+        updatedTemp1["Percent Change"] = temp1["dp"];
+        updatedTemp1["High"] = temp1["h"];
+        updatedTemp1["Low"] = temp1["l"];
+        updatedTemp1["Open"] = temp1["o"];
+        updatedTemp1["Previous Close"] = temp1["pc"];
+
+        //Removing 
         stockData = {
+            ...updatedTemp1,
             ...temp,
-            ...temp1
         }
+
+
 
         console.log("Data fetched from api");
 
@@ -61,9 +75,8 @@ router.route("/:name").get(async (req, res) => {
             error: error.message
         })
     }
-    return res.status(200).json({
-        stockData
-    });
+    return res.status(200).json(
+        stockData);
 });
 
 module.exports = router;

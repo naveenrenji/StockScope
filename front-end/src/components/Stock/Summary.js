@@ -1,6 +1,7 @@
 import protoFile from '../../config/YPricingData.proto';
 import { React, useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
+import { Tab, Table } from "react-bootstrap";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import protobuf from 'protobufjs';
@@ -11,7 +12,14 @@ const axios = require("axios");
 export default function Summary(props) {
 
     //This useEffect is used to get the live data
-    const [stockPrice, setStockPrice] = useState({});
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDay = now.getDay();
+
+    const [latestStockInfo, setLatestStockInfo] = useState();
+    const [stockPrice, setStockPrice] = useState(0);
+    const [changePrice, setChangePrice] = useState(0);
+    const [changePercentange, setChangePercentange] = useState(0);
     const [stockDetails, setStockDetails] = useState({});
 
     //This useEffect is used to get the live data price of the stock
@@ -43,9 +51,14 @@ export default function Summary(props) {
                 console.log('coming message');
 
                 let data = Yaticker.decode(new Buffer(message.data, 'base64'));
-                console.log(data);
-                setStockPrice(data);
-                console.log(data);
+                setLatestStockInfo(data);
+                if (currentHour >= 9 && currentHour <= 20 && currentDay !== 0 && currentDay !== 6) {
+
+                    //Set the price of the stock and the change percentage from the websocket;
+                    setStockPrice(data.price);
+                    setChangePrice(data.change)
+                    setChangePercentange(data.changePercent);
+                }
             };
         });
     })
@@ -61,14 +74,19 @@ export default function Summary(props) {
                         "Content-Type": "application/json"
                     },
                     method: "GET",
-                }).then((response) => {
+                }).then(response => response.json()
+                ).then((data) => {
 
-                    return response.json();
-                }).then((data) => {
-
-                    console.log("Printing data");
-                    setStockDetails(data);
                     console.log(data);
+                    setStockDetails(data);
+
+                    if (currentHour >= 20 || currentHour < 9 || currentDay === 0 || currentDay === 6) {
+
+                        setStockPrice(data["Current Price"]);
+                        setChangePrice(data["Change"])
+                        setChangePercentange(data["Percent Change"]);
+
+                    }
                 })
 
             } catch (e) {
@@ -98,27 +116,44 @@ export default function Summary(props) {
 
                 <h1> {props.symbol} - {props.name}.</h1>
                 <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
-                <h2>{parseFloat(stockPrice.price).toFixed(2)}</h2>
+                <h2>{parseFloat(stockPrice).toFixed(2)}</h2>
                 <p>
                     <span style={
                         {
-                            color: stockPrice.change > 0 ? 'green' : 'red'
+                            color: changePrice > 0 ? 'green' : 'red'
                         }
                     }>
-                        {parseFloat(stockPrice.change).toFixed(2)}
+                        {parseFloat(changePrice).toFixed(2)}
                     </span>
 
                     <span style={
                         {
-                            color: stockPrice.changePercent > 0 ? 'green' : 'red',
+                            color: changePercentange > 0 ? 'green' : 'red',
                             paddingLeft: '0.8rem'
                         }
                     }>
-                        ({parseFloat(stockPrice.changePercent).toFixed(2)})%
+
+                        {parseFloat(changePercentange.toFixed(2))}%
                     </span>
                 </p>
 
-
+                <Table>
+                    <tbody>
+                        {Object.keys(stockDetails).map((key, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>
+                                        {key}
+                                    </td>
+                                    <td>
+                                        {stockDetails[key]}
+                                    </td>
+                                </tr>
+                            );
+                        }
+                        )}
+                    </tbody>
+                </Table>
 
             </Container>
         </>
