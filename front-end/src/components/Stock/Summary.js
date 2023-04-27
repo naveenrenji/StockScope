@@ -61,7 +61,7 @@ export default function Summary(props) {
                 }
             };
         });
-    })
+    }, [])
 
     //This useEffect is used to get the fundamental details of the stock
     useEffect(() => {
@@ -77,7 +77,6 @@ export default function Summary(props) {
                 }).then(response => response.json()
                 ).then((data) => {
 
-                    console.log(data);
                     setStockDetails(data);
 
                     if (currentHour >= 20 || currentHour < 9 || currentDay === 0 || currentDay === 6) {
@@ -140,13 +139,33 @@ export default function Summary(props) {
                 <Table>
                     <tbody>
                         {Object.keys(stockDetails).map((key, index) => {
+
+                            let formattedNumber;
+                            let number = stockDetails[key];
+
+                            if (!isNaN(number)) {
+
+                                number = parseFloat(number);
+                                formattedNumber = number.toLocaleString(undefined, {
+                                    maximumFractionDigits: 20,
+                                });
+                            }
+
+                            else
+                                formattedNumber = number;
+
+
+                            { console.log(`Formated Number is ${formattedNumber}`) }
+
+
+
                             return (
                                 <tr key={index}>
                                     <td>
                                         {key}
                                     </td>
                                     <td>
-                                        {stockDetails[key]}
+                                        {formattedNumber}
                                     </td>
                                 </tr>
                             );

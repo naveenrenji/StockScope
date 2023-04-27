@@ -60,10 +60,7 @@ router.route("/:name").get(async (req, res) => {
             ...temp,
         }
 
-
-
         console.log("Data fetched from api");
-
         //convert the data to the string
         let stringData = JSON.stringify(stockData);
 
@@ -77,6 +74,69 @@ router.route("/:name").get(async (req, res) => {
     }
     return res.status(200).json(
         stockData);
+});
+
+
+router.route("/news/:name").get(async (req, res) => {
+
+    let newsData;
+
+    try {
+
+        let stockName = req.params.name;
+        helper.checkStockName(stockName);
+        stockName = stockName.toUpperCase();
+
+        //Checking if the data is present in the cache or not
+        if (await client.get(`news:${stockName}`)) {
+
+            console.log("data fetched from redis");
+            let stringData = await client.get(`news:${stockName}`);
+            newsData = JSON.parse(stringData);
+            return res.status(200).json(stockData);
+        }
+
+        // current date
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const currentDate = `${year}-${month}-${day}`;
+
+        // last week date
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        const lastWeekYear = lastWeek.getFullYear();
+        const lastWeekMonth = String(lastWeek.getMonth() + 1).padStart(2, '0');
+        const lastWeekDay = String(lastWeek.getDate()).padStart(2, '0');
+        const lastWeekDate = `${lastWeekYear}-${lastWeekMonth}-${lastWeekDay}`;
+
+        let { data } = await axios.get(`https://finnhub.io/api/v1/company-news?symbol=${stockName}&from=${lastWeekDate}&to=${currentDate}&token=${process.env.FINNHUB_API_KEY}`);
+
+        //If the data is not present we will throw 404 along with data not found message
+        if (Object.keys(data).length === 0) {
+
+            const error = new Error("Data not found");
+            error.statusCode = 404;
+            throw error;
+        }
+        console.log("Data fetched from api");
+        //convert the data to the string
+        let stringData = JSON.stringify(data);
+
+        await client.set(`news:${stockName}`, stringData);
+        await client.expire(`news:${stockName}`, 300);
+        newsData = data;
+    }
+
+    catch (error) {
+
+        return res.status(error.statusCode).json({
+            error: error.message
+        });
+    }
+
+    return res.status(200).json(newsData);
 });
 
 module.exports = router;
