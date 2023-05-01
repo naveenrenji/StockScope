@@ -1,82 +1,65 @@
 import React, { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-
 import { doCreateUserWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
 import { AuthContext } from "../../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
+import { checkName, checkPassword, checkEmail } from "../../helpers";
 
 function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [usernameError, setUsernameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [errorMessages, setErrorMessages] = useState({});
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+  const navigate = useNavigate();
+
+  const handleInputChange = (event, setterFunction) => {
+    setterFunction(event.target.value);
   };
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+  const validateInputs = () => {
+    const newErrorMessages = {};
 
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
+    try {
+      checkName(username);
+    } catch (error) {
+      newErrorMessages.username = error.message;
+    }
+
+    try {
+      checkEmail(email);
+    } catch (error) {
+      newErrorMessages.email = error.message;
+    }
+
+    try {
+      checkPassword(password);
+    } catch (error) {
+      newErrorMessages.password = error.message;
+    }
+
+    if (password !== confirmPassword) {
+      newErrorMessages.confirmPassword = "Passwords do not match";
+    }
+
+    setErrorMessages(newErrorMessages);
+
+    return Object.keys(newErrorMessages).length === 0;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Reset errors
-    setUsernameError("");
-    setPasswordError("");
-    setConfirmPasswordError("");
-
-    // Validate inputs
-    if (!username) {
-      setUsernameError("Username cannot be empty");
-      return;
-    }
-
-    if (!/^[a-zA-Z0-9]+$/.test(username)) {
-      setUsernameError("Username can only contain alphanumeric characters");
-      return;
-    }
-
-    if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters long");
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      setPasswordError("Password must contain at least one uppercase letter");
-      return;
-    }
-
-    if (!/[a-z]/.test(password)) {
-      setPasswordError("Password must contain at least one lowercase letter");
-      return;
-    }
-
-    if (!/[0-9]/.test(password)) {
-      setPasswordError("Password must contain at least one digit");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-      return;
-    }
-
-    // Add code to submit the signup form
-    try {
-      await doCreateUserWithEmailAndPassword(email, password, username);
-    } catch (error) {
-      alert(error);
+    if (validateInputs()) {
+      try {
+        await doCreateUserWithEmailAndPassword(email, password, username);
+        navigate("/login"); 
+      } catch (error) {
+        alert(error);
+      }
     }
   };
 
@@ -92,9 +75,24 @@ function Signup() {
                 type="text"
                 placeholder="Enter username"
                 value={username}
-                onChange={handleUsernameChange}
+                onChange={(event) => handleInputChange(event, setUsername)}
               />
-              <Form.Text className="text-danger">{usernameError}</Form.Text>
+              <Form.Text className="text-danger">
+                {errorMessages.username}
+              </Form.Text>
+            </Form.Group>
+
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(event) => handleInputChange(event, setEmail)}
+              />
+              <Form.Text className="text-danger">
+                {errorMessages.email}
+              </Form.Text>
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
@@ -103,9 +101,11 @@ function Signup() {
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={handlePasswordChange}
+                onChange={(event) => handleInputChange(event, setPassword)}
               />
-              <Form.Text className="text-danger">{passwordError}</Form.Text>
+              <Form.Text className="text-danger">
+                {errorMessages.password}
+              </Form.Text>
             </Form.Group>
 
             <Form.Group controlId="formBasicConfirmPassword">
@@ -114,20 +114,25 @@ function Signup() {
                 type="password"
                 placeholder="Confirm Password"
                 value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
+                onChange={(event) =>
+                  handleInputChange(event, setConfirmPassword)
+                }
               />
               <Form.Text className="text-danger">
-                {confirmPasswordError}
+                {errorMessages.confirmPassword}
               </Form.Text>
             </Form.Group>
             <br></br>
             <Button variant="primary" type="submit">
               Signup
             </Button>
+
           </Form>
           <br></br>
           <SocialSignIn />
-          <div>Create an account instead</div>
+          <div>
+            <Link to="/login">Login with existing/created account</Link>
+          </div>{" "}
         </Card.Body>
       </Card>
     </div>
