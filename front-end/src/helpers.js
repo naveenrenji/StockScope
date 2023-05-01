@@ -16,17 +16,6 @@ const checkNumberOfShares = (shares) => {
 
 
 
-const checkEmail = (email) => {
-  let check = validator.isEmail(email);
-  if(check){
-    return true;
-  }
-  else{
-    throw new Error("Please enter a valid email ID");
-  }
-}
-
-
 const checkBuyingPrice = (price) => {
   if (!price) {
     throw new Error("Please pass the price value");
@@ -41,6 +30,8 @@ const checkBuyingPrice = (price) => {
   return true;
 };
 
+
+
 const checkId = (id, varName) => {
   if (!id) {
     throw new Error(`Error: You must provide a ${varName}`);
@@ -54,6 +45,8 @@ const checkId = (id, varName) => {
   }
   return id;
 };
+
+
 
 const checkString = (strVal, varName) => {
   if (!strVal) {
@@ -72,6 +65,19 @@ const checkString = (strVal, varName) => {
   return strVal;
 };
 
+
+const checkEmail = (email) => {
+  let check = validator.isEmail(email);
+  if(check){
+    return true;
+  }
+  else{
+    throw new Error("Please enter a valid email ID");
+  }
+}
+
+
+
 const checkUsername = (strVal) => {
   strVal = strVal.trim();
   strVal = strVal.toLowerCase();
@@ -83,6 +89,8 @@ const checkUsername = (strVal) => {
   }
   return strVal;
 };
+
+
 
 const checkPassword = (strVal) => {
   if (strVal.length < 6) {
@@ -102,6 +110,8 @@ const checkPassword = (strVal) => {
     throw new Error(`Password must contain at least one special character.`);
   }
 };
+
+
 
 const checkName = (strVal) => {
   if (!strVal) {
@@ -128,6 +138,8 @@ const checkName = (strVal) => {
   });
   return strVal;
 };
+
+
 
 export {
   checkNumberOfShares,
