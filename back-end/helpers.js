@@ -1,3 +1,6 @@
+const mongo = require('mongodb');
+
+
 const checkStockName = (name) => {
   if (!name) {
     const error = new Error("Please pass the stock name");
