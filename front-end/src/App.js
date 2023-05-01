@@ -11,6 +11,8 @@ import PortfolioBrief from './components/Portfolio/PortfolioBrief';
 import StockSummary from './components/Stock/Summary';
 import StockNews from './components/Stock/News';
 import NotFoundPage from './pages/404';
+import Agent from "./components/Agent/Agent";
+
 
 
 
@@ -28,6 +30,8 @@ function App() {
         <Route key="portfolio_brief" path="/portfolio/:name" element={<PortfolioBrief />} />
         <Route key="stock_summary" path="/stock/summary" element={<StockSummary symbol="TSLA" name="Tesla, Inc" />} />
         <Route key="stock_news" path="/stock/news" element={<StockNews symbol="TSLA" name="Tesla, Inc" />} />
+        <Route key="agent" path="/agent" element={<Agent />} />
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
