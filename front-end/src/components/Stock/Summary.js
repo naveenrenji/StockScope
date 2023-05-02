@@ -102,7 +102,7 @@ export default function Summary(props) {
                         <Nav className="me-auto">
                             <Nav.Link href="/stock/summary">Summary</Nav.Link>
                             <Nav.Link href="/stock/news">News</Nav.Link>
-                            <Nav.Link href="/stock/statistics">Historical Data</Nav.Link>
+                            <Nav.Link href="/stock/historicaldata">Historical Data</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
