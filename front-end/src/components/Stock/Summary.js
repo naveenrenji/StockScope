@@ -5,7 +5,8 @@ import { Table } from "react-bootstrap";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import protobuf from 'protobufjs';
-import axios from 'axios'
+import axios from 'axios';
+import Chart from '../StockChart/Chart';
 const { Buffer } = require('buffer/');
 
 
@@ -111,6 +112,7 @@ export default function Summary(props) {
             <Container>
 
                 <h1> {props.symbol} - {props.name}.</h1>
+                <Chart symbol={props.symbol}></Chart>
                 <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
                 <h2>{parseFloat(stockPrice).toFixed(2)}</h2>
                 <p>

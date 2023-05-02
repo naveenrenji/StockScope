@@ -4,10 +4,41 @@
     right: 20px;
     z-index: 9999;
   }
-  
   .chatbot__icon {
     cursor: pointer;
-    /* Add styles for your chat icon */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #007bff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  
+  .chatbot__icon-inner {
+    width: 24px;
+    height: 24px;
+    background-image: "💬";
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  
+
+  .chatbot__icon {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    background-color: #007bff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+  }
+  
+  .chatbot__icon::before {
+    content: "💬";
   }
   
   .chatbot__container {
@@ -20,9 +51,28 @@
     width: 300px;
     height: 400px;
     padding: 10px;
-    /* Add more styles as needed */
+    overflow: hidden;
   }
-
+  
+  .chatbot__messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+  
+  .chatbot__message {
+    margin-bottom: 10px;
+  }
+  
+  .chatbot__message.bot {
+    color: #007bff;
+  }
+  
+  .chatbot__message.user {
+    color: #333;
+    text-align: right;
+  }
+  
   .chatbot__options {
     display: flex;
     justify-content: space-around;
@@ -37,11 +87,43 @@
     cursor: pointer;
     padding: 5px 10px;
   }
-
+  
   .chatbot__agent-name {
     font-size: 12px;
     font-weight: bold;
     color: #007bff;
     margin-left: 5px;
+  }
+  
+  .chatbot__minimize {
+    background-color: #ccc;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+  }
+  
+  .chatbot__input {
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .chatbot__input input {
+    flex-grow: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .chatbot__input button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+    padding: 5px 10px;
   }
   
