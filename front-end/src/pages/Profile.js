@@ -66,7 +66,7 @@ function Profile() {
                             </div>
                         </Col>
                         <Col xs={6} md={4} className="profileRow2">
-                            <button className="authButton btn-semi-transparent" onClick={() => setModal(true)}>Edit Profile <PencilSquare size="18px" /></button>
+                            <button className="authButton" onClick={() => setModal(true)}>Edit Profile <PencilSquare size="18px" /></button>
                         </Col>
                     </Row>
                     <Row>
@@ -103,7 +103,7 @@ function Profile() {
                     <Modal.Body>
                         <input type="file" id="avatar" name="avatar" style={{ display: "none" }} onChange={profileImageChange} />
                         {avatar ? <Image className="profileImage" src={avatar} /> : <Image className="profileImage" src={img4} />}
-                        <button type="button" onClick={() => document.getElementById("avatar").click()} className="authButton btn-semi-transparent">
+                        <button type="button" onClick={() => document.getElementById("avatar").click()} className="authButton">
                             Upload Image
                         </button>
                         <h4> Info</h4>
@@ -162,7 +162,7 @@ function Profile() {
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
-                        <button className="authButton btn-semi-transparent text-white" type="submit">
+                        <button className="authButton text-white" type="submit">
                             Submit
                         </button>
                     </Modal.Footer>

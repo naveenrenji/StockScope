@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ChatBot.css";
 import { io } from "socket.io-client";
-import { Chat, ChatFill } from "react-bootstrap-icons";
+import { Chat, ChatFill, Send, XLg } from "react-bootstrap-icons";
 
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -86,7 +86,7 @@ function ChatBot() {
       {isOpen ? (
         <div className="chatbot__container">
           <button className="chatbot__minimize" onClick={toggleChat}>
-            Minimize
+            <XLg />
           </button>
           <div className="chatbot__messages">
             {messages.map((message, index) => (
@@ -119,7 +119,7 @@ function ChatBot() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
               />
-              <button type="submit">Send</button>
+              <button type="submit" className="sendButton"><Send/></button>
             </form>
           </div>
         </div>

@@ -127,7 +127,7 @@ function Signup() {
               </Form.Text>
             </Form.Group>
             <br></br>
-            <button type="submit" className="authButton btn-semi-transparent">
+            <button type="submit" className="authButton">
               Signup
             </button>
 
@@ -137,12 +137,6 @@ function Signup() {
           </h4>
           <div className="authentication-social-media">
             <SocialSignIn />
-            <a href="#">
-              <div className="icons8-facebook-circled authentication-social-mediaImg"></div>
-            </a>
-            <a href="#">
-              <div className="icons8-twitter authentication-social-mediaImg"></div>
-            </a>
           </div>
           <span className="authentication-ac">
             Already have an Account? <Link to="/login">Login</Link>
