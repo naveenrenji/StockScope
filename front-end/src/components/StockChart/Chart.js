@@ -1,67 +1,64 @@
-import React, { useState, useEffect } from "react";
-import ApexCharts from "react-apexcharts";
-// import ApexCharts from "apexcharts";
+import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
 
-const StockChart = (props) => {
+const Chart = (props) => {
     const [chartData, setChartData] = useState({
-        series: [
+        labels: [],
+        datasets: [
           {
-            data: []
-          }
-        ]
+            label: 'Stock Price',
+            data: [],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+          },
+        ],
       });
-        const [resolution, setResolution] = useState("W");
-  const [timeframe, setTimeframe] = useState("1y");
+        const [resolution, setResolution] = useState('1');
+  const [timeframe, setTimeframe] = useState('1w');
 
   const fetchData = async () => {
     const now = Math.floor(Date.now() / 1000);
     let from;
 
     switch (timeframe) {
-      case "1y":
+      case '1y':
         from = now - 31536000;
         break;
-      case "6m":
+      case '6m':
         from = now - 15768000;
         break;
-      case "1m":
+      case '1m':
         from = now - 2592000;
         break;
-      case "1w":
+      case '1w':
       default:
         from = now - 604800;
         break;
     }
-    from = from.toString();
+
     try {
-      const response = await fetch(
-        `http://localhost:3001/chart/${props.symbol}/${resolution}/${from}/${now}`
-      );
+      const response = await fetch(`http://localhost:3001/chart/${props.symbol}/${resolution}/${from}/${now}`);
       const data = await response.json();
 
-      if (data.s === "ok") {
+      if (data.s === 'ok' && data.t && data.c) {
         setChartData({
-          series: [
+          labels: data.t.map((timestamp) => new Date(timestamp * 1000).toLocaleString()),
+          datasets: [
             {
-              data: data.t.map((timestamp, index) => {
-                return {
-                  x: new Date(timestamp * 1000),
-                  y: [
-                    data.o[index],
-                    data.h[index],
-                    data.l[index],
-                    data.c[index],
-                  ],
-                };
-              }),
+              label: 'Stock Price',
+              data: data.c,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 2,
             },
           ],
         });
       } else {
-        console.error("Error fetching stock candles data");
+        console.error('Error fetching stock candles data');
       }
     } catch (error) {
-      console.error("Error fetching stock candles data:", error);
+      console.error('Error fetching stock candles data:', error);
     }
   };
 
@@ -79,38 +76,10 @@ const StockChart = (props) => {
     setTimeframe(event.target.value);
   };
 
-  const options = {
-    chart: {
-      type: "candlestick",
-      height: 350,
-    },
-    title: {
-      text: "Stock Price",
-      align: "left",
-    },
-    xaxis: {
-      type: "datetime",
-    },
-    yaxis: {
-      tooltip: {
-        enabled: true,
-      },
-    },
-  };
-
   return (
     <div>
       <h2>Stock Chart</h2>
-      {chartData.series[0].data.length > 0 ? (
-        <ApexCharts
-          options={options}
-          series={chartData.series}
-          type="candlestick"
-          height={350}
-        />
-      ) : (
-        <p>Loading chart...</p>
-      )}
+      <Line data={chartData} />
       <label>
         Resolution:
         <select value={resolution} onChange={handleResolutionChange}>
@@ -135,8 +104,6 @@ const StockChart = (props) => {
       </label>
     </div>
   );
-  
-  
 };
 
-export default StockChart;
+export default Chart;
