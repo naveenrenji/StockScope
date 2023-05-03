@@ -1,22 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {useNavigate} from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {
-  doSignInWithEmailAndPassword,
-  doPasswordReset,
+  logInWithEmailAndPassword,
+  sendPasswordReset,
+  auth
 } from "../../firebase/FirebaseFunctions";
-
 import SocialSignIn from "./SocialSignIn";
 import SignUp from "./Signup";
+import { useAuthState } from "react-firebase-hooks/auth";
+
 
 export let isLoggedIn = false;
+
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+    if (user) navigate("/");
+  }, [user, loading]);
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -29,17 +42,17 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!username || !password) {
-      setError("Please enter both username and password.");
+      setErrorMessage("Please enter both username and password.");
     } else if (
       !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password)
     ) {
-      setError(
+      setErrorMessage(
         "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number."
       );
     } else {
       // Add code to submit the login form
       try {
-        await doSignInWithEmailAndPassword(email.value, password.value);
+        await logInWithEmailAndPassword(email.value, password.value);
         isLoggedIn = true; // set isLoggedIn to true upon successful login
       } catch (error) {
         alert(error);

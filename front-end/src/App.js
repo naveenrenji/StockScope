@@ -12,8 +12,6 @@ import StockSummary from './components/Stock/Summary';
 import StockNews from './components/Stock/News';
 import NotFoundPage from './pages/404';
 
-
-
 function App() {
   return (
 

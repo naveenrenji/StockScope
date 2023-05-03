@@ -3,7 +3,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-import { doCreateUserWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
+import { registerWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
 import { AuthContext } from "../../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
 
@@ -74,7 +74,7 @@ function Signup() {
 
     // Add code to submit the signup form
     try {
-      await doCreateUserWithEmailAndPassword(email, password, username);
+      await registerWithEmailAndPassword(email, password, username);
     } catch (error) {
       alert(error);
     }

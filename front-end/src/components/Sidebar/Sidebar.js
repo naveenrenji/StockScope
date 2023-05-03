@@ -4,16 +4,20 @@ import { PersonCircle, Power } from "react-bootstrap-icons";
 import { SidebarData } from "../../config/config";
 import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isLoggedIn } from "../../pages/Authentication/Login"; 
-//Use this above line once user authentication code is 
-//complete and modify below accordingly
+import { logout, auth } from "../../firebase/FirebaseFunctions";
+import { useAuthState } from "react-firebase-hooks/auth";
+
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
   const { pathname } = useLocation();
   const [isLoggedIn, setUserLogin] = useState(false)
+  const [user, loading, error] = useAuthState(auth);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const selectedIndex = SidebarData.findIndex(item => item.link === pathname);
@@ -26,11 +30,13 @@ const Sidebar = () => {
 
   const handleLogin = () => {
     /* Add login code here */
+    navigate('/login')
     setUserLogin(true);
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     /* Add logout code here */
+    await logout();
     setUserLogin(false);
   }
 
@@ -75,7 +81,7 @@ const Sidebar = () => {
             );
           })}
           <div className="menuItem">
-            {isLoggedIn ?
+            {user ?
               <button className="authButton btn-semi-transparent" onClick={handleLogout}>Logout <Power size="18px" /></button> :
               <button className="authButton btn-semi-transparent" onClick={handleLogin}>Login <PersonCircle size="18px" /></button>}
           </div>

@@ -31,11 +31,11 @@ export const SidebarData = [
     heading: 'View Account',
     link: "/profile"
   },
-  {
-    icon : <PersonCircle/>,
-    heading: 'Login',
-    link: "/login"
-  }
+  // {
+  //   icon : <PersonCircle/>,
+  //   heading: 'Login',
+  //   link: "/login"
+  // }
 ];
 
 // Analytics Cards Data
