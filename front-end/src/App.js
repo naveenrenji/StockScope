@@ -12,6 +12,8 @@ import StockSummary from './components/Stock/Summary';
 import StockNews from './components/Stock/News';
 import NotFoundPage from './pages/404';
 import HistoricalData from './components/Stock/HistoricalData';
+import Agent from "./components/Agent/Agent";
+
 
 
 
@@ -30,6 +32,8 @@ function App() {
         <Route key="stock_summary" path="/stock/summary" element={<StockSummary symbol="TSLA" name="Tesla, Inc" />} />
         <Route key="stock_news" path="/stock/news" element={<StockNews symbol="TSLA" name="Tesla, Inc" />} />
         <Route key="stock_historical_data" path="/stock/historicaldata" element={<HistoricalData symbol="TSLA" name="Tesla, Inc" />} />
+        <Route key="agent" path="/agent" element={<Agent />} />
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>

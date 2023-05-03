@@ -141,4 +141,145 @@ router.route("/news/:name").get(async (req, res) => {
     return res.status(200).json(newsData);
 });
 
+
+router.route("/income-statement/:name").get(async (req, res) => {
+
+    let incomeData;
+
+    try {
+
+        let stockName = req.params.name;
+        helper.checkStockName(stockName);
+        stockName = stockName.toUpperCase();
+
+        //Checking if the data is present in the cache or not
+        if (await client.get(`income-statement:${stockName}`)) {
+
+            console.log("data fetched from redis");
+            let stringData = await client.get(`income-statement:${stockName}`);
+            incomeData = JSON.parse(stringData);
+            return res.status(200).json(incomeData);
+        }
+
+        //If the data is not present in the redis cache fetch the data from the api
+        let { data } = await axios.get(`https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+
+        //If the data is not present we will throw 404 along with data not found message
+        if (Object.keys(data).length === 0) {
+
+            const error = new Error("Data not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        let stringData = JSON.stringify(data);
+
+        await client.set(`income-statement:${stockName}`, stringData);
+        await client.expire(`income-statement:${stockName}`, 10000);
+        incomeData = data;
+    }
+    catch (error) {
+
+        console.log(error);
+        return res.status(error.statusCode).json({
+            error: error.message
+        });
+    }
+    return res.status(200).json(incomeData);
+})
+
+
+router.route("/balance-sheet/:name").get(async (req, res) => {
+
+    let balanceData;
+
+    try {
+
+        let stockName = req.params.name;
+        helper.checkStockName(stockName);
+        stockName = stockName.toUpperCase();
+
+        //Checking if the data is present in the cache or not
+        if (await client.get(`balance-sheet:${stockName}`)) {
+
+            console.log("data fetched from redis");
+            let stringData = await client.get(`balance-sheet:${stockName}`);
+            balanceData = JSON.parse(stringData);
+            return res.status(200).json(balanceData);
+        }
+
+        //If the data is not present in the redis cache fetch the data from the api
+        let { data } = await axios.get(`https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+
+        //If the data is not present we will throw 404 along with data not found message
+        if (Object.keys(data).length === 0) {
+
+            const error = new Error("Data not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        let stringData = JSON.stringify(data);
+
+        await client.set(`balance-sheet:${stockName}`, stringData);
+        await client.expire(`balance-sheet:${stockName}`, 11000);
+        balanceData = data;
+    }
+    catch (error) {
+
+        console.log(error);
+        return res.status(error.statusCode).json({
+            error: error.message
+        });
+    }
+    return res.status(200).json(balanceData);
+})
+
+
+router.route("/cash-flow/:name").get(async (req, res) => {
+
+    let cashFlowData;
+
+    try {
+
+        let stockName = req.params.name;
+        helper.checkStockName(stockName);
+        stockName = stockName.toUpperCase();
+
+        //Checking if the data is present in the cache or not
+        if (await client.get(`cash-flow:${stockName}`)) {
+
+            console.log("data fetched from redis");
+            let stringData = await client.get(`cash-flow:${stockName}`);
+            cashFlowData = JSON.parse(stringData);
+            return res.status(200).json(cashFlowData);
+        }
+
+        //If the data is not present in the redis cache fetch the data from the api
+        let { data } = await axios.get(`https://www.alphavantage.co/query?function=CASH_FLOW&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+
+        //If the data is not present we will throw 404 along with data not found message
+        if (Object.keys(data).length === 0) {
+
+            const error = new Error("Data not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        let stringData = JSON.stringify(data);
+
+        await client.set(`balance-sheet:${stockName}`, stringData);
+        await client.expire(`balance-sheet:${stockName}`, 12000);
+        cashFlowData = data;
+    }
+    catch (error) {
+
+        console.log(error);
+        return res.status(error.statusCode).json({
+            error: error.message
+        });
+    }
+    return res.status(200).json(cashFlowData);
+})
+
 module.exports = router;

@@ -1,0 +1,47 @@
+.chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
+  
+  .chatbot__icon {
+    cursor: pointer;
+    /* Add styles for your chat icon */
+  }
+  
+  .chatbot__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    height: 400px;
+    padding: 10px;
+    /* Add more styles as needed */
+  }
+
+  .chatbot__options {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+  }
+  
+  .chatbot__options button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px 10px;
+  }
+
+  .chatbot__agent-name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #007bff;
+    margin-left: 5px;
+  }
+  

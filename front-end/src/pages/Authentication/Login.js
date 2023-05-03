@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -6,9 +8,7 @@ import {
   doSignInWithEmailAndPassword,
   doPasswordReset,
 } from "../../firebase/FirebaseFunctions";
-
 import SocialSignIn from "./SocialSignIn";
-import SignUp from "./Signup";
 
 export let isLoggedIn = false;
 
@@ -77,9 +77,10 @@ function Login() {
           </Form>
           <br></br>
           <SocialSignIn />
-          <div>Create an account</div>
+          <div>
+            <Link to="/signup">Create an account</Link>
+          </div>{" "}
         </Card.Body>
-
       </Card>
     </div>
   );
