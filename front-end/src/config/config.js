@@ -1,7 +1,7 @@
 // Bootstrap Icons
 import {
   Newspaper, FileBarGraph, PersonCircle, 
-  Apple, Microsoft, CurrencyDollar, Grid1x2
+  Apple, Microsoft, CurrencyDollar, Grid1x2, Chat
 } from 'react-bootstrap-icons';
 
 // Recent Card Imports

@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import {useNavigate} from "react-router-dom";
+=======
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
+>>>>>>> 542bf554a583c36c5c311ff4d9317c6d6134948a
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -12,6 +18,8 @@ import SocialSignIn from "./SocialSignIn";
 import SignUp from "./Signup";
 import { useAuthState } from "react-firebase-hooks/auth";
 
+import '../../assets/css/authentication.css'
+import { PersonCircle } from "react-bootstrap-icons";
 
 export let isLoggedIn = false;
 
@@ -61,11 +69,12 @@ function Login() {
   };
 
   return (
-    <div className="d-flex justify-content-center mt-5">
-      <Card style={{ width: "20rem" }}>
-        <Card.Body>
-          <Card.Title>Login</Card.Title>
-          {error && <p className="text-danger">{error}</p>}
+    <div className="authentication-body">
+      <div className="authentication-container">
+        <div className="authentication-container-wrapper">
+          <h3 className="authentication-login-text">
+            <PersonCircle /> Login
+          </h3>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="username">
               <Form.Label>Username</Form.Label>
@@ -83,17 +92,32 @@ function Login() {
                 onChange={handlePasswordChange}
               />
             </Form.Group>
+            <span className="authentication-ac">
+            <Link to="">Forgot Password?</Link>
+          </span>
             <br></br>
-            <Button variant="primary" type="submit">
+            <button type="submit" className="authButton btn-semi-transparent">
               Login
-            </Button>
+            </button>
           </Form>
-          <br></br>
-          <SocialSignIn />
-          <div>Create an account</div>
-        </Card.Body>
-
-      </Card>
+          {error && <p className="text-danger">{error}</p>}
+          <h4>
+            <span>Social Login</span>
+          </h4>
+          <div className="authentication-social-media">
+            <SocialSignIn />
+            <a href="#">
+              <div className="icons8-facebook-circled authentication-social-mediaImg"></div>
+            </a>
+            <a href="#">
+              <div className="icons8-twitter authentication-social-mediaImg"></div>
+            </a>
+          </div>
+          <span className="authentication-ac">
+            Don't have an Account? <Link to="/signup">Signup</Link>
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
