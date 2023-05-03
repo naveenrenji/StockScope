@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Chart from "react-apexcharts";
+import ApexCharts from "react-apexcharts";
+// import ApexCharts from "apexcharts";
 
 const StockChart = (props) => {
     const [chartData, setChartData] = useState({
@@ -9,8 +10,8 @@ const StockChart = (props) => {
           }
         ]
       });
-        const [resolution, setResolution] = useState("1");
-  const [timeframe, setTimeframe] = useState("1w");
+        const [resolution, setResolution] = useState("W");
+  const [timeframe, setTimeframe] = useState("1y");
 
   const fetchData = async () => {
     const now = Math.floor(Date.now() / 1000);
@@ -31,7 +32,7 @@ const StockChart = (props) => {
         from = now - 604800;
         break;
     }
-
+    from = from.toString();
     try {
       const response = await fetch(
         `http://localhost:3001/chart/${props.symbol}/${resolution}/${from}/${now}`
@@ -100,9 +101,9 @@ const StockChart = (props) => {
   return (
     <div>
       <h2>Stock Chart</h2>
-      {chartData.series && chartData.series.length > 0 ? (
+      {chartData.series[0].data.length > 0 ? (
         <ApexCharts
-          options={chartOptions}
+          options={options}
           series={chartData.series}
           type="candlestick"
           height={350}
@@ -134,6 +135,7 @@ const StockChart = (props) => {
       </label>
     </div>
   );
+  
   
 };
 
