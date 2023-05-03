@@ -164,10 +164,16 @@ router.route("/income-statement/:name").get(async (req, res) => {
         //If the data is not present in the redis cache fetch the data from the api
         let { data } = await axios.get(`https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
 
+        //If the data is not present we will throw 404 along with data not found message
+        if (Object.keys(data).length === 0) {
+
+            const error = new Error("Data not found");
+            error.statusCode = 404;
+            throw error;
+        }
 
         //Structuring the data 
-        let first_record = data.annualReports[0];
-        let keys = Object.keys(first_record);
+        let keys = Object.keys(data.annualReports[0]);
 
         let annual_records = {};
 
@@ -179,26 +185,40 @@ router.route("/income-statement/:name").get(async (req, res) => {
             temp.push(data.annualReports[2][keys[i]]);
             temp.push(data.annualReports[3][keys[i]]);
             temp.push(data.annualReports[4][keys[i]]);
-            console.log(temp);
-
-            annual_records[keys[i]] = temp;
+            let new_key = keys[i];
+            annual_records[new_key] = temp;
         }
 
-        console.log(annual_records);
+        let quarter_records = {};
+        keys = Object.keys(data.quarterlyReports[0]);
 
-        //If the data is not present we will throw 404 along with data not found message
-        if (Object.keys(data).length === 0) {
+        for (let i = 0; i < keys.length; i++) {
 
-            const error = new Error("Data not found");
-            error.statusCode = 404;
-            throw error;
+            let temp = [];
+            temp.push(data.quarterlyReports[0][keys[i]]);
+            temp.push(data.quarterlyReports[1][keys[i]]);
+            temp.push(data.quarterlyReports[2][keys[i]]);
+            temp.push(data.quarterlyReports[3][keys[i]]);
+            temp.push(data.quarterlyReports[4][keys[i]]);
+            let new_key = keys[i];
+            quarter_records[new_key] = temp;
         }
+
+        let final_data = {}
+
+        final_data["symbol"] = data["symbol"];
+        final_data["annualReports"] = annual_records;
+        final_data["quarterlyReports"] = quarter_records;
+
+        console.log(final_data);
+
+
 
         let stringData = JSON.stringify(data);
 
         await client.set(`income-statement:${stockName}`, stringData);
         await client.expire(`income-statement:${stockName}`, 10000);
-        incomeData = data;
+        incomeData = final_data;
     }
     catch (error) {
 
