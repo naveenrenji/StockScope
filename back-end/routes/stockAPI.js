@@ -164,6 +164,28 @@ router.route("/income-statement/:name").get(async (req, res) => {
         //If the data is not present in the redis cache fetch the data from the api
         let { data } = await axios.get(`https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
 
+
+        //Structuring the data 
+        let first_record = data.annualReports[0];
+        let keys = Object.keys(first_record);
+
+        let annual_records = {};
+
+        for (let i = 0; i < keys.length; i++) {
+
+            let temp = [];
+            temp.push(data.annualReports[0][keys[i]]);
+            temp.push(data.annualReports[1][keys[i]]);
+            temp.push(data.annualReports[2][keys[i]]);
+            temp.push(data.annualReports[3][keys[i]]);
+            temp.push(data.annualReports[4][keys[i]]);
+            console.log(temp);
+
+            annual_records[keys[i]] = temp;
+        }
+
+        console.log(annual_records);
+
         //If the data is not present we will throw 404 along with data not found message
         if (Object.keys(data).length === 0) {
 

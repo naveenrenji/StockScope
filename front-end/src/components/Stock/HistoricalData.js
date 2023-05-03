@@ -25,6 +25,8 @@ export default function HistoricalData(props) {
 
                 setDataFound(false);
                 let { data } = await axios.get(`http://localhost:3001/stock/income-statement/${props.symbol}`);
+
+
                 if (showAnnual) {
 
                     let temp = data.annualReports;
