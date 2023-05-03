@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ChatBot.css";
 import { io } from "socket.io-client";
+import { Chat, ChatFill } from "react-bootstrap-icons";
 
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -124,16 +125,7 @@ function ChatBot() {
         </div>
       ) : (
         <div className="chatbot__icon" onClick={toggleChat}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M0 0h24v24H0z" fill="none" />
-            <path d="M12 2C6.486 2 2 6.486 2 12c0 5.515 4.486 10 10 10h9V12C22 6.486 17.515 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-4-10h8v2H8zm0-4h8v2H8zm0 8h4v2H8z" />
-          </svg>
+          <ChatFill height={30} width={30} color="#FF919D"/>
         </div>
       )}
     </div>
