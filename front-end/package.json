@@ -21,6 +21,7 @@
     "popper.js": "^1.16.1",
     "protobufjs": "^7.2.3",
     "react": "^18.2.0",
+    "react-apexcharts": "^1.4.0",
     "react-bootstrap": "^2.7.2",
     "react-bootstrap-icons": "^1.10.3",
     "react-circular-progressbar": "^2.1.0",
