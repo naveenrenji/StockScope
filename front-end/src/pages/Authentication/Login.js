@@ -90,7 +90,7 @@ function Login() {
             <Link to="">Forgot Password?</Link>
           </span>
             <br></br>
-            <button type="submit" className="authButton btn-semi-transparent">
+            <button type="submit" className="authButton">
               Login
             </button>
           </Form>

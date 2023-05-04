@@ -6,7 +6,7 @@ const userRoutes = require('./users')
 
 const constructorMethod = (app) => {
   app.use("/stock", stockAPI);
-  app.use("/chart",finnHubStockAPI);
+  app.use("/chart", finnHubStockAPI);
   app.use("/screener", yahooFinAPI);
   app.use("/users", userRoutes);
 
