@@ -76,8 +76,8 @@ const Sidebar = () => {
           })}
           <div className="menuItem">
             {isLoggedIn ?
-              <button className="authButton btn-semi-transparent" onClick={handleLogout}>Logout <Power size="18px" /></button> :
-              <button className="authButton btn-semi-transparent" onClick={handleLogin}>Login <PersonCircle size="18px" /></button>}
+              <button className="authButton" onClick={handleLogout}>Logout <Power size="18px" /></button> :
+              <button className="authButton" onClick={handleLogin}>Login <PersonCircle size="18px" /></button>}
           </div>
         </div>
       </motion.div>

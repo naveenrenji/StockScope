@@ -1,13 +1,7 @@
 import { Table } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
 import './Table.css';
-
-const stocks = [
-  { name: "Apple Inc.", symbol: "AAPL", price: 128.47, change: -1.23 },
-  { name: "Tesla, Inc.", symbol: "TSLA", price: 716.56, change: 0.78 },
-  { name: "Microsoft Corporation", symbol: "MSFT", price: 246.47, change: 2.19 },
-  { name: "Amazon.com, Inc.", symbol: "AMZN", price: 3157.00, change: -0.23 },
-  { name: "Facebook, Inc.", symbol: "FB", price: 297.89, change: -1.56 },
-];
+import axios from 'axios';
 
 const makeStyle = (change) => {
   if (change > 0) {
@@ -31,31 +25,69 @@ const makeStyle = (change) => {
 }
 
 export default function BasicTable() {
-  return (
-    <div className="Table">
-      <h3>Trending Stocks</h3>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Symbol</th>
-            <th>Price</th>
-            <th>Change</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stocks.map((stock) => (
-            <tr key={stock.symbol}>
-              <td style={{padding: "15px"}}>{stock.name}</td>
-              <td style={{padding: "15px"}}>{stock.symbol}</td>
-              <td style={{padding: "15px"}}>${stock.price.toFixed(2)}</td>
-              <td style={{padding: "15px"}}>
-                <span className="change" style={makeStyle(stock.change)}>{stock.change}%</span>
-              </td>
+
+  const [stocksData, setStocksData] = useState([]);
+  const [renderCount, setRenderCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRenderCount((prevCount) => prevCount + 1);
+    }, 60000); // 60 seconds
+
+    async function fetchData() {
+      try {
+        let { data } = await axios.get('http://localhost:3001/screener/trending-stocks');
+        setStocksData(data);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+
+    console.log(renderCount);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+
+  if (loading) {
+    return (
+      <div className='Table'>
+        <h3>Loading....</h3>
+      </div>
+    );
+  } else {
+    return (
+      <div className="Table">
+        <h3>Trending Stocks</h3>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Symbol</th>
+              <th>Price</th>
+              <th>Change</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
-  );
+          </thead>
+          <tbody>
+            {stocksData && stocksData.map((stock) => (
+              <tr key={stock.symbol}>
+                <td style={{ padding: "15px" }}>{stock.name}</td>
+                <td style={{ padding: "15px" }}>{stock.symbol}</td>
+                <td style={{ padding: "15px" }}>${stock.price.toFixed(2)}</td>
+                <td style={{ padding: "15px" }}>
+                  <span className="change" style={makeStyle(stock.change)}>{stock.change.toFixed(2)}%</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  }
 }

@@ -1,7 +1,7 @@
 // Bootstrap Icons
 import {
   Newspaper, FileBarGraph, PersonCircle, 
-  Apple, Microsoft, CurrencyDollar, Grid1x2
+  Apple, Microsoft, CurrencyDollar, Grid1x2, Chat, PersonVcardFill
 } from 'react-bootstrap-icons';
 
 // Recent Card Imports
@@ -27,7 +27,7 @@ export const SidebarData = [
     link: "/portfolio"
   },
   {
-    icon: <PersonCircle />,
+    icon: <PersonVcardFill />,
     heading: 'View Account',
     link: "/profile"
   },
@@ -35,6 +35,11 @@ export const SidebarData = [
     icon : <PersonCircle/>,
     heading: 'Login',
     link: "/login"
+  },
+  {
+    icon: <Chat/>,
+    heading: 'Agent Help',
+    link: "/agent"
   }
 ];
 
