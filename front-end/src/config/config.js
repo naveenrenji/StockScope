@@ -1,6 +1,6 @@
 // Bootstrap Icons
 import {
-  Newspaper, FileBarGraph, PersonCircle, 
+  Newspaper, FileBarGraph, PersonCircle,
   Apple, Microsoft, CurrencyDollar, Grid1x2, Chat, PersonVcardFill
 } from 'react-bootstrap-icons';
 
@@ -30,14 +30,15 @@ export const SidebarData = [
     icon: <PersonVcardFill />,
     heading: 'View Account',
     link: "/profile"
-  },
-  // {
-  //   icon : <PersonCircle/>,
-  //   heading: 'Login',
-  //   link: "/login"
-  // }
+  }
 ];
 
+//StocksScope Navbar Data
+export const StockScopeNavbarData = [
+  { heading: "Summary", link: "/stock/summary"},
+  { heading: "News", link: "/stock/news"},
+  { heading: "Historical Data", link: "/stock/historicaldata"}
+];
 // Analytics Cards Data
 export const cardsData = [
   {
