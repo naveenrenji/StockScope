@@ -138,8 +138,8 @@ export default function PortfolioModal(props) {
                 </Row>
             </Modal.Body>
             <Modal.Footer>
-                <button className='authButton' onClick={handleSubmit}>Submit</button>
-                <button className='authButton' onClick={props.onHide}>Cancel</button>
+                <button className='authButton btn-semi-transparent' onClick={handleSubmit}>Submit</button>
+                <button className='authButton btn-semi-transparent' onClick={props.onHide}>Cancel</button>
             </Modal.Footer>
         </Modal>
     );

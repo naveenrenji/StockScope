@@ -103,7 +103,7 @@ export default function Summary(props) {
                         <Nav className="me-auto">
                             <Nav.Link href="/stock/summary">Summary</Nav.Link>
                             <Nav.Link href="/stock/news">News</Nav.Link>
-                            <Nav.Link href="/stock/historicaldata">Historical Data</Nav.Link>
+                            <Nav.Link href="/stock/statistics">Historical Data</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
@@ -113,7 +113,8 @@ export default function Summary(props) {
 
                 <h1> {props.symbol} - {props.name}.</h1>
                 <Chart symbol={props.symbol}></Chart>
-                <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
+                <br></br>
+                <h3>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h3>
                 <h2>{parseFloat(stockPrice).toFixed(2)}</h2>
                 <p>
                     <span style={

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ChatBot.css";
 import { io } from "socket.io-client";
-import { Chat, ChatFill, Send, XLg } from "react-bootstrap-icons";
 
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,34 +16,34 @@ function ChatBot() {
     if (chatState === "talk_agent") {
       const socket = io("http://localhost:3001");
 
-      socket.on("connect", () => {
-        console.log("Connected to the server");
+      socket.on(
+        "connect",
+        () => {
+          console.log("Connected to the server");
 
-        socket.emit("join", { username: "user", room: "agent" });
+          socket.emit("join", { username: "user", room: "agent" });
 
-        socket.on("message", (message) => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: message.text, sender: "agent" },
-          ]);
-        });
+          socket.on("message", (message) => {
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { text: message.text, sender: "agent" },
+            ]);
+          });
 
-        socket.on("disconnect", () => {
-          console.log("Disconnected from the server");
-        });
-      });
-
-      return () => {
-        socket.disconnect();
-      };
+          return () => {
+            socket.disconnect();
+          };
+        },
+        []
+      );
     }
   }, [chatState]);
 
   const handleOptionClick = (option) => {
     if (option === "raise_ticket") {
       setChatState("raise_ticket");
-      setMessages([
-        ...messages,
+      setMessages((prevMessages) => [
+        ...prevMessages,
         { text: "Please describe your issue.", sender: "bot" },
       ]);
     } else if (option === "talk_agent") {
@@ -55,13 +54,16 @@ function ChatBot() {
   const handleSendMessage = (event) => {
     event.preventDefault();
     if (inputMessage.trim()) {
-      setMessages([...messages, { text: inputMessage, sender: "user" }]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: inputMessage, sender: "user" },
+      ]);
       setInputMessage("");
 
       if (chatState === "raise_ticket") {
         setChatState("ask_email");
-        setMessages([
-          ...messages,
+        setMessages((prevMessages) => [
+          ...prevMessages,
           { text: "Please provide your email address.", sender: "bot" },
         ]);
       } else if (chatState === "ask_email") {
@@ -73,8 +75,8 @@ function ChatBot() {
         console.log(ticket);
 
         setChatState("ticket_created");
-        setMessages([
-          ...messages,
+        setMessages((prevMessages) => [
+          ...prevMessages,
           { text: "Thank you. Your ticket has been created.", sender: "bot" },
         ]);
       }
@@ -86,7 +88,7 @@ function ChatBot() {
       {isOpen ? (
         <div className="chatbot__container">
           <button className="chatbot__minimize" onClick={toggleChat}>
-            <XLg />
+            Minimize
           </button>
           <div className="chatbot__messages">
             {messages.map((message, index) => (
@@ -119,13 +121,13 @@ function ChatBot() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
               />
-              <button type="submit" className="sendButton"><Send/></button>
+              <button type="submit">Send</button>
             </form>
           </div>
         </div>
       ) : (
         <div className="chatbot__icon" onClick={toggleChat}>
-          <ChatFill height={30} width={30} color="#FF919D"/>
+          <div className="chatbot__icon-inner"></div>
         </div>
       )}
     </div>

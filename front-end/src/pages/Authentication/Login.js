@@ -9,8 +9,6 @@ import {
   doPasswordReset,
 } from "../../firebase/FirebaseFunctions";
 import SocialSignIn from "./SocialSignIn";
-import '../../assets/css/authentication.css'
-import { PersonCircle } from "react-bootstrap-icons";
 
 export let isLoggedIn = false;
 
@@ -50,12 +48,11 @@ function Login() {
   };
 
   return (
-    <div className="authentication-body">
-      <div className="authentication-container">
-        <div className="authentication-container-wrapper">
-          <h3 className="authentication-login-text">
-            <PersonCircle /> Login
-          </h3>
+    <div className="d-flex justify-content-center mt-5">
+      <Card style={{ width: "20rem" }}>
+        <Card.Body>
+          <Card.Title>Login</Card.Title>
+          {error && <p className="text-danger">{error}</p>}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="username">
               <Form.Label>Username</Form.Label>
@@ -73,26 +70,18 @@ function Login() {
                 onChange={handlePasswordChange}
               />
             </Form.Group>
-            <span className="authentication-ac">
-            <Link to="">Forgot Password?</Link>
-          </span>
             <br></br>
-            <button type="submit" className="authButton">
+            <Button variant="primary" type="submit">
               Login
-            </button>
+            </Button>
           </Form>
-          {error && <p className="text-danger">{error}</p>}
-          <h4>
-            <span>Social Login</span>
-          </h4>
-          <div className="authentication-social-media">
-            <SocialSignIn />
-          </div>
-          <span className="authentication-ac">
-            Don't have an Account? <Link to="/signup">Signup</Link>
-          </span>
-        </div>
-      </div>
+          <br></br>
+          <SocialSignIn />
+          <div>
+            <Link to="/signup">Create an account</Link>
+          </div>{" "}
+        </Card.Body>
+      </Card>
     </div>
   );
 }
