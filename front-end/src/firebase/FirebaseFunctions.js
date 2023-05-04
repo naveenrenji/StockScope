@@ -1,4 +1,6 @@
 import { initializeApp } from "firebase/app";
+import axios from "axios";
+import env from '../config/env.json'
 import {
   GoogleAuthProvider,
   getAuth,
@@ -25,24 +27,33 @@ const firebaseConfig = {
   appId: "1:904760319835:web:44fd0d957f114b4e51447e",
   measurementId: "G-Q4TYKH9GG7",
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
+
 const signInWithGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user;
-    const q = query(collection(db, "users"), where("uid", "==", user.uid));
-    const docs = await getDocs(q);
-    if (docs.docs.length === 0) {
-      await addDoc(collection(db, "users"), {
-        uid: user.uid,
-        name: user.displayName,
-        authProvider: "google",
-        email: user.email,
-      });
+    // const q = query(collection(db, "users"), where("uid", "==", user.uid));
+    // const docs = await getDocs(q);
+    // if (docs.docs.length === 0) {
+    //   await addDoc(collection(db, "users"), {
+    //     uid: user.uid,
+    //     name: user.displayName,
+    //     authProvider: "google",
+    //     email: user.email,
+    //   });
+    // }
+    let userObj = {
+      name: user.displayName,
+      email: user.email
     }
+    let resJson = await axios.post(env.backend+"users/createuser", userObj);
+    console.log(user);
+    return user;
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -66,6 +77,7 @@ const registerWithEmailAndPassword = async (name, email, password) => {
       authProvider: "local",
       email,
     });
+
   } catch (err) {
     console.error(err);
     alert(err.message);

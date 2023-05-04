@@ -6,11 +6,10 @@ import Button from "react-bootstrap/Button";
 
 import { registerWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
 import { AuthContext } from "../../firebase/Auth";
-import { doCreateUserWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
-/* import { AuthContext } from "../../firebase/Auth"; */
+// import { AuthContext } from "../../firebase/Auth"; d
 import SocialSignIn from "./SocialSignIn";
 import { checkName, checkPassword, checkEmail } from "../../helpers";
-import '../../assets/css/authentication.css';
+import "../../assets/css/authentication.css";
 import { PersonCircle } from "react-bootstrap-icons";
 
 function Signup() {
@@ -58,56 +57,9 @@ function Signup() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Reset errors
-    setUsernameError("");
-    setPasswordError("");
-    setConfirmPasswordError("");
-
-    // Validate inputs
-    if (!username) {
-      setUsernameError("Username cannot be empty");
-      return;
-    }
-
-    if (!/^[a-zA-Z0-9]+$/.test(username)) {
-      setUsernameError("Username can only contain alphanumeric characters");
-      return;
-    }
-
-    if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters long");
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      setPasswordError("Password must contain at least one uppercase letter");
-      return;
-    }
-
-    if (!/[a-z]/.test(password)) {
-      setPasswordError("Password must contain at least one lowercase letter");
-      return;
-    }
-
-    if (!/[0-9]/.test(password)) {
-      setPasswordError("Password must contain at least one digit");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-      return;
-    }
-
-    // Add code to submit the signup form
-    try {
-      await registerWithEmailAndPassword(email, password, username);
-    } catch (error) {
-      alert(error);
     if (validateInputs()) {
       try {
-        await doCreateUserWithEmailAndPassword(email, password, username);
+        await registerWithEmailAndPassword(email, password, username);
         navigate("/login");
       } catch (error) {
         alert(error);
@@ -180,7 +132,6 @@ function Signup() {
             <button type="submit" className="authButton btn-semi-transparent">
               Signup
             </button>
-
           </Form>
           <h4>
             <span>Social Signup</span>

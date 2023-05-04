@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
-import {useNavigate} from "react-router-dom";
-=======
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
->>>>>>> 542bf554a583c36c5c311ff4d9317c6d6134948a
+import {Link, useNavigate} from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -106,12 +100,12 @@ function Login() {
           </h4>
           <div className="authentication-social-media">
             <SocialSignIn />
-            <a href="#">
+            {/* <a href="#">
               <div className="icons8-facebook-circled authentication-social-mediaImg"></div>
             </a>
             <a href="#">
               <div className="icons8-twitter authentication-social-mediaImg"></div>
-            </a>
+            </a> */}
           </div>
           <span className="authentication-ac">
             Don't have an Account? <Link to="/signup">Signup</Link>

@@ -1,6 +1,6 @@
 {
   "mongoConfig": {
-    "serverUrl": "mongodb+srv://sagarcse19:cs554stockscope@cluster0.oxnej3r.mongodb.net/?retryWrites=true&w=majority",
+    "serverUrl": "mongodb+srv://sagarcse19:cs554stockscope@cluster0.oxnej3r.mongodb.net/",
     "database": "stockscope"
   }
 }
