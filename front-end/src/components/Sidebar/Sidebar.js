@@ -14,7 +14,6 @@ const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
   const { pathname } = useLocation();
-  const [isLoggedIn, setUserLogin] = useState(false)
   const [user, loading, error] = useAuthState(auth);
 
   const navigate = useNavigate();
@@ -31,13 +30,13 @@ const Sidebar = () => {
   const handleLogin = () => {
     /* Add login code here */
     navigate('/login')
-    setUserLogin(true);
+    isLoggedIn = true;
   }
 
   const handleLogout = async () => {
     /* Add logout code here */
-    await logout();
-    setUserLogin(false);
+    logout();
+    isLoggedIn = false;
   }
 
   const sidebarVariants = {
