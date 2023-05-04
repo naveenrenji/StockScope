@@ -53,7 +53,6 @@ const Chart = (props) => {
       case "1w":
       default:
         return [
-          { value: "15", label: "15 min" },
           { value: "30", label: "30 min" },
           { value: "60", label: "1 hour" },
           { value: "D", label: "1 day" },
@@ -209,7 +208,6 @@ const Chart = (props) => {
       </label>
     </div>
   );
-
 };
 
 export default Chart;
