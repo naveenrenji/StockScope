@@ -31,9 +31,9 @@ router.post("/createUser", async (req, res) => {
   }
 });
 
-router.post("/getUserPortfolios", async (req, res) => {
+router.get("/getUserPortfolios/:email", async (req, res) => {
   try{
-    let user = await User.findOne({email: req.body.email});
+    let user = await User.findOne({email: req.params.email});
     return res.status(200).json(user);
   }catch(e){
     return res.status(500).json(e);
@@ -43,6 +43,25 @@ router.post("/getUserPortfolios", async (req, res) => {
 router.post("/createNewPortfolio", async (req, res) => {
   try {
     let user = await User.findOne({ email: req.body.email });
+    for (let portfolio of user.portfolios) {
+      if (portfolio.name === req.body.portfolioName) {
+        return res.status(400).json({ error: "Portfolio already exists" });
+      }
+    }
+    user.portfolios.push({
+      name: req.body.portfolioName,
+      stocks: [],
+    });
+    let portfolio = await user.save();
+    return res.status(200).json(portfolio);
+  } catch (e) {
+    return res.status(500).json(e);
+  }
+});
+
+router.get("/deletePortfolio/:id", async (req, res) => {
+  try {
+    let user = await User.findOne({ _id: req.params.id });
     for (let portfolio of user.portfolios) {
       if (portfolio.name === req.body.portfolioName) {
         return res.status(400).json({ error: "Portfolio already exists" });
