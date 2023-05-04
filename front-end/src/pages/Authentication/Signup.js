@@ -4,11 +4,9 @@ import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import { doCreateUserWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
-/* import { AuthContext } from "../../firebase/Auth"; */
+import { AuthContext } from "../../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
 import { checkName, checkPassword, checkEmail } from "../../helpers";
-import '../../assets/css/authentication.css';
-import { PersonCircle } from "react-bootstrap-icons";
 
 function Signup() {
   const [username, setUsername] = useState("");
@@ -58,7 +56,7 @@ function Signup() {
     if (validateInputs()) {
       try {
         await doCreateUserWithEmailAndPassword(email, password, username);
-        navigate("/login");
+        navigate("/login"); 
       } catch (error) {
         alert(error);
       }
@@ -66,12 +64,10 @@ function Signup() {
   };
 
   return (
-    <div className="authentication-body">
-      <div className="authentication-container">
-        <div className="authentication-container-wrapper">
-          <h3 className="authentication-login-text">
-            <PersonCircle /> Signup
-          </h3>
+    <div className="d-flex justify-content-center mt-5">
+      <Card style={{ width: "20rem" }}>
+        <Card.Body>
+          <Card.Title>Signup</Card.Title>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formBasicUsername">
               <Form.Label>Username</Form.Label>
@@ -127,22 +123,18 @@ function Signup() {
               </Form.Text>
             </Form.Group>
             <br></br>
-            <button type="submit" className="authButton">
+            <Button variant="primary" type="submit">
               Signup
-            </button>
+            </Button>
 
           </Form>
-          <h4>
-            <span>Social Signup</span>
-          </h4>
-          <div className="authentication-social-media">
-            <SocialSignIn />
-          </div>
-          <span className="authentication-ac">
-            Already have an Account? <Link to="/login">Login</Link>
-          </span>
-        </div>
-      </div>
+          <br></br>
+          <SocialSignIn />
+          <div>
+            <Link to="/login">Login with existing/created account</Link>
+          </div>{" "}
+        </Card.Body>
+      </Card>
     </div>
   );
 }

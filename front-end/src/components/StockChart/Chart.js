@@ -1,122 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {
-  LineChart,
-  BarChart,
-  AreaChart,
-  Line,
-  Bar,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import ApexCharts from "react-apexcharts";
+// import ApexCharts from "apexcharts";
 
-const Chart = (props) => {
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "Stock Price",
-        data: [],
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 2,
-      },
-    ],
-  });
-  const [chartType, setChartType] = useState("line");
-  const [resolution, setResolution] = useState("W");
+const StockChart = (props) => {
+    const [chartData, setChartData] = useState({
+        series: [
+          {
+            data: []
+          }
+        ]
+      });
+        const [resolution, setResolution] = useState("W");
   const [timeframe, setTimeframe] = useState("1y");
-
-  const getResolutionOptions = () => {
-    switch (timeframe) {
-      case "1y":
-        return [
-          { value: "D", label: "1 day" },
-          { value: "W", label: "1 week" },
-          { value: "M", label: "1 month" },
-        ];
-      case "6m":
-        return [
-          { value: "D", label: "1 day" },
-          { value: "W", label: "1 week" },
-          { value: "M", label: "1 month" },
-        ];
-      case "1m":
-        return [
-          { value: "D", label: "1 day" },
-          { value: "W", label: "1 week" },
-          { value: "60", label: "1 hour" },
-        ];
-      case "1w":
-      default:
-        return [
-          { value: "30", label: "30 min" },
-          { value: "60", label: "1 hour" },
-          { value: "D", label: "1 day" },
-          { value: "W", label: "1 week" },
-          { value: "M", label: "1 month" },
-        ];
-    }
-  };
-
-  const renderChart = () => {
-    const commonProps = {
-      data: chartData,
-      margin: { top: 5, right: 20, bottom: 5, left: 0 },
-    };
-
-    switch (chartType) {
-      case "line":
-        return (
-          <LineChart {...commonProps}>
-            <Line
-              type="monotone"
-              dataKey="price"
-              stroke="#ff7300"
-              yAxisId={0}
-            />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <CartesianGrid stroke="#f5f5f5" />
-          </LineChart>
-        );
-      case "bar":
-        return (
-          <BarChart {...commonProps}>
-            <Bar dataKey="price" fill="#ff7300" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <CartesianGrid stroke="#f5f5f5" />
-          </BarChart>
-        );
-      case "area":
-        return (
-          <AreaChart {...commonProps}>
-            <Area
-              type="monotone"
-              dataKey="price"
-              stroke="#ff7300"
-              fill="#ff7300"
-            />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <CartesianGrid stroke="#f5f5f5" />
-          </AreaChart>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const handleChartTypeChange = (event) => {
-    setChartType(event.target.value);
-  };
 
   const fetchData = async () => {
     const now = Math.floor(Date.now() / 1000);
@@ -137,31 +32,42 @@ const Chart = (props) => {
         from = now - 604800;
         break;
     }
-
+    from = from.toString();
     try {
       const response = await fetch(
         `http://localhost:3001/chart/${props.symbol}/${resolution}/${from}/${now}`
       );
       const data = await response.json();
 
-      if (data.s === "ok" && data.t && data.c) {
-        setChartData(
-          data.t.map((timestamp, index) => ({
-            date: new Date(timestamp * 1000).toLocaleDateString(),
-            price: data.c[index],
-          }))
-        );
+      if (data.s === "ok") {
+        setChartData({
+          series: [
+            {
+              data: data.t.map((timestamp, index) => {
+                return {
+                  x: new Date(timestamp * 1000),
+                  y: [
+                    data.o[index],
+                    data.h[index],
+                    data.l[index],
+                    data.c[index],
+                  ],
+                };
+              }),
+            },
+          ],
+        });
       } else {
-        console.error("Error fetching stock graph data");
+        console.error("Error fetching stock candles data");
       }
     } catch (error) {
-      console.error("Error fetching stock graph data:", error);
+      console.error("Error fetching stock candles data:", error);
     }
   };
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 5000);
+    const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
   }, [resolution, timeframe]);
 
@@ -173,28 +79,49 @@ const Chart = (props) => {
     setTimeframe(event.target.value);
   };
 
+  const options = {
+    chart: {
+      type: "candlestick",
+      height: 350,
+    },
+    title: {
+      text: "Stock Price",
+      align: "left",
+    },
+    xaxis: {
+      type: "datetime",
+    },
+    yaxis: {
+      tooltip: {
+        enabled: true,
+      },
+    },
+  };
+
   return (
     <div>
       <h2>Stock Chart</h2>
-      <ResponsiveContainer width="100%" height={400}>
-        {renderChart()}
-      </ResponsiveContainer>
-      <label>
-        Chart Type:
-        <select value={chartType} onChange={handleChartTypeChange}>
-          <option value="line">Line</option>
-          <option value="bar">Bar</option>
-          <option value="area">Area</option>
-        </select>
-      </label>
+      {chartData.series[0].data.length > 0 ? (
+        <ApexCharts
+          options={options}
+          series={chartData.series}
+          type="candlestick"
+          height={350}
+        />
+      ) : (
+        <p>Loading chart...</p>
+      )}
       <label>
         Resolution:
         <select value={resolution} onChange={handleResolutionChange}>
-          {getResolutionOptions().map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
+          <option value="1">1 min</option>
+          <option value="5">5 min</option>
+          <option value="15">15 min</option>
+          <option value="30">30 min</option>
+          <option value="60">1 hour</option>
+          <option value="D">1 day</option>
+          <option value="W">1 week</option>
+          <option value="M">1 month</option>
         </select>
       </label>
       <label>
@@ -208,6 +135,8 @@ const Chart = (props) => {
       </label>
     </div>
   );
+  
+  
 };
 
-export default Chart;
+export default StockChart;

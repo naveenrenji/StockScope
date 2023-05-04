@@ -13,8 +13,9 @@ function Home() {
         <Sidebar />
         <MainDash />
         <RightSide />
-        {/* <ChatBot /> */} {/* Moved into RightSide.js to view it in whole app */}
-        {/* <Link to="/agent">Talk to an Agent</Link> */} {/* Moved to Sidebar as Agent Help*/}
+        <ChatBot />
+        <Link to="/agent">Talk to an Agent</Link>
+
       </div>
     </div>
   );
