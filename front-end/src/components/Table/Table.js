@@ -48,11 +48,10 @@ export default function BasicTable() {
 
     fetchData();
 
-    console.log(renderCount);
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [renderCount]);
 
 
   if (loading) {
