@@ -45,14 +45,12 @@ export default function BasicTable() {
         setLoading(false);
       }
     }
-
     fetchData();
 
-    console.log(renderCount);
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [renderCount]);
 
 
   if (loading) {

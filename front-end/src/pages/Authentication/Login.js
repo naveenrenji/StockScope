@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import {
   logInWithEmailAndPassword,
   sendPasswordReset,
@@ -31,7 +29,7 @@ function Login() {
       return;
     }
     if (user) navigate("/");
-  }, [user, loading]);
+  }, [user, loading, navigate]);
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);

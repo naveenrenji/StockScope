@@ -9,8 +9,6 @@ const StockScopeNavbar = () => {
   const [selected, setSelected] = useState(0);
   const { pathname } = useLocation();
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     const selectedIndex = StockScopeNavbarData.findIndex(item => item.link === pathname);
     setSelected(selectedIndex >= 0 ? selectedIndex : 0);

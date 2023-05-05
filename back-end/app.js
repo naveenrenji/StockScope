@@ -1,22 +1,18 @@
-// Setup server, session and middleware here.
 const express = require("express");
 const app = express();
 const session = require("express-session");
 const configRoutes = require("./routes");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const http = require("http");
 const socketio = require("socket.io");
+const http = require("http");
 const { mongoConfig } = require("./config/settings.json");
-
-const server = http.createServer(app);
-const io = socketio(server);
 
 let count = {};
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 const connectMongo = async () => {
   try {
@@ -42,8 +38,11 @@ app.use(
     cookie: { maxAge: 86400000 },
   })
 );
+configRoutes(app);
 
-//socket.io
+const server = http.createServer(app);
+const io = socketio(server);
+
 io.on("connection", (socket) => {
   console.log("New client connected");
 
@@ -67,8 +66,6 @@ io.on("connection", (socket) => {
     console.log("Client disconnected");
   });
 });
-
-configRoutes(app);
 
 server.listen(3001, () => {
   console.log("We've now got a server!");
