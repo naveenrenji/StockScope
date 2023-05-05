@@ -261,11 +261,50 @@ router.route("/balance-sheet/:name").get(async (req, res) => {
             throw error;
         }
 
-        let stringData = JSON.stringify(data);
+        //Structuring the data 
+        let keys = Object.keys(data.annualReports[0]);
+        let annual_records = {};
+
+        for (let i = 0; i < keys.length; i++) {
+
+            let temp = [];
+            temp.push(data.annualReports[0][keys[i]]);
+            temp.push(data.annualReports[1][keys[i]]);
+            temp.push(data.annualReports[2][keys[i]]);
+            temp.push(data.annualReports[3][keys[i]]);
+            temp.push(data.annualReports[4][keys[i]]);
+            let new_key = keys[i];
+            annual_records[new_key] = temp;
+        }
+
+        let quarter_records = {};
+        keys = Object.keys(data.quarterlyReports[0]);
+
+        for (let i = 0; i < keys.length; i++) {
+
+            let temp = [];
+            temp.push(data.quarterlyReports[0][keys[i]]);
+            temp.push(data.quarterlyReports[1][keys[i]]);
+            temp.push(data.quarterlyReports[2][keys[i]]);
+            temp.push(data.quarterlyReports[3][keys[i]]);
+            temp.push(data.quarterlyReports[4][keys[i]]);
+            let new_key = keys[i];
+            quarter_records[new_key] = temp;
+        }
+
+        let final_data = {}
+
+        final_data["symbol"] = data["symbol"];
+        final_data["annualReports"] = annual_records;
+        final_data["quarterlyReports"] = quarter_records;
+
+        console.log(final_data);
+
+        let stringData = JSON.stringify(final_data);
 
         await client.set(`balance-sheet:${stockName}`, stringData);
         await client.expire(`balance-sheet:${stockName}`, 11000);
-        balanceData = data;
+        balanceData = { ...final_data };
     }
     catch (error) {
 
@@ -308,11 +347,50 @@ router.route("/cash-flow/:name").get(async (req, res) => {
             throw error;
         }
 
-        let stringData = JSON.stringify(data);
+        //Structuring the data 
+        let keys = Object.keys(data.annualReports[0]);
+        let annual_records = {};
 
-        await client.set(`balance-sheet:${stockName}`, stringData);
-        await client.expire(`balance-sheet:${stockName}`, 12000);
-        cashFlowData = data;
+        for (let i = 0; i < keys.length; i++) {
+
+            let temp = [];
+            temp.push(data.annualReports[0][keys[i]]);
+            temp.push(data.annualReports[1][keys[i]]);
+            temp.push(data.annualReports[2][keys[i]]);
+            temp.push(data.annualReports[3][keys[i]]);
+            temp.push(data.annualReports[4][keys[i]]);
+            let new_key = keys[i];
+            annual_records[new_key] = temp;
+        }
+
+        let quarter_records = {};
+        keys = Object.keys(data.quarterlyReports[0]);
+
+        for (let i = 0; i < keys.length; i++) {
+
+            let temp = [];
+            temp.push(data.quarterlyReports[0][keys[i]]);
+            temp.push(data.quarterlyReports[1][keys[i]]);
+            temp.push(data.quarterlyReports[2][keys[i]]);
+            temp.push(data.quarterlyReports[3][keys[i]]);
+            temp.push(data.quarterlyReports[4][keys[i]]);
+            let new_key = keys[i];
+            quarter_records[new_key] = temp;
+        }
+
+        let final_data = {}
+
+        final_data["symbol"] = data["symbol"];
+        final_data["annualReports"] = annual_records;
+        final_data["quarterlyReports"] = quarter_records;
+
+        console.log(final_data);
+
+        let stringData = JSON.stringify(final_data);
+
+        await client.set(`cash-flow:${stockName}`, stringData);
+        await client.expire(`cash-flow:${stockName}`, 12000);
+        cashFlowData = { ...final_data };
     }
     catch (error) {
 

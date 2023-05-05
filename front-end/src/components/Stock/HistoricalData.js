@@ -11,11 +11,8 @@ const HistoricalData = (props) => {
     //This useEffect is used to get the live data
     const [activeTab, setActiveTab] = useState('income-statement');
     const [data, setData] = useState({});
-    const [showAnnual, setShowAnnual] = useState(true);
+    const [showAnnual, setShowAnnual] = useState('annual-records');
     const [dataFound, setDataFound] = useState(false);
-
-
-    let tableData = [];
 
     useEffect(() => {
 
@@ -24,10 +21,11 @@ const HistoricalData = (props) => {
             try {
 
                 setDataFound(false);
-                let { data } = await axios.get(`http://localhost:3001/stock/income-statement/${props.symbol}`);
+                let { data } = await axios.get(`http://localhost:3001/stock/${activeTab}/${props.symbol}`);
+                console.log(data);
 
 
-                if (showAnnual) {
+                if (showAnnual === "annual-records") {
 
                     let temp = data.annualReports;
                     setData(temp);
@@ -50,14 +48,12 @@ const HistoricalData = (props) => {
         }
 
         fetchData();
-    }, [showAnnual, activeTab])
+    }, [showAnnual, activeTab, showAnnual])
 
 
     if (dataFound) {
 
         return (
-
-
 
             <Container className="mt-4">
 
@@ -75,8 +71,17 @@ const HistoricalData = (props) => {
                     </Nav.Item>
                 </Nav>
 
+                <Nav variant="pills" activeKey={showAnnual} onSelect={(tab) => setShowAnnual(tab)}>
+                    <Nav.Item>
+                        <Nav.Link eventKey="annual-records">Annual Records</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="quarterly-records">Quarterly Records</Nav.Link>
+                    </Nav.Item>
+                </Nav>
 
-                {Object.keys(data).length > 0 &&
+
+                {Object.keys(data) && Object.keys(data).length > 0 &&
                     <Table>
                         <tbody>
                             {Object.entries(data).map(([key, value]) => {

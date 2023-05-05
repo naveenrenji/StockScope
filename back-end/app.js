@@ -7,7 +7,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const http = require("http");
 const socketio = require("socket.io");
-const {mongoConfig} = require("./config/settings.json");
+const { mongoConfig } = require("./config/settings.json");
 
 const server = http.createServer(app);
 const io = socketio(server);
