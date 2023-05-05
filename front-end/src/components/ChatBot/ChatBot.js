@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ChatBot.css";
 import { io } from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
+import { checkEmail } from "../../helpers";
 
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,7 @@ function ChatBot() {
 
   useEffect(() => {
     if (chatState === "talk_agent") {
+      console.log("talking to agent");
       const socket = io("http://localhost:3001");
 
       socket.on("connect", () => {
@@ -54,29 +56,51 @@ function ChatBot() {
 
   const handleSendMessage = (event) => {
     event.preventDefault();
+    let new_messages = [];
     if (inputMessage.trim()) {
-      setMessages([...messages, { text: inputMessage, sender: "user" }]);
+      // setMessages([
+      //   ...messages,
+      //   { text: inputMessage.toString(), sender: "user" },
+      // ]);
+      new_messages = [
+        ...messages,
+        { text: inputMessage.toString(), sender: "user" },
+      ];
       setInputMessage("");
 
       if (chatState === "raise_ticket") {
-        setChatState("ask_email");
-        setMessages([
-          ...messages,
+        new_messages = [
+          ...new_messages,
           { text: "Please provide your email address.", sender: "bot" },
-        ]);
-      } else if (chatState === "ask_email") {
-        // Save the ticket as a JSON object
-        const ticket = {
-          issue: messages[messages.length - 2].text,
-          email: inputMessage,
-        };
-        console.log(ticket);
+        ];
 
-        setChatState("ticket_created");
-        setMessages([
-          ...messages,
-          { text: "Thank you. Your ticket has been created.", sender: "bot" },
-        ]);
+        setChatState("ask_email");
+        setMessages(new_messages);
+      } else if (chatState === "ask_email") {
+        let email = "";
+        try {
+          email = checkEmail(inputMessage);
+          // Save the ticket as a JSON object
+          const ticket = {
+            issue: messages[messages.length - 2].text,
+            email: inputMessage,
+          };
+          console.log(ticket);
+          new_messages = [
+            ...new_messages,
+            { text: "Thank you. Your ticket has been created.", sender: "bot" },
+          ];
+          setChatState("ticket_created");
+          setMessages(new_messages);
+          setChatState("welcome");
+        } catch (e) {
+          new_messages = [
+            ...new_messages,
+            { text: "Invalid email ID, please re-enter", sender: "bot" },
+          ];
+          setChatState("ask_email");
+          setMessages(new_messages);
+        }
       }
     }
   };
@@ -119,13 +143,15 @@ function ChatBot() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
               />
-              <button type="submit" className="sendButton"><Send/></button>
+              <button type="submit" className="sendButton">
+                <Send />
+              </button>
             </form>
           </div>
         </div>
       ) : (
         <div className="chatbot__icon" onClick={toggleChat}>
-          <ChatFill height={30} width={30} color="#FF919D"/>
+          <ChatFill height={30} width={30} color="#FF919D" />
         </div>
       )}
     </div>
