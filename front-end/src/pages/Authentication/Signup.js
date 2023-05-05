@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
-
 import { registerWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
 // import { AuthContext } from "../../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
-import { checkName, checkPassword, checkEmail } from "../../helpers";
+import { checkUsername, checkPassword, checkEmail } from "../../helpers";
 import "../../assets/css/authentication.css";
 import { PersonCircle } from "react-bootstrap-icons";
 
@@ -26,7 +25,7 @@ function Signup() {
     const newErrorMessages = {};
 
     try {
-      checkName(username);
+      checkUsername(username);
     } catch (error) {
       newErrorMessages.username = error.message;
     }
