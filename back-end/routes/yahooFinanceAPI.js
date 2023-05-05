@@ -113,7 +113,8 @@ router.route("/general-news")
                     img: image,
                     name: news.title,
                     noti: news.summary,
-                    time: helper.getTimeDifference(news.time_published)
+                    time: helper.getTimeDifference(news.time_published),
+                    url: news.url
                 };
                 newsData.push(newsObj);
             }
