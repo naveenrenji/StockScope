@@ -20,6 +20,7 @@ const StocksSchema = new Schema(
 const PortfolioSchema = new Schema(
     {
         name: String,
+        net_profit_loss: Number,
         stocks: [StocksSchema]
     }
 );
