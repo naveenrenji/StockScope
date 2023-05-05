@@ -6,7 +6,6 @@ import Stocks from './pages/Stocks';
 import Profile from './pages/Profile';
 import Signup from './pages/Authentication/Signup';
 import Login from './pages/Authentication/Login';
-import Portfolio from './components/Portfolio/Portfolio'
 import PortfolioBrief from './components/Portfolio/PortfolioBrief';
 import StockSummary from './components/Stock/Summary';
 import StockNews from './components/Stock/News';

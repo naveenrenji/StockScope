@@ -3,8 +3,8 @@ import "./Card.css";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { motion } from "framer-motion";
-import { UilTimes } from "@iconscout/react-unicons";
 import Chart from "react-apexcharts";
+import { XCircleFill } from "react-bootstrap-icons";
 
 // parent Card
 
@@ -120,7 +120,7 @@ function ExpandedCard({ param, setExpanded }) {
       layoutId="expandableCard"
     >
       <div style={{ alignSelf: "flex-end", cursor: "pointer", color: "white" }}>
-        <UilTimes onClick={setExpanded} />
+        <XCircleFill onClick={setExpanded} size={30}/>
       </div>
         <span>{param.title}</span>
       <div className="chartContainer">

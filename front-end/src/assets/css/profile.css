@@ -101,36 +101,6 @@
     border: 1px solid var(--pink);
 }
 
-.facebook {
-    color: #0a54f3;
-    font-size: 25px;
-}
-
-.linkedin {
-    color: #007bb6;
-    font-size: 25px;
-}
-
-.instagram {
-    color: #c32aa3;
-    font-size: 25px;
-}
-
-.twitter {
-    color: #00aced;
-    font-size: 25px;
-}
-
-.youtube {
-    color: #ff0000;
-    font-size: 25px;
-}
-
-.github {
-    color: #000000;
-    font-size: 25px;
-}
-
 .modal-content {
     max-width: 500px;
     height: max-content;
@@ -155,6 +125,12 @@
 
 .modal-content .modal-body h4 {
     padding: 15px;
+}
+
+.modal-content .modal-body .profile-alert {
+    color: var(--black);
+    background: rgba(255, 255, 255, 0.307);
+    border: 1px solid rgba(255, 255, 255, 0.899);
 }
 
 .form-control {

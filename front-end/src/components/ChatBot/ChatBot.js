@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ChatBot.css";
 import { io } from "socket.io-client";
-import { Chat, ChatFill, Send, XLg } from "react-bootstrap-icons";
+import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);

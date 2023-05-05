@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
 
 import { registerWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
-import { AuthContext } from "../../firebase/Auth";
-// import { AuthContext } from "../../firebase/Auth"; d
+// import { AuthContext } from "../../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
 import { checkName, checkPassword, checkEmail } from "../../helpers";
 import "../../assets/css/authentication.css";
