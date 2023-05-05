@@ -3,11 +3,13 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-import { doCreateUserWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
-/* import { AuthContext } from "../../firebase/Auth"; */
+
+import { registerWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
+import { AuthContext } from "../../firebase/Auth";
+// import { AuthContext } from "../../firebase/Auth"; d
 import SocialSignIn from "./SocialSignIn";
 import { checkName, checkPassword, checkEmail } from "../../helpers";
-import '../../assets/css/authentication.css';
+import "../../assets/css/authentication.css";
 import { PersonCircle } from "react-bootstrap-icons";
 
 function Signup() {
@@ -57,7 +59,7 @@ function Signup() {
     event.preventDefault();
     if (validateInputs()) {
       try {
-        await doCreateUserWithEmailAndPassword(email, password, username);
+        await registerWithEmailAndPassword(email, password, username);
         navigate("/login");
       } catch (error) {
         alert(error);
@@ -130,7 +132,6 @@ function Signup() {
             <button type="submit" className="authButton">
               Signup
             </button>
-
           </Form>
           <h4>
             <span>Social Signup</span>

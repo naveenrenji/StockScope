@@ -1,13 +1,14 @@
 import { React, useState, useEffect } from 'react';
 import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import { Table } from 'react-bootstrap';
+import Sidebar from '../Sidebar/Sidebar';
+import StockScopeNavbar from '../StockScopeNavbar/StockScopeNavbar';
+import RightSide from '../RigtSide/RightSide';
 
-export default function HistoricalData(props) {
-
-
+const HistoricalData = (props) => {
+    //This useEffect is used to get the live data
     const [activeTab, setActiveTab] = useState('income-statement');
     const [data, setData] = useState({});
     const [showAnnual, setShowAnnual] = useState(true);
@@ -15,7 +16,6 @@ export default function HistoricalData(props) {
 
 
     let tableData = [];
-
 
     useEffect(() => {
 
@@ -55,68 +55,53 @@ export default function HistoricalData(props) {
 
     if (dataFound) {
 
-
         return (
-            <>
-
-                <Navbar bg="light" expand="lg">
-                    <Container>
-                        <Navbar.Brand href="/">StockScope</Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="me-auto">
-                                <Nav.Link href="/stock/summary">Summary</Nav.Link>
-                                <Nav.Link href="/stock/news">News</Nav.Link>
-                                <Nav.Link href="/stock/historicaldata">Historical Data</Nav.Link>
-                            </Nav>
-                        </Navbar.Collapse>
-                    </Container>
-                </Navbar >
-
-
-                <Container className="mt-4">
-
-                    <h1>{props.name}</h1>
-                    <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
-                    <Nav variant="pills" activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
-                        <Nav.Item>
-                            <Nav.Link eventKey="income-statement">Income Statement</Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
-                            <Nav.Link eventKey="balance-sheet">Balance Sheet</Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
-                            <Nav.Link eventKey="cash-flow">Cash Flow</Nav.Link>
-                        </Nav.Item>
-                    </Nav>
-
-
-                    {Object.keys(data).length > 0 &&
-                        <Table>
-                            <tbody>
-                                {Object.entries(data).map(([key, value]) => {
-
-                                    return (
-                                        <tr>
-                                            <td>{key}</td>
-                                            {value && value.map(data => {
-                                                return (
-                                                    <td>{data}</td>
-                                                )
-                                            })}
-                                        </tr>
-                                    )
-                                })
-                                }
-                            </tbody>
-
-                        </Table>
-                    }
 
 
 
-                </Container>
-            </>
+            <Container className="mt-4">
+
+                <h1>{props.name}</h1>
+                <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
+                <Nav variant="pills" activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
+                    <Nav.Item>
+                        <Nav.Link eventKey="income-statement">Income Statement</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="balance-sheet">Balance Sheet</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="cash-flow">Cash Flow</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+
+
+                {Object.keys(data).length > 0 &&
+                    <Table>
+                        <tbody>
+                            {Object.entries(data).map(([key, value]) => {
+
+                                return (
+                                    <tr>
+                                        <td>{key}</td>
+                                        {value && value.map(data => {
+                                            return (
+                                                <td>{data}</td>
+                                            )
+                                        })}
+                                    </tr>
+                                )
+                            })
+                            }
+                        </tbody>
+
+                    </Table>
+                }
+
+
+
+            </Container>
+
         )
     }
 
@@ -127,3 +112,5 @@ export default function HistoricalData(props) {
         </Container>
     }
 }
+
+export default HistoricalData;

@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-  LineChart,
-  BarChart,
-  AreaChart,
-  Line,
-  Bar,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  LineChart, BarChart, AreaChart,
+  Line, Bar, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer,
 } from "recharts";
+
+import './Chart.css';
 
 const Chart = (props) => {
   const [chartData, setChartData] = useState({
@@ -75,7 +69,7 @@ const Chart = (props) => {
             <Line
               type="monotone"
               dataKey="price"
-              stroke="#ff7300"
+              stroke="#8884d8"
               yAxisId={0}
             />
             <XAxis dataKey="date" />
@@ -87,7 +81,7 @@ const Chart = (props) => {
       case "bar":
         return (
           <BarChart {...commonProps}>
-            <Bar dataKey="price" fill="#ff7300" />
+            <Bar dataKey="price" fill="#8884d8" />
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
@@ -97,11 +91,17 @@ const Chart = (props) => {
       case "area":
         return (
           <AreaChart {...commonProps}>
+            <defs>
+              <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <Area
               type="monotone"
               dataKey="price"
-              stroke="#ff7300"
-              fill="#ff7300"
+              stroke="#000000"
+              fill="url(#colorUv)"
             />
             <XAxis dataKey="date" />
             <YAxis />
@@ -110,7 +110,7 @@ const Chart = (props) => {
           </AreaChart>
         );
       default:
-        return null;
+        return "area";
     }
   };
 
@@ -175,8 +175,8 @@ const Chart = (props) => {
 
   return (
     <div>
-      <h2>Stock Chart</h2>
-      <ResponsiveContainer width="100%" height={400}>
+      <h4>Stock Chart</h4>
+      <ResponsiveContainer width="100%" height={410}>
         {renderChart()}
       </ResponsiveContainer>
       <label>

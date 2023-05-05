@@ -15,8 +15,6 @@ import HistoricalData from './components/Stock/HistoricalData';
 import Agent from "./components/Agent/Agent";
 
 
-
-
 function App() {
   return (
 

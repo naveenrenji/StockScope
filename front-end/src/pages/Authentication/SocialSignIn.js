@@ -1,12 +1,16 @@
 import React from 'react';
+import { Navigate } from "react-router-dom";
+import {signInWithGoogle} from '../../firebase/FirebaseFunctions';
 import { doSocialSignIn } from '../../firebase/FirebaseFunctions';
 
 import google_img from "../../assets/imgs/google-signup-img.png";
 
+
 const SocialSignIn = () => {
-  const socialSignOn = async (provider) => {
+  const socialSignOn = async () => {
     try {
-      await doSocialSignIn(provider);
+      let res = await signInWithGoogle();
+      console.log(res);
     } catch (error) {
       alert(error);
     }
