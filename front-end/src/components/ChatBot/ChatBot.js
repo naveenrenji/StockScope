@@ -4,6 +4,12 @@ import { io } from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 import { checkEmail } from "../../helpers";
 
+const socketOptions = {
+  withCredentials: true,
+};
+
+let socket;
+
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [chatState, setChatState] = useState("welcome");
@@ -15,32 +21,33 @@ function ChatBot() {
   };
 
   useEffect(() => {
-    if (chatState === "talk_agent") {
-      console.log("talking to agent");
-      const socket = io("http://localhost:3001");
+    socket = io(process.env.REACT_APP_BACKEND_URL || "http://localhost:3001", socketOptions);
 
-      socket.on("connect", () => {
-        console.log("Connected to the server");
+    socket.on("connect", () => {
+      console.log("Connected to the server");
 
+      if (chatState === "talk_agent") {
+        console.log("talking to agent");
         socket.emit("join", { username: "user", room: "agent" });
+      }
+    });
 
-        socket.on("message", (message) => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: message.text, sender: "agent" },
-          ]);
-        });
+    socket.on("message", (message) => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: message.text, sender: "agent" },
+      ]);
+    });
 
-        socket.on("disconnect", () => {
-          console.log("Disconnected from the server");
-        });
-      });
+    socket.on("disconnect", () => {
+      console.log("Disconnected from the server");
+    });
 
-      return () => {
-        socket.disconnect();
-      };
-    }
+    return () => {
+      socket.disconnect();
+    };
   }, [chatState]);
+  
 
   const handleOptionClick = (option) => {
     if (option === "raise_ticket") {
@@ -66,6 +73,10 @@ function ChatBot() {
         ...messages,
         { text: inputMessage.toString(), sender: "user" },
       ];
+      if (chatState === "talk_agent") {
+        socket.emit("sendMessage", inputMessage, "agent");
+      }
+      
       setInputMessage("");
 
       if (chatState === "raise_ticket") {
