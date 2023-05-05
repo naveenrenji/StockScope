@@ -1,6 +1,6 @@
 
 .Updates{
-    width: 85%;
+    width: 98%;
     background: white;
     border-radius: 0.7rem;
     padding: 1rem;
@@ -8,7 +8,7 @@
     /* display: flex;
     flex-direction: column; */
     font-size: 13px;
-    height: 50%;
+    height: 400px;
     overflow: auto;
 }
 

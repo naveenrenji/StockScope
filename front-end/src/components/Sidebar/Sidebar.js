@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./Sidebar.css";
-import { PersonCircle, Power } from "react-bootstrap-icons";
+import { List, PersonCircle, Power } from "react-bootstrap-icons";
 import { SidebarData } from "../../config/config";
-import { UilBars } from "@iconscout/react-unicons";
 import { motion } from "framer-motion";
-import { Link, useLocation } from 'react-router-dom';
-import { isLoggedIn } from "../../pages/Authentication/Login"; 
-//Use this above line once user authentication code is 
-//complete and modify below accordingly
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { logout, auth } from "../../firebase/FirebaseFunctions";
+
 
 const Sidebar = () => {
   const [selected, setSelected] = useState(0);
   const [expanded, setExpanded] = useState(true);
   const { pathname } = useLocation();
-  const [isLoggedIn, setUserLogin] = useState(false)
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const selectedIndex = SidebarData.findIndex(item => item.link === pathname);
@@ -25,14 +24,16 @@ const Sidebar = () => {
   };
 
   const handleLogin = () => {
-    /* Add login code here */
-    setUserLogin(true);
-  }
+    navigate('/login');
+  };
 
   const handleLogout = () => {
-    /* Add logout code here */
-    setUserLogin(false);
-  }
+    try {
+      logout();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const sidebarVariants = {
     true: {
@@ -46,9 +47,9 @@ const Sidebar = () => {
   return (
     <>
       <div className="bars" style={{ left: expanded ? '60%' : '5%' }} onClick={toggleSidebar}>
-        <UilBars />
+        <List />
       </div>
-      <motion.div className='sidebar'
+      <motion.div key="sidebar" className='sidebar'
         variants={sidebarVariants}
         animate={window.innerWidth <= 768 ? `${expanded}` : ''} >
         {/* logo */}
@@ -60,24 +61,33 @@ const Sidebar = () => {
 
         {/* SideBar Section */}
         <div className="menu">
-          {SidebarData.map((item, index) => {
-            return (
-              <Link
-                className={selected === index ? "menuItem active" : "menuItem"}
-                to={item.link}
-                key={index}
-                onClick={() => setSelected(index)}
-                aria-label={index}
-              >
-                {item.icon}
-                <span>{item.heading}</span>
-              </Link>
-            );
-          })}
+          {auth.currentUser ? SidebarData.map(({ link, icon, heading }, index) => (
+            <Link
+              key={link}
+              className={selected === index ? "menuItem active" : "menuItem"}
+              to={link}
+              onClick={() => setSelected(index)}
+              aria-label={index}
+            >
+              {icon}
+              <span>{heading}</span>
+            </Link>
+          )): SidebarData.slice(0,2).map(({ link, icon, heading }, index) => (
+            <Link
+              key={link}
+              className={selected === index ? "menuItem active" : "menuItem"}
+              to={link}
+              onClick={() => setSelected(index)}
+              aria-label={index}
+            >
+              {icon}
+              <span>{heading}</span>
+            </Link>
+          ))}
           <div className="menuItem">
-            {isLoggedIn ?
-              <button className="authButton btn-semi-transparent" onClick={handleLogout}>Logout <Power size="18px" /></button> :
-              <button className="authButton btn-semi-transparent" onClick={handleLogin}>Login <PersonCircle size="18px" /></button>}
+            {auth.currentUser ?
+              <button className="authButton" onClick={handleLogout}>Logout <Power size="18px" /></button> :
+              <button className="authButton" onClick={handleLogin}>Login <PersonCircle size="18px" /></button>}
           </div>
         </div>
       </motion.div>

@@ -45,7 +45,6 @@ export default function BasicTable() {
         setLoading(false);
       }
     }
-
     fetchData();
 
     return () => {

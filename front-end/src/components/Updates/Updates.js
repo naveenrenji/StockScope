@@ -40,7 +40,7 @@ const Updates = () => {
   }else{
     return (
     <div className="Updates">
-      {UpdatesData.map((update, index) => {
+      {UpdatesData.slice(0, 10).map((update, index) => {
         return (
           <div className="update" key={index}>
             <img src={update.img} alt="profile" />

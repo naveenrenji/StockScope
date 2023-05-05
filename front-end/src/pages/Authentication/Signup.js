@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import { doCreateUserWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
-/* import { AuthContext } from "../../firebase/Auth"; */
+
+import { registerWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
+// import { AuthContext } from "../../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
 import { checkName, checkPassword, checkEmail } from "../../helpers";
-import '../../assets/css/authentication.css';
+import "../../assets/css/authentication.css";
 import { PersonCircle } from "react-bootstrap-icons";
 
 function Signup() {
@@ -57,7 +56,7 @@ function Signup() {
     event.preventDefault();
     if (validateInputs()) {
       try {
-        await doCreateUserWithEmailAndPassword(email, password, username);
+        await registerWithEmailAndPassword(email, password, username);
         navigate("/login");
       } catch (error) {
         alert(error);
@@ -127,22 +126,15 @@ function Signup() {
               </Form.Text>
             </Form.Group>
             <br></br>
-            <button type="submit" className="authButton btn-semi-transparent">
+            <button type="submit" className="authButton">
               Signup
             </button>
-
           </Form>
           <h4>
             <span>Social Signup</span>
           </h4>
           <div className="authentication-social-media">
             <SocialSignIn />
-            <a href="#">
-              <div className="icons8-facebook-circled authentication-social-mediaImg"></div>
-            </a>
-            <a href="#">
-              <div className="icons8-twitter authentication-social-mediaImg"></div>
-            </a>
           </div>
           <span className="authentication-ac">
             Already have an Account? <Link to="/login">Login</Link>
