@@ -9,7 +9,7 @@ export default function HistoricalData(props) {
 
 
     const [activeTab, setActiveTab] = useState('income-statement');
-    const [data, setData] = useState([]);
+    const [data, setData] = useState({});
     const [showAnnual, setShowAnnual] = useState(true);
     const [dataFound, setDataFound] = useState(false);
 
@@ -36,8 +36,7 @@ export default function HistoricalData(props) {
                 else {
 
                     let temp = data.quarterlyReports;
-                    let new_temp = temp.slice(0, 5);
-                    setData(new_temp);
+                    setData(temp);
                 }
 
                 setDataFound(true);
@@ -54,18 +53,8 @@ export default function HistoricalData(props) {
     }, [showAnnual, activeTab])
 
 
-    if (dataFound && data.length > 0) {
+    if (dataFound) {
 
-
-        console.log(data[0]);
-
-        let ObjectKeys = Object.keys(data[0]);
-
-
-        for (let i = 0; i < ObjectKeys.length; i++) {
-
-            tableData.push(`<tr> <td> ${ObjectKeys[i]} </td> </tr>`);
-        }
 
         return (
             <>
@@ -86,6 +75,7 @@ export default function HistoricalData(props) {
 
 
                 <Container className="mt-4">
+
                     <h1>{props.name}</h1>
                     <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
                     <Nav variant="pills" activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
@@ -101,10 +91,23 @@ export default function HistoricalData(props) {
                     </Nav>
 
 
-                    {tableData &&
+                    {Object.keys(data).length > 0 &&
                         <Table>
                             <tbody>
-                                {tableData}
+                                {Object.entries(data).map(([key, value]) => {
+
+                                    return (
+                                        <tr>
+                                            <td>{key}</td>
+                                            {value && value.map(data => {
+                                                return (
+                                                    <td>{data}</td>
+                                                )
+                                            })}
+                                        </tr>
+                                    )
+                                })
+                                }
                             </tbody>
 
                         </Table>

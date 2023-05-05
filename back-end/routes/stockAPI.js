@@ -144,7 +144,7 @@ router.route("/news/:name").get(async (req, res) => {
 
 router.route("/income-statement/:name").get(async (req, res) => {
 
-    let incomeData;
+    let incomeData = {};
 
     try {
 
@@ -214,11 +214,11 @@ router.route("/income-statement/:name").get(async (req, res) => {
 
 
 
-        let stringData = JSON.stringify(data);
+        let stringData = JSON.stringify(final_data);
 
         await client.set(`income-statement:${stockName}`, stringData);
         await client.expire(`income-statement:${stockName}`, 10000);
-        incomeData = final_data;
+        incomeData = { ...final_data };
     }
     catch (error) {
 
