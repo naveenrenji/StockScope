@@ -13,15 +13,6 @@ const Sidebar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  
-  // firebase.auth().onAuthStateChanged((user) => {
-  //   if (user) {
-  //     console.log(user);
-  //   } else {
-  //     console.log('Not authenticated');
-  //     // No user is signed in.
-  //   }
-  // });
 
   useEffect(() => {
     const selectedIndex = SidebarData.findIndex(item => item.link === pathname);
@@ -82,7 +73,18 @@ const Sidebar = () => {
 
         {/* SideBar Section */}
         <div className="menu">
-          {SidebarData.map(({ link, icon, heading }, index) => (
+          {loggedIn ? SidebarData.map(({ link, icon, heading }, index) => (
+            <Link
+              key={link}
+              className={selected === index ? "menuItem active" : "menuItem"}
+              to={link}
+              onClick={() => setSelected(index)}
+              aria-label={index}
+            >
+              {icon}
+              <span>{heading}</span>
+            </Link>
+          )) : SidebarData.slice(0, 2).map(({ link, icon, heading }, index) => (
             <Link
               key={link}
               className={selected === index ? "menuItem active" : "menuItem"}

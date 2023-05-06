@@ -20,34 +20,10 @@ function Signup() {
     setterFunction(event.target.value);
   };
 
-  const validateInputs = () => {
-    const newErrorMessages = {};
-
-    // try {
-    //   checkUsername(username);
-    // } catch (error) {
-    //   newErrorMessages.username = error.message;
-    // }
-
-    try {
-      checkEmail(email);
-    } catch (error) {
-      newErrorMessages.email = error.message;
-    }
-
-    try {
-      checkPassword(password);
-    } catch (error) {
-      newErrorMessages.password = error.message;
-    }
-
-    if (password !== confirmPassword) {
-      newErrorMessages.confirmPassword = "Passwords do not match";
-    }
-
-    setErrorMessages(newErrorMessages);
-
-    return Object.keys(newErrorMessages).length === 0;
+  const validateEmail = () => {
+    // Email validation regex pattern
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const validatePassword = () => {
@@ -90,7 +66,7 @@ function Signup() {
           <h3 className="authentication-login-text">
             <PersonCircle /> Signup
           </h3>
-          <Form onSubmit={handleSubmit}>
+          <Form>
             {/* <Form.Group controlId="formBasicUsername">
               <Form.Label>Email</Form.Label>
               <Form.Control

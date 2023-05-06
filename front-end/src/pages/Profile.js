@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RightSide from '../components/RigtSide/RightSide';
 import Sidebar from '../components/Sidebar/Sidebar';
-import { Alert, Col, Container, Form, Image, Modal, Row } from "react-bootstrap";
+import { Col, Container, Form, Image, Modal, Row } from "react-bootstrap";
 import '../assets/css/profile.css';
 import img4 from '../assets/imgs/img4.png';
 import { PencilSquare } from "react-bootstrap-icons";
 import Cards from "../components/Cards/Cards";
-import { auth } from "../firebase/FirebaseFunctions";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase/firebaseConfiguration";
+import { useNavigate } from "react-router-dom";
+
 
 function Profile() {
     const [modal, setModal] = useState(false);
-    const [avatar, setAvatar] = useState(auth.currentUser.photoURL);
-    const { currentUser, updateProfile } = /* useAuth(); */ useState(auth.currentUser);
+    const [avatar, setAvatar] = useState("");
+    const [user, setUser] = useState(null);
+    const [isSocialSignIn, setIsSocialSignIn] = useState(false);
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         name: '',
@@ -39,8 +45,6 @@ function Profile() {
             };
         }
     }
-    console.log(currentUser);
-    const isGoogleUser = currentUser.providerId; 
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -61,8 +65,28 @@ function Profile() {
         }
     };
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUser({
+                    displayName: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    isSocialSignIn: user.providerData.length > 0 && user.providerData[0].providerId === "google.com",
+                });
+            } else {
+                // User is signed out
+                // ...
+                console.log("user is logged out");
+                alert("You are not Logged in");
+                navigate('/');
+            }
+        });
+        return unsubscribe;
+    }, [navigate])
+
     return (
-        
+
         <div className="Home">
             <div className="HomeGlass">
                 <Sidebar />
@@ -70,31 +94,19 @@ function Profile() {
                     <h1>Profile</h1>
                     <Row>
                         <Col className="profileRow1">
-                            {isGoogleUser ? (
-                                <>
-                                    <Image className="profileImage" src={currentUser.photoURL} />
-                                    <div>
-                                        <h2>{currentUser.displayName}</h2>
-                                        <p>@{currentUser.displayName.replace(/\s/g, "").toLowerCase()}</p>
-                                    </div>
-                                </>
+                            {isSocialSignIn  ? (
+                                <Image className="profileImage" src={user.photoURL} />
                             ) : (
-                                <>
-                                    {avatar ? (
-                                        <Image className="profileImage" src={avatar} />
-                                    ) : (
-                                        <Image className="profileImage" src={img4} />
-                                    )}
-                                    <div>
-                                        <h2>{formData.name ? formData.name : "StockScope App"}</h2>
-                                        <p>
-                                            {formData.username
-                                                ? "@" + formData.username
-                                                : "@stockscope12"}
-                                        </p>
-                                    </div>
-                                </>
+                                avatar? <Image className="profileImage" src={avatar} /> : <Image className="profileImage" src={img4} />
                             )}
+                            <div>
+                                <h2>{formData.name ? formData.name : "StockScope App"}</h2>
+                                <p>
+                                    {formData.username
+                                        ? "@" + formData.username
+                                        : "@stockscope12"}
+                                </p>
+                            </div>
                         </Col>
                         <Col className="profileRow2">
                             <button className="authButton" onClick={() => setModal(true)}>Edit Profile <PencilSquare size="18px" /></button>
@@ -119,8 +131,8 @@ function Profile() {
                         <Modal.Title id="modal-styling-title">Edit Profile</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {isGoogleUser ? <Alert className="profile-alert">You have used Google Sign In so only about info can be edited!</Alert> : ""}
-                        <input type="file" id="avatar" name="avatar" style={{ display: "none" }} onChange={profileImageChange} disabled={isGoogleUser} />
+                        {/* {user.providerId === "google.com" ? <Alert className="profile-alert">You have used Google Sign In so only about info can be edited!</Alert> : ""} */}
+                        <input type="file" id="avatar" name="avatar" style={{ display: "none" }} onChange={profileImageChange} />
                         {avatar ? <Image className="profileImage" src={avatar} /> : <Image className="profileImage" src={img4} />}
                         <button type="button" onClick={() => document.getElementById("avatar").click()} className="authButton">
                             Upload Image
@@ -131,7 +143,7 @@ function Profile() {
                                 <Col>
                                     <Form.Group className="mb-3" controlId="formBasicName">
                                         <Form.Label>Name</Form.Label>
-                                        <Form.Control type="text" placeholder="Enter your name" name="name" value={newFormData.name} onChange={handleChange} disabled={isGoogleUser} />
+                                        <Form.Control type="text" placeholder="Enter your name" name="name" value={newFormData.name} onChange={handleChange} />
                                         <Form.Text className="text-muted">Change your name</Form.Text>
                                     </Form.Group>
                                 </Col>
@@ -139,31 +151,29 @@ function Profile() {
                                 <Col>
                                     <Form.Group className="mb-3" controlId="formBasicUsername">
                                         <Form.Label>Username</Form.Label>
-                                        <Form.Control type="text" placeholder="Choose username" name="username" value={newFormData.username} onChange={handleChange} disabled={isGoogleUser} />
+                                        <Form.Control type="text" placeholder="Choose username" name="username" value={newFormData.username} onChange={handleChange} />
                                         <Form.Text className="text-muted">Choose a different username</Form.Text>
                                     </Form.Group>
                                 </Col>
                             </Row>
 
-                            {!isGoogleUser && (
-                                <Row>
-                                    <Col>
-                                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                                            <Form.Label>Email</Form.Label>
-                                            <Form.Control type="email" placeholder="Enter email" name="email" value={newFormData.email} onChange={handleChange} />
-                                            <Form.Text className="text-muted">We'll never share your email.</Form.Text>
-                                        </Form.Group>
-                                    </Col>
+                            <Row>
+                                <Col>
+                                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                                        <Form.Label>Email</Form.Label>
+                                        <Form.Control type="email" placeholder="Enter email" name="email" value={newFormData.email} onChange={handleChange} />
+                                        <Form.Text className="text-muted">We'll never share your email.</Form.Text>
+                                    </Form.Group>
+                                </Col>
 
-                                    <Col>
-                                        <Form.Group className="mb-3" controlId="formBasicPassword">
-                                            <Form.Label>Password</Form.Label>
-                                            <Form.Control type="password" placeholder="Password" name="password" value={newFormData.password} onChange={handleChange} />
-                                            <Form.Text className="text-muted">Leave blank to keep the same password.</Form.Text>
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            )}
+                                <Col>
+                                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                                        <Form.Label>Password</Form.Label>
+                                        <Form.Control type="password" placeholder="Password" name="password" value={newFormData.password} onChange={handleChange} />
+                                        <Form.Text className="text-muted">Leave blank to keep the same password.</Form.Text>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
 
                             <Form.Group className="mb-3" controlId="formBasicAbout">
                                 <Form.Label>About</Form.Label>
