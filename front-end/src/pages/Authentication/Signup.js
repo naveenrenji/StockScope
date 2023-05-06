@@ -24,11 +24,11 @@ function Signup() {
   const validateInputs = () => {
     const newErrorMessages = {};
 
-    try {
-      checkUsername(username);
-    } catch (error) {
-      newErrorMessages.username = error.message;
-    }
+    // try {
+    //   checkUsername(username);
+    // } catch (error) {
+    //   newErrorMessages.username = error.message;
+    // }
 
     try {
       checkEmail(email);
@@ -71,21 +71,21 @@ function Signup() {
             <PersonCircle /> Signup
           </h3>
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formBasicUsername">
-              <Form.Label>Username</Form.Label>
+            {/* <Form.Group controlId="formBasicUsername">
+              <Form.Label>Email</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Enter username"
-                value={username}
-                onChange={(event) => handleInputChange(event, setUsername)}
+                type="email"
+                placeholder="Enter EmailID"
+                value={email}
+                onChange={(event) => handleInputChange(event, setEmail)}
               />
               <Form.Text className="text-danger">
                 {errorMessages.username}
               </Form.Text>
-            </Form.Group>
+            </Form.Group> */}
 
             <Form.Group controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
+              <Form.Label>Email ID</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Enter email"
