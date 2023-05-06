@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from "react";
 import "./ChatBot.css";
 import { io } from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 import { checkEmail } from "../../helpers";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const socketOptions = {
   withCredentials: false,
@@ -18,23 +17,20 @@ function ChatBot() {
   const [chatState, setChatState] = useState("welcome");
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [roomID, setRoomID] = useState(null);
+  const [roomID, setRoomID] = useState('');
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
 
   useEffect(() => {
-    socket = io(process.env.REACT_APP_BACKEND_URL || "http://localhost:3001", socketOptions);
+    socket = io(
+      process.env.REACT_APP_BACKEND_URL || "http://localhost:3001",
+      socketOptions
+    );
 
     socket.on("connect", () => {
       console.log("Connected to the server");
-
-      if (chatState === "talk_agent") {
-        console.log("talking to agent");
-        setRoomID(uuidv4());
-        socket.emit("joinRequest", { username: currentUser, room: roomID });
-      }
     });
 
     socket.on("message", (message) => {
@@ -58,10 +54,9 @@ function ChatBot() {
     });
 
     return () => {
-      socket.disconnect();
+      socket.off("agentJoined");
     };
   }, [chatState]);
-
 
   const handleOptionClick = (option) => {
     if (option === "raise_ticket") {
@@ -76,6 +71,10 @@ function ChatBot() {
         ...messages,
         { text: "Connecting you to an agent. Please wait...", sender: "bot" },
       ]);
+      console.log("requested to talk to agent");
+      let newRoomID=uuidv4();
+      setRoomID(newRoomID);
+      socket.emit("agentJoinRequest", { username: currentUser, room: newRoomID });
     }
   };
 
@@ -88,11 +87,11 @@ function ChatBot() {
         { text: inputMessage.toString(), sender: "user" },
       ];
       setMessages(new_messages);
-      
+
       if (chatState === "agent_chat") {
         socket.emit("sendMessage", inputMessage, roomID);
       }
-      
+
       setInputMessage("");
 
       if (chatState === "raise_ticket") {
@@ -133,9 +132,10 @@ function ChatBot() {
   };
 
   const Message = ({ message }) => (
-
     <div
-      className={`chatbot__message ${message.sender === currentUser ? "user" : "bot"}`}
+      className={`chatbot__message ${
+        message.sender === currentUser ? "user" : "bot"
+      }`}
     >
       {message.text}
       {message.sender === "agent" && (

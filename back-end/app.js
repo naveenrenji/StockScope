@@ -56,7 +56,6 @@ io.on("connection", (socket) => {
         text: `${username} has joined the chat`,
       });
     } else {
-      socket.join(room);
       socket.emit("message", {
         text: `Welcome ${username}, you are connected with ${room}`,
       });
@@ -69,11 +68,16 @@ io.on("connection", (socket) => {
 
 
   socket.on("agentJoinRequest", ({ username, room }) => {
-    if (!rooms.has(room)) {
+    console.log("user request to agent to join room");
+    if (!(rooms.has(room))) {
       rooms.set(room, { users: new Set(), messages: [] });
     }
+    socket.join(room);
     io.to(room).emit("joinRequest", { username, room });
+    console.log("user request emitted to " + room);
+
   });
+
 
   socket.on("sendMessage", (message, room) => {
     const sender = rooms.get(room).users.has("agent") ? "agent" : "user";

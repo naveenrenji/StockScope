@@ -21,11 +21,10 @@ function Agent() {
 
     socket.on("connect", () => {
       console.log("Connected to the server");
-      socket.emit("join", { username: "agent", room: "agent" });
     });
 
     socket.on("joinRequest", (request) => {
-      console.log("accepted join request " + request);
+      console.log("received join request " + request);
 
       setPendingRequests((prevRequests) => [...prevRequests, request]);
     });
@@ -72,7 +71,7 @@ function Agent() {
 
   const handleEndChat = () => {
     if (currentRoom) {
-      socket.emit("endChat", currentRoom);
+      socket.emit("agentEndChat", currentRoom);
       setCurrentRoom(null);
       setMessages([]);
     }
@@ -82,36 +81,50 @@ function Agent() {
     <div className="agent">
       <h2>Agent Chat</h2>
       <div className="agent__requests">
-        {pendingRequests.map((request, index) => (
-          <div key={index} className="agent__request">
-            {request.username} wants to chat
-            <button onClick={() => handleAcceptRequest(request)}>Accept</button>
-          </div>
-        ))}
+        {currentRoom === null && (
+          <>
+            <h3>Pending Requests</h3>
+            <ul>
+              {pendingRequests.map((request, index) => (
+                <li key={index}>
+                  {request.username}{" "}
+                  <button onClick={() => handleAcceptRequest(request)}>
+                    Accept
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
-      <div className="agent__messages">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`agent__message ${
-              message.sender === "agent" ? "agent" : "user"
-            }`}
-          >
-            {message.text}
+      {currentRoom !== null && (
+        <>
+          <div className="agent__messages">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`agent__message ${
+                  message.sender === "agent" ? "agent" : "user"
+                }`}
+              >
+                {message.text}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <form className="agent__input" onSubmit={handleSendMessage}>
-        <input
-          type="text"
-          placeholder="Type your message"
-          value={inputMessage}
-          onChange={handleInputChange}
-        />
-        <button type="submit">Send</button>
-      </form>
-      <button onClick={handleEndChat}>End Chat</button>
+          <form className="agent__input" onSubmit={handleSendMessage}>
+            <input
+              type="text"
+              placeholder="Type your message"
+              value={inputMessage}
+              onChange={handleInputChange}
+            />
+            <button type="submit">Send</button>
+          </form>
+          <button onClick={handleEndChat}>End Chat</button>
+        </>
+      )}
     </div>
   );
 }
+
 export default Agent;
