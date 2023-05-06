@@ -1,20 +1,24 @@
+
 import React, { useEffect, useState } from "react";
 import "./ChatBot.css";
 import { io } from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 import { checkEmail } from "../../helpers";
+import { v4 as uuidv4 } from 'uuid';
 
 const socketOptions = {
-  withCredentials: true,
+  withCredentials: false,
 };
 
 let socket;
 
 function ChatBot() {
+  const currentUser = "naveenrenji";
   const [isOpen, setIsOpen] = useState(false);
   const [chatState, setChatState] = useState("welcome");
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [roomID, setRoomID] = useState(null);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -28,15 +32,25 @@ function ChatBot() {
 
       if (chatState === "talk_agent") {
         console.log("talking to agent");
-        socket.emit("join", { username: "user", room: "agent" });
+        setRoomID(uuidv4());
+        socket.emit("joinRequest", { username: currentUser, room: roomID });
       }
     });
 
     socket.on("message", (message) => {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: message.text, sender: "agent" },
+        { text: message.text, sender: message.sender },
       ]);
+    });
+
+    socket.on("agentJoined", () => {
+      setChatState("agent_chat");
+    });
+
+    socket.on("agentEndChat", () => {
+      setChatState("welcome");
+      setMessages([]);
     });
 
     socket.on("disconnect", () => {
@@ -47,7 +61,7 @@ function ChatBot() {
       socket.disconnect();
     };
   }, [chatState]);
-  
+
 
   const handleOptionClick = (option) => {
     if (option === "raise_ticket") {
@@ -58,6 +72,10 @@ function ChatBot() {
       ]);
     } else if (option === "talk_agent") {
       setChatState("talk_agent");
+      setMessages([
+        ...messages,
+        { text: "Connecting you to an agent. Please wait...", sender: "bot" },
+      ]);
     }
   };
 
@@ -65,16 +83,14 @@ function ChatBot() {
     event.preventDefault();
     let new_messages = [];
     if (inputMessage.trim()) {
-      // setMessages([
-      //   ...messages,
-      //   { text: inputMessage.toString(), sender: "user" },
-      // ]);
       new_messages = [
         ...messages,
         { text: inputMessage.toString(), sender: "user" },
       ];
-      if (chatState === "talk_agent") {
-        socket.emit("sendMessage", inputMessage, "agent");
+      setMessages(new_messages);
+      
+      if (chatState === "agent_chat") {
+        socket.emit("sendMessage", inputMessage, roomID);
       }
       
       setInputMessage("");
@@ -116,6 +132,18 @@ function ChatBot() {
     }
   };
 
+  const Message = ({ message }) => (
+
+    <div
+      className={`chatbot__message ${message.sender === currentUser ? "user" : "bot"}`}
+    >
+      {message.text}
+      {message.sender === "agent" && (
+        <span className="chatbot__agent-name">Agent</span>
+      )}
+    </div>
+  );
+
   return (
     <div className="chatbot">
       {isOpen ? (
@@ -125,17 +153,7 @@ function ChatBot() {
           </button>
           <div className="chatbot__messages">
             {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`chatbot__message ${
-                  message.sender === "user" ? "user" : "bot"
-                }`}
-              >
-                {message.text}
-                {message.sender === "agent" && (
-                  <span className="chatbot__agent-name">Agent</span>
-                )}
-              </div>
+              <Message key={index} message={message} />
             ))}
             {chatState === "welcome" && (
               <div className="chatbot__options">

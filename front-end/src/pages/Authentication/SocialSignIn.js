@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navigate } from "react-router-dom";
-import {signInWithGoogle} from '../../firebase/FirebaseFunctions';
-import { doSocialSignIn } from '../../firebase/FirebaseFunctions';
+import {signInWithGoogle, auth} from '../../firebase/FirebaseFunctions';
 
 import google_img from "../../assets/imgs/google-signup-img.png";
 
@@ -10,7 +9,8 @@ const SocialSignIn = () => {
   const socialSignOn = async () => {
     try {
       let res = await signInWithGoogle();
-      console.log(res);
+      // console.log(res);
+      console.log(auth.currentUser);
     } catch (error) {
       alert(error);
     }

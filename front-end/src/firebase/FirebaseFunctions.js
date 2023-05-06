@@ -18,6 +18,7 @@ import {
   where,
   addDoc,
 } from "firebase/firestore";
+console.log(process.env);
 const firebaseConfig = {
   apiKey: "AIzaSyDIXJ5YT7hoNbBFqK3TBcV41-TzIO-7n7w",
   authDomain: "fir-auth-6edd8.firebaseapp.com",
@@ -37,6 +38,7 @@ const signInWithGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user;
+    console.log(res.user);
     // const q = query(collection(db, "users"), where("uid", "==", user.uid));
     // const docs = await getDocs(q);
     // if (docs.docs.length === 0) {

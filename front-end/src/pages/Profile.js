@@ -6,11 +6,12 @@ import '../assets/css/profile.css';
 import img4 from '../assets/imgs/img4.png';
 import { PencilSquare } from "react-bootstrap-icons";
 import Cards from "../components/Cards/Cards";
+import { auth } from "../firebase/FirebaseFunctions";
 
 function Profile() {
     const [modal, setModal] = useState(false);
-    const [avatar, setAvatar] = useState("");
-    const { currentUser, updateProfile } = /* useAuth(); */ useState("");;
+    const [avatar, setAvatar] = useState(auth.currentUser.photoURL);
+    const { currentUser, updateProfile } = /* useAuth(); */ useState(auth.currentUser);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -38,8 +39,8 @@ function Profile() {
             };
         }
     }
-
-    const isGoogleUser = /* currentUser?.providerData[0]?.providerId === */ !"google.com";
+    console.log(currentUser);
+    const isGoogleUser = currentUser.providerId; 
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -61,6 +62,7 @@ function Profile() {
     };
 
     return (
+        
         <div className="Home">
             <div className="HomeGlass">
                 <Sidebar />
