@@ -7,6 +7,7 @@ import '../assets/css/style.css';
 
 function Home() {
 
+<<<<<<< Updated upstream
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
 
   useEffect(() => {
@@ -19,6 +20,8 @@ function Home() {
     
   }, [auth]);
 
+=======
+>>>>>>> Stashed changes
   return (
     <div className="Home">
       <div className="HomeGlass">
