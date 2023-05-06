@@ -42,31 +42,54 @@ app.use(
 configRoutes(app);
 
 const server = http.createServer(app);
-const io = new Server(server, {cors: {origin: "*"}});
+const io = new Server(server, { cors: { origin: "*" } });
+
+const rooms = new Map();
 
 io.on("connection", (socket) => {
   console.log("New client connected");
 
   socket.on("join", ({ username, room }) => {
-    socket.join(room);
+    if (username === "agent") {
+      // Do not send a welcome message to the agent
+      socket.broadcast.to(room).emit("message", {
+        text: `${username} has joined the chat`,
+      });
+    } else {
+      socket.join(room);
+      socket.emit("message", {
+        text: `Welcome ${username}, you are connected with ${room}`,
+      });
 
-    socket.emit("message", {
-      text: `Welcome ${username}, you are connected to ${room}`,
-    });
+      socket.broadcast.to(room).emit("message", {
+        text: `${username} has joined the chat`,
+      });
+    }
+  });
 
-    socket.broadcast.to(room).emit("message", {
-      text: `${username} has joined the chat`,
-    });
+
+  socket.on("agentJoinRequest", ({ username, room }) => {
+    if (!rooms.has(room)) {
+      rooms.set(room, { users: new Set(), messages: [] });
+    }
+    io.to(room).emit("joinRequest", { username, room });
   });
 
   socket.on("sendMessage", (message, room) => {
-    io.to(room).emit("message", { text: message });
+    const sender = rooms.get(room).users.has("agent") ? "agent" : "user";
+    io.to(room).emit("message", { text: message, sender: sender, room: room });
+  });
+
+  socket.on("agentEndChat", (room) => {
+    io.to(room).emit("chatEnded", { text: "The agent has ended the chat.", sender: "system" });
+    socket.leave(room);
   });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 });
+
 
 server.listen(3001, () => {
   console.log("We've now got a server!");
