@@ -3,60 +3,58 @@ import "./ChatBot.css";
 import { io } from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 import { checkEmail } from "../../helpers";
-import { v4 as uuidv4 } from "uuid";
 
+let currentUser = "naveenrenji";
 const socketOptions = {
   withCredentials: false,
 };
 
-let socket;
+const socket = io("http://localhost:3001/user", socketOptions);
+//socket = io(process.env.REACT_APP_BACKEND_URL || "http://localhost:3001", socketOptions);
+
 
 function ChatBot() {
-  const currentUser = "naveenrenji";
   const [isOpen, setIsOpen] = useState(false);
   const [chatState, setChatState] = useState("welcome");
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [roomID, setRoomID] = useState('');
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
 
   useEffect(() => {
-    socket = io(
-      process.env.REACT_APP_BACKEND_URL || "http://localhost:3001",
-      socketOptions
-    );
-
     socket.on("connect", () => {
       console.log("Connected to the server");
+  
+      if (chatState === "talk_agent") {
+        console.log("Requesting agent");
+        socket.emit("requestAgent", currentUser);
+      }
     });
-
-    socket.on("message", (message) => {
+  
+    socket.on("agentConnected", ({ room }) => {
+      setChatState("talk_agent");
+      console.log("Agent connected to room", room);
+      socket.emit("join", { username: currentUser, room });
+    });
+  
+    socket.on("message", (message, room) => {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: message.text, sender: message.sender },
+        { text: message.text, sender: "agent" },
       ]);
     });
-
-    socket.on("agentJoined", () => {
-      setChatState("agent_chat");
-    });
-
-    socket.on("agentEndChat", () => {
-      setChatState("welcome");
-      setMessages([]);
-    });
-
+  
     socket.on("disconnect", () => {
       console.log("Disconnected from the server");
     });
-
+  
     return () => {
-      socket.off("agentJoined");
+      socket.disconnect();
     };
   }, [chatState]);
+  
 
   const handleOptionClick = (option) => {
     if (option === "raise_ticket") {
@@ -66,15 +64,13 @@ function ChatBot() {
         { text: "Please describe your issue.", sender: "bot" },
       ]);
     } else if (option === "talk_agent") {
+      let new_messages =[];
+      new_messages = [
+        ...new_messages,
+        { text: "Finding an Agent for you, please be patient...", sender: "bot" },
+      ];
+      setMessages(new_messages);
       setChatState("talk_agent");
-      setMessages([
-        ...messages,
-        { text: "Connecting you to an agent. Please wait...", sender: "bot" },
-      ]);
-      console.log("requested to talk to agent");
-      let newRoomID=uuidv4();
-      setRoomID(newRoomID);
-      socket.emit("agentJoinRequest", { username: currentUser, room: newRoomID });
     }
   };
 
@@ -86,10 +82,8 @@ function ChatBot() {
         ...messages,
         { text: inputMessage.toString(), sender: "user" },
       ];
-      setMessages(new_messages);
-
-      if (chatState === "agent_chat") {
-        socket.emit("sendMessage", inputMessage, roomID);
+      if (chatState === "talk_agent") {
+        socket.emit("sendMessage", inputMessage, currentUser, "agent");
       }
 
       setInputMessage("");
@@ -131,19 +125,6 @@ function ChatBot() {
     }
   };
 
-  const Message = ({ message }) => (
-    <div
-      className={`chatbot__message ${
-        message.sender === currentUser ? "user" : "bot"
-      }`}
-    >
-      {message.text}
-      {message.sender === "agent" && (
-        <span className="chatbot__agent-name">Agent</span>
-      )}
-    </div>
-  );
-
   return (
     <div className="chatbot">
       {isOpen ? (
@@ -153,7 +134,17 @@ function ChatBot() {
           </button>
           <div className="chatbot__messages">
             {messages.map((message, index) => (
-              <Message key={index} message={message} />
+              <div
+                key={index}
+                className={`chatbot__message ${
+                  message.sender === currentUser ? "user" : "bot"
+                }`}
+              >
+                {message.text}
+                {message.sender === "agent" && (
+                  <span className="chatbot__agent-name">Agent</span>
+                )}
+              </div>
             ))}
             {chatState === "welcome" && (
               <div className="chatbot__options">

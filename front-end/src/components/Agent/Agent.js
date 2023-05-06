@@ -1,48 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socketOptions = {
-  withCredentials: false,
-};
-
-let socket;
-
 function Agent() {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [pendingRequests, setPendingRequests] = useState([]);
-  const [currentRoom, setCurrentRoom] = useState(null);
+  const [requests, setRequests] = useState([]);
+  const [currentChat, setCurrentChat] = useState(null);
+
+  const socket = io("http://localhost:3001/agent", { autoConnect: false });
 
   useEffect(() => {
-    socket = io(
-      process.env.REACT_APP_BACKEND_URL || "http://localhost:3001",
-      socketOptions
-    );
+    socket.connect();
 
-    socket.on("connect", () => {
-      console.log("Connected to the server");
-    });
-
-    socket.on("joinRequest", (request) => {
-      console.log("received join request " + request);
-      setPendingRequests((prevRequests) => [...prevRequests, request]);
+    socket.on("updateRequests", (updatedRequests) => {
+      setRequests(updatedRequests);
     });
 
     socket.on("message", (message) => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: message.text, sender: message.sender },
-      ]);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server");
+      setMessages((prevMessages) => [...prevMessages, message]);
     });
 
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [socket]);
+
+  const handleAcceptRequest = (request) => {
+    setCurrentChat(request);
+    socket.emit("acceptRequest", request);
+  };
 
   const handleInputChange = (event) => {
     setInputMessage(event.target.value);
@@ -52,75 +38,61 @@ function Agent() {
     event.preventDefault();
 
     if (inputMessage.trim()) {
-      socket.emit("sendMessage", { text: inputMessage, room: currentRoom });
+      const room = currentChat.id;
+      socket.emit("sendMessage", inputMessage, room);
 
-      setMessages([...messages, { text: inputMessage, sender: "agent" }]);
+      setMessages([...messages, { text: inputMessage, sender: "agent", room }]);
       setInputMessage("");
     }
   };
-  const handleAcceptRequest = (request) => {
-    setCurrentRoom(request.room);
-    socket.emit("acceptRequest", { room: request.room });
-    // Join the room when the agent accepts an incoming request
-    socket.emit("join", { username: "agent", room: request.room });
-    setPendingRequests((prevRequests) =>
-      prevRequests.filter((req) => req.room !== request.room)
-    );
-  };
 
   const handleEndChat = () => {
-    if (currentRoom) {
-      socket.emit("agentEndChat", currentRoom);
-      setCurrentRoom(null);
-      setMessages([]);
-    }
+    const room = currentChat.id;
+    socket.emit("endChat", room);
+    setCurrentChat(null);
+    setMessages([]);
   };
 
   return (
     <div className="agent">
       <h2>Agent Chat</h2>
       <div className="agent__requests">
-        {currentRoom === null && (
-          <>
-            <h3>Pending Requests</h3>
-            <ul>
-              {pendingRequests.map((request, index) => (
-                <li key={index}>
-                  {request.username}{" "}
-                  <button onClick={() => handleAcceptRequest(request)}>
-                    Accept
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
-      {currentRoom !== null && (
-        <>
-          <div className="agent__messages">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`agent__message ${
-                  message.sender === "agent" ? "agent" : "user"
-                }`}
-              >
-                {message.text}
-              </div>
-            ))}
+        <h3>Pending Requests</h3>
+        {requests.map((request, index) => (
+          <div key={index} className="agent__request">
+            <span>{request.username}</span>
+            <button onClick={() => handleAcceptRequest(request)}>Accept</button>
           </div>
-          <form className="agent__input" onSubmit={handleSendMessage}>
-            <input
-              type="text"
-              placeholder="Type your message"
-              value={inputMessage}
-              onChange={handleInputChange}
-            />
-            <button type="submit">Send</button>
-          </form>
-          <button onClick={handleEndChat}>End Chat</button>
-        </>
+        ))}
+      </div>
+      <div className="agent__messages">
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`agent__message ${
+              message.sender === "agent" ? "agent" : "user"
+            }`}
+          >
+            {message.text}
+          </div>
+        ))}
+      </div>
+      <form className="agent__input" onSubmit={handleSendMessage}>
+        <input
+          type="text"
+          placeholder="Type your message"
+          value={inputMessage}
+          onChange={handleInputChange}
+          disabled={!currentChat}
+        />
+        <button type="submit" disabled={!currentChat}>
+          Send
+        </button>
+      </form>
+      {currentChat && (
+        <button onClick={handleEndChat} className="agent__end-chat">
+          End Chat
+        </button>
       )}
     </div>
   );

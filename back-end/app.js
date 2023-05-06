@@ -4,16 +4,13 @@ const session = require("express-session");
 const configRoutes = require("./routes");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const {Server} = require("socket.io");
+const { Server } = require("socket.io");
 const http = require("http");
 const { mongoConfig } = require("./config/settings.json");
-
-let count = {};
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
-
 
 const connectMongo = async () => {
   try {
@@ -44,58 +41,58 @@ configRoutes(app);
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-const rooms = new Map();
+let agentRequests = [];
+let agentRooms = {};
 
-io.on("connection", (socket) => {
-  console.log("New client connected");
+const userNamespace = io.of("/user");
+const agentNamespace = io.of("/agent");
 
-  socket.on("join", ({ username, room }) => {
-    if (username === "agent") {
-      // Do not send a welcome message to the agent
-      socket.broadcast.to(room).emit("message", {
-        text: `${username} has joined the chat`,
-      });
-    } else {
-      socket.emit("message", {
-        text: `Welcome ${username}, you are connected with ${room}`,
-      });
+userNamespace.on("connection", (socket) => {
+  console.log("New user client connected");
 
-      socket.broadcast.to(room).emit("message", {
-        text: `${username} has joined the chat`,
-      });
-    }
-  });
-
-  socket.on("acceptRequest", ({ room }) => {
-    console.log("Agent accepted request for room:", room);
-    socket.join(room);
-    io.to(room).emit("agentJoined", { room });
-  });
-  
-  socket.on("agentJoinRequest", ({ username, room }) => {
-    console.log("user request to agent to join room");
-    if (!(rooms.has(room))) {
-      rooms.set(room, { users: new Set(), messages: [] });
-    }
-    socket.join(room);
-    io.to(room).emit("joinRequest", { username, room });
-    console.log("user request emitted to " + room);
-
-  });
-
-
-  socket.on("sendMessage", (message, room) => {
-    const sender = rooms.get(room).users.has("agent") ? "agent" : "user";
-    io.to(room).emit("message", { text: message, sender: sender, room: room });
-  });
-
-  socket.on("agentEndChat", (room) => {
-    io.to(room).emit("chatEnded", { text: "The agent has ended the chat.", sender: "system" });
-    socket.leave(room);
+  socket.on("requestAgent", (user) => {
+    agentRequests.push(user);
+    agentNamespace.emit("requestsUpdated", agentRequests);
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    console.log("User client disconnected");
+  });
+
+  socket.onAny((event, ...args) => {
+    console.log("user : ",event, args);
+  });
+});
+
+agentNamespace.on("connection", (socket) => {
+  console.log("New agent client connected");
+
+  socket.emit("requestsUpdated", agentRequests);
+
+  socket.on("acceptRequest", (user) => {
+    const roomId = `room_${user}_${Date.now()}`;
+    agentRooms[user] = roomId;
+    socket.join(roomId);
+
+    socket.emit("roomCreated", { user, roomId });
+    userNamespace.to(user).emit("roomCreated", roomId);
+  });
+
+  socket.on("sendMessage", (message, room) => {
+    socket.to(room).emit("message", { text: message, room: room });
+  });
+
+  socket.on("endChat", (roomId) => {
+    userNamespace.to(roomId).emit("chatEnded");
+    socket.leave(roomId);
+  });
+
+  socket.onAny((event, ...args) => {
+    console.log("Agent : ",event, args);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Agent client disconnected");
   });
 });
 
