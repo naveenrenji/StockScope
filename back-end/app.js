@@ -4,7 +4,7 @@ const session = require("express-session");
 const configRoutes = require("./routes");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const socketio = require("socket.io");
+const {Server} = require("socket.io");
 const http = require("http");
 const { mongoConfig } = require("./config/settings.json");
 
@@ -13,6 +13,7 @@ let count = {};
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
 
 const connectMongo = async () => {
   try {
@@ -41,7 +42,7 @@ app.use(
 configRoutes(app);
 
 const server = http.createServer(app);
-const io = socketio(server);
+const io = new Server(server, {cors: {origin: "*"}});
 
 io.on("connection", (socket) => {
   console.log("New client connected");

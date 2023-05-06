@@ -1,7 +1,7 @@
 //require express and express router as shown in lecture code
 const express = require("express");
 const router = express.Router();
-
+const helper = require("../helpers");
 const User = require("../models/User");
 
 router.post("/createUser", async (req, res) => {
@@ -11,10 +11,18 @@ router.post("/createUser", async (req, res) => {
     res.status(200).json({ Error: "User already exists" });
     return;
   }
+  try{
+    helper.checkName(req.body.name);
+    helper.check
+  } catch(e){
+
+  }
   const user = new User({
     name: req.body.name,
     email: req.body.email,
     type: "user",
+    photoUrl: "",
+    about: "",
     portfolios: [
       {
         name: "default",

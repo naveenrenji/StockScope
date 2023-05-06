@@ -30,6 +30,8 @@ const UserSchema = new Schema(
     name: String,
     email: String,
     type: String,
+    photoUrl: String,
+    about: String,
     portfolios: [PortfolioSchema]
 
   }

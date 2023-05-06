@@ -125,6 +125,8 @@ const checkName = (strVal) => {
   return strVal;
 };
 
+
+
 module.exports = {
   checkStockName,
   getTimeDifference,

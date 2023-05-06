@@ -5,14 +5,14 @@ import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 import { checkEmail } from "../../helpers";
 
 const socketOptions = {
-  withCredentials: true,
+  withCredentials: false,
 };
 
 let socket;
 
 function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [chatState, setChatState] = useState("welcome");
+  const [chatState, setChatState] = useState("talk_agent");
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
 
@@ -137,7 +137,7 @@ function ChatBot() {
                 )}
               </div>
             ))}
-            {chatState === "welcome" && (
+            {/* {chatState === "welcome" && (
               <div className="chatbot__options">
                 <button onClick={() => handleOptionClick("raise_ticket")}>
                   Raise a Ticket
@@ -146,7 +146,7 @@ function ChatBot() {
                   Talk to an Agent
                 </button>
               </div>
-            )}
+            )} */}
             <form className="chatbot__input" onSubmit={handleSendMessage}>
               <input
                 type="text"

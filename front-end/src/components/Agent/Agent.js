@@ -13,7 +13,7 @@ function Agent() {
     event.preventDefault();
 
     if (inputMessage.trim()) {
-      const socket = io("http://localhost:3001");
+      const socket = io("http://localhost:8091");
       socket.emit("sendMessage", inputMessage, "agent");
 
       setMessages([...messages, { text: inputMessage, sender: "agent" }]);

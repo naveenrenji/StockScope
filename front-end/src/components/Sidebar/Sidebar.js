@@ -13,6 +13,15 @@ const Sidebar = () => {
   const { pathname } = useLocation();
 
   const navigate = useNavigate();
+  
+  // firebase.auth().onAuthStateChanged((user) => {
+  //   if (user) {
+  //     console.log(user);
+  //   } else {
+  //     console.log('Not authenticated');
+  //     // No user is signed in.
+  //   }
+  // });
 
   useEffect(() => {
     const selectedIndex = SidebarData.findIndex(item => item.link === pathname);
