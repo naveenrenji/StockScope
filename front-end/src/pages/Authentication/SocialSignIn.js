@@ -3,6 +3,9 @@ import { Navigate } from "react-router-dom";
 import {signInWithGoogle, auth} from '../../firebase/FirebaseFunctions';
 
 import google_img from "../../assets/imgs/google-signup-img.png";
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../../firebase/firebaseConfiguration';
+import { useNavigate } from 'react-router-dom';
 
 
 const SocialSignIn = () => {
@@ -15,11 +18,12 @@ const SocialSignIn = () => {
       alert(error);
     }
   };
+
   return (
     <>
       <div>
         <img className="signin-img"
-          onClick={() => socialSignOn('google')}
+          onClick={() => onGoogleSignIn('google')}
           alt='Google signin'
           src={google_img}
           height={50}

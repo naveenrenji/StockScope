@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
-import { registerWithEmailAndPassword } from "../../firebase/FirebaseFunctions";
-// import { AuthContext } from "../../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
-import { checkUsername, checkPassword, checkEmail } from "../../helpers";
 import "../../assets/css/authentication.css";
 import { PersonCircle } from "react-bootstrap-icons";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase/firebaseConfiguration";
 
 function Signup() {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessages, setErrorMessages] = useState({});
 
@@ -51,18 +50,39 @@ function Signup() {
     return Object.keys(newErrorMessages).length === 0;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (validateInputs()) {
-      try {
-        await registerWithEmailAndPassword(email, password, username);
-        navigate("/login");
-      } catch (error) {
-        alert(error);
-      }
-    }
+  const validatePassword = () => {
+    // Password validation regex pattern
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+    return passwordRegex.test(password);
   };
 
+  const onSignup = async (e) => {
+    e.preventDefault()
+    if (!validateEmail()) {
+      alert();
+      return;
+    }
+    if (!validatePassword()) {
+      alert(
+        'Please enter a password with at least 8 characters, containing at least one lowercase letter, one uppercase letter, and one number.'
+      );
+      return;
+    }
+    await createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user);
+        navigate("/login")
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        // ..
+      });
+  }
   return (
     <div className="authentication-body">
       <div className="authentication-container">
@@ -125,7 +145,7 @@ function Signup() {
               </Form.Text>
             </Form.Group>
             <br></br>
-            <button type="submit" className="authButton">
+            <button className="authButton" onClick={onSignup}>
               Signup
             </button>
           </Form>

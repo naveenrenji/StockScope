@@ -1,29 +1,22 @@
 import React, { useState, useEffect } from "react";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
-import {
-  logInWithEmailAndPassword,
-  sendPasswordReset,
-  auth
-} from "../../firebase/FirebaseFunctions";
 import SocialSignIn from "./SocialSignIn";
-import SignUp from "./Signup";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { fetchSignInMethodsForEmail, signInWithEmailAndPassword } from 'firebase/auth';
 
 import '../../assets/css/authentication.css'
 import { PersonCircle } from "react-bootstrap-icons";
+import { auth } from "../../firebase/firebaseConfiguration";
 
 export let isLoggedIn = false;
 
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [user, loading, error] = useAuthState(auth);
+  const [password, setPassword] = useState("");
+  const [user, loading, error] = useState(""); //useAuthState(auth);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (loading) {
       return;
@@ -39,24 +32,45 @@ function Login() {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!username || !password) {
-      setErrorMessage("Please enter both username and password.");
-    } else if (
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password)
-    ) {
-      setErrorMessage(
-        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one number."
+  const validateEmail = () => {
+    // Email validation regex pattern
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = () => {
+    // Password validation regex pattern
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+    return passwordRegex.test(password);
+  };
+
+  // Login with email and password
+  const onLogin = async (e) => {
+    e.preventDefault();
+    if (!validateEmail()) {
+      alert();
+      return;
+    }
+    if (!validatePassword()) {
+      alert(
+        'Please enter a password with at least 8 characters, containing at least one lowercase letter, one uppercase letter, and one number.'
       );
-    } else {
-      // Add code to submit the login form
-      try {
-        await logInWithEmailAndPassword(email.value, password.value);
-        isLoggedIn = true; // set isLoggedIn to true upon successful login
-      } catch (error) {
-        alert(error);
+      return;
+    }
+    try {
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      if (methods.length === 0) {
+        alert("There is no user with this email. Please sign up first.");
+        return;
       }
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      navigate("/");
+      console.log(user);
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
     }
   };
 
@@ -85,25 +99,18 @@ function Login() {
               />
             </Form.Group>
             <span className="authentication-ac">
-            <Link to="">Forgot Password?</Link>
-          </span>
+              <Link to="">Forgot Password?</Link>
+            </span>
             <br></br>
-            <button type="submit" className="authButton">
+            <button className="authButton" onClick={onLogin}>
               Login
             </button>
           </Form>
-          {error && <p className="text-danger">{error}</p>}
           <h4>
             <span>Social Login</span>
           </h4>
           <div className="authentication-social-media">
             <SocialSignIn />
-            {/* <a href="#">
-              <div className="icons8-facebook-circled authentication-social-mediaImg"></div>
-            </a>
-            <a href="#">
-              <div className="icons8-twitter authentication-social-mediaImg"></div>
-            </a> */}
           </div>
           <span className="authentication-ac">
             Don't have an Account? <Link to="/signup">Signup</Link>

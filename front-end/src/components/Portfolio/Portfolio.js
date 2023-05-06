@@ -82,8 +82,6 @@ export default function Portfolio() {
 
     //Axios call to search the stock when the user enters the stock name and hits enter or search button
     async function searchStock(e) {
-
-
         try {
 
             const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${stockName}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`
