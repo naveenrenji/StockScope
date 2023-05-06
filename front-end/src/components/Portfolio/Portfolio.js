@@ -7,6 +7,9 @@ import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
 import protobuf from 'protobufjs';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../firebase/firebaseConfiguration';
+import { useNavigate } from 'react-router-dom';
 const { Buffer } = require('buffer/');
 
 
@@ -30,16 +33,14 @@ export default function Portfolio() {
     //This state is used to save all the stocks that user has subscribed
     const [allStocks, setAllStocks] = useState([]);
 
+    const navigate = useNavigate();
 
     //This useEffect is used to get the live data
     useEffect(() => {
-
-
         const ws = new WebSocket('wss://streamer.finance.yahoo.com');
         protobuf.load(protoFile, (error, root) => {
 
             if (error) {
-
                 return console.log(error);
             }
 
@@ -69,11 +70,29 @@ export default function Portfolio() {
             };
         });
 
-    })
+    });
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+                // ...
+                console.log("uid", uid);
+            } else {
+                // User is signed out
+                // ...
+                console.log("user is logged out");
+                alert("You are not Logged in");
+                navigate('/');
+            }
+        });
+        return unsubscribe;
+    }, [navigate]);
 
     //Function to make the value of the input search and the useState value consistent
     function handleStockChange(e) {
-
         console.log("handlechange triggered");
         setSearchStatus(false);
         setStockName(e.target.value);
@@ -83,7 +102,6 @@ export default function Portfolio() {
     //Axios call to search the stock when the user enters the stock name and hits enter or search button
     async function searchStock(e) {
         try {
-
             const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${stockName}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`
             const { data } = await axios.get(url);
             const { bestMatches } = data;
@@ -107,14 +125,12 @@ export default function Portfolio() {
 
     //Event Triggered when user Clicks one of the list item in the search bar
     function showModal(e) {
-
         setModalStock(e.target.textContent)
         setModalShow(true);
     }
 
     //Event Triggered when user press escape button or when user hits close button in the modal
     function hideModal(e) {
-
         setModalShow(false);
     }
 

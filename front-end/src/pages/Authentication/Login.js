@@ -14,7 +14,7 @@ export let isLoggedIn = false;
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, loading, error] = useState(""); //useAuthState(auth);
+  const [user, loading, error] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,7 +81,7 @@ function Login() {
           <h3 className="authentication-login-text">
             <PersonCircle /> Login
           </h3>
-          <Form onSubmit={handleSubmit}>
+          <Form>
             <Form.Group controlId="email">
               <Form.Label>Email ID</Form.Label>
               <Form.Control
