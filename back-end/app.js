@@ -66,7 +66,12 @@ io.on("connection", (socket) => {
     }
   });
 
-
+  socket.on("acceptRequest", ({ room }) => {
+    console.log("Agent accepted request for room:", room);
+    socket.join(room);
+    io.to(room).emit("agentJoined", { room });
+  });
+  
   socket.on("agentJoinRequest", ({ username, room }) => {
     console.log("user request to agent to join room");
     if (!(rooms.has(room))) {

@@ -25,7 +25,6 @@ function Agent() {
 
     socket.on("joinRequest", (request) => {
       console.log("received join request " + request);
-
       setPendingRequests((prevRequests) => [...prevRequests, request]);
     });
 
