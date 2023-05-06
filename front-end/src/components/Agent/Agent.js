@@ -1,9 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+
+const socketOptions = {
+  withCredentials: false,
+};
+
+let socket;
 
 function Agent() {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [currentRoom, setCurrentRoom] = useState(null);
+
+  useEffect(() => {
+    socket = io(
+      process.env.REACT_APP_BACKEND_URL || "http://localhost:3001",
+      socketOptions
+    );
+
+    socket.on("connect", () => {
+      console.log("Connected to the server");
+      socket.emit("join", { username: "agent", room: "agent" });
+    });
+
+    socket.on("joinRequest", (request) => {
+      console.log("accepted join request " + request);
+
+      setPendingRequests((prevRequests) => [...prevRequests, request]);
+    });
+
+    socket.on("message", (message) => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: message.text, sender: message.sender },
+      ]);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from the server");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const handleInputChange = (event) => {
     setInputMessage(event.target.value);
@@ -13,20 +54,49 @@ function Agent() {
     event.preventDefault();
 
     if (inputMessage.trim()) {
-      const socket = io("http://localhost:3001");
-      socket.emit("sendMessage", inputMessage, "agent");
+      socket.emit("sendMessage", { text: inputMessage, room: currentRoom });
 
       setMessages([...messages, { text: inputMessage, sender: "agent" }]);
       setInputMessage("");
+    }
+  };
+  const handleAcceptRequest = (request) => {
+    setCurrentRoom(request.room);
+    socket.emit("acceptRequest", { room: request.room });
+    // Join the room when the agent accepts an incoming request
+    socket.emit("join", { username: "agent", room: request.room });
+    setPendingRequests((prevRequests) =>
+      prevRequests.filter((req) => req.room !== request.room)
+    );
+  };
+
+  const handleEndChat = () => {
+    if (currentRoom) {
+      socket.emit("endChat", currentRoom);
+      setCurrentRoom(null);
+      setMessages([]);
     }
   };
 
   return (
     <div className="agent">
       <h2>Agent Chat</h2>
+      <div className="agent__requests">
+        {pendingRequests.map((request, index) => (
+          <div key={index} className="agent__request">
+            {request.username} wants to chat
+            <button onClick={() => handleAcceptRequest(request)}>Accept</button>
+          </div>
+        ))}
+      </div>
       <div className="agent__messages">
         {messages.map((message, index) => (
-          <div key={index} className={`agent__message ${message.sender === "agent" ? "agent" : "user"}`}>
+          <div
+            key={index}
+            className={`agent__message ${
+              message.sender === "agent" ? "agent" : "user"
+            }`}
+          >
             {message.text}
           </div>
         ))}
@@ -40,8 +110,8 @@ function Agent() {
         />
         <button type="submit">Send</button>
       </form>
+      <button onClick={handleEndChat}>End Chat</button>
     </div>
   );
 }
-
 export default Agent;
