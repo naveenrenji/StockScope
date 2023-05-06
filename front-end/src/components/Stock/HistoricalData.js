@@ -23,8 +23,6 @@ const HistoricalData = (props) => {
                 setDataFound(false);
                 let { data } = await axios.get(`http://localhost:3001/stock/${activeTab}/${props.symbol}`);
                 console.log(data);
-
-
                 if (showAnnual === "annual-records") {
 
                     let temp = data.annualReports;
