@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import axios from "axios";
-import env from '../config/env.json'
+import env from "../config/env.json";
 import {
   GoogleAuthProvider,
   getAuth,
@@ -51,9 +51,9 @@ const signInWithGoogle = async () => {
     // }
     let userObj = {
       name: user.displayName,
-      email: user.email
-    }
-    let resJson = await axios.post(env.backend+"users/createuser", userObj);
+      email: user.email,
+    };
+    let resJson = await axios.post(env.backend + "users/createuser", userObj);
     console.log(user);
     return user;
   } catch (err) {
@@ -63,7 +63,15 @@ const signInWithGoogle = async () => {
 };
 const logInWithEmailAndPassword = async (email, password) => {
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const res = await signInWithEmailAndPassword(auth, email, password);
+    const user = res.user;
+    let userObj = {
+      name: user.displayName,
+      email: user.email,
+    };
+    let resJson = await axios.post(env.backend + "users/createuser", userObj);
+    console.log(user);
+    return user;
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -72,14 +80,21 @@ const logInWithEmailAndPassword = async (email, password) => {
 const registerWithEmailAndPassword = async (name, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
+    // const user = res.user;
+    // await addDoc(collection(db, "users"), {
+    //   uid: user.uid,
+    //   name,
+    //   authProvider: "local",
+    //   email,
+    // });
     const user = res.user;
-    await addDoc(collection(db, "users"), {
-      uid: user.uid,
-      name,
-      authProvider: "local",
-      email,
-    });
-
+    let userObj = {
+      name: user.displayName,
+      email: user.email,
+    };
+    let resJson = await axios.post(env.backend + "users/createuser", userObj);
+    console.log(user);
+    return user;
   } catch (err) {
     console.error(err);
     alert(err.message);

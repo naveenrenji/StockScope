@@ -31,8 +31,8 @@ function Login() {
     if (user) navigate("/");
   }, [user, loading, navigate]);
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+  const handleEmail = (event) => {
+    setEmail(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -68,12 +68,12 @@ function Login() {
             <PersonCircle /> Login
           </h3>
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="username">
-              <Form.Label>Username</Form.Label>
+            <Form.Group controlId="email">
+              <Form.Label>Email ID</Form.Label>
               <Form.Control
-                type="text"
-                value={username}
-                onChange={handleUsernameChange}
+                type="email"
+                value={email}
+                onChange={handleEmail}
               />
             </Form.Group>
             <Form.Group controlId="password">

@@ -40,9 +40,42 @@ router.post("/createUser", async (req, res) => {
   }
 });
 
+router.post("/editUser", async (req, res) => {
+  const tempUser = await User.findOne({ email: req.body.email });
+  console.log(tempUser);
+  try {
+    helper.checkName(req.body.name);
+    helper.checkEmail(req.body.email);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  const user = new User({
+    name: req.body.name,
+    email: req.body.email,
+    type: "user",
+    photoUrl: "",
+    about: "",
+    portfolios: [
+      {
+        name: "default",
+        net_profit_loss: 0,
+        stocks: [],
+      },
+    ],
+  });
+  try {
+    const savedUser = await user.save();
+    res.status(200).json(savedUser);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(e);
+  }
+});
+
+
 router.get("/getUserPortfolios/:email", async (req, res) => {
   try {
-    helper.checkEmail(req.body.email);
+    helper.checkEmail(req.params.email);
   } catch (e) {
     return res.status(400).json({ error: e });
   }
