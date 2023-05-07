@@ -1,148 +1,119 @@
-
 import React, { useEffect, useState } from "react";
-import "./ChatBot.css";
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
-import { checkEmail } from "../../helpers";
-import { v4 as uuidv4 } from 'uuid';
+import "./ChatBot.css";
+import sendEmail from "./RaiseTicket";
 
-const socketOptions = {
-  withCredentials: false,
-};
-
-let socket;
-
-function ChatBot() {
-  const currentUser = "naveenrenji";
+const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [chatState, setChatState] = useState("welcome");
+  const [chatStatus, setChatStatus] = useState("idle");
+  const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [roomID, setRoomID] = useState(null);
+  const currUsername = "naveenrenji";
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
 
   useEffect(() => {
-    socket = io(process.env.REACT_APP_BACKEND_URL || "http://localhost:3001", socketOptions);
+    const newSocket = io("http://localhost:3001");
+    setSocket(newSocket);
+    newSocket.emit("new_user", { userId: currUsername });
 
-    socket.on("connect", () => {
-      console.log("Connected to the server");
+    return () => newSocket.close();
+  }, []);
 
-      if (chatState === "talk_agent") {
-        console.log("talking to agent");
-        setRoomID(uuidv4());
-        socket.emit("joinRequest", { username: currentUser, room: roomID });
-      }
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("request_accepted", () => {
+      const messageData = {
+        senderId: "bot",
+        receiverId: currUsername,
+        content: "Agent Connected",
+      };
+      setMessages((prevMessages) => [...prevMessages, messageData]);
+      console.log("connected with agent");
+      setChatStatus("connected");
     });
 
-    socket.on("message", (message) => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: message.text, sender: message.sender },
-      ]);
+    socket.on("message", (data) => {
+      setMessages((prevMessages) => [...prevMessages, data]);
     });
 
-    socket.on("agentJoined", () => {
-      setChatState("agent_chat");
-    });
-
-    socket.on("agentEndChat", () => {
-      setChatState("welcome");
-      setMessages([]);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server");
+    socket.on("chat_ended", () => {
+      setChatStatus("idle");
+      const messageData = {
+        senderId: "bot",
+        receiverId: currUsername,
+        content: "Agent has ended the chat.",
+      };
+      setMessages((prevMessages) => [...prevMessages, messageData]);
     });
 
     return () => {
-      socket.disconnect();
+      socket.off("request_accepted");
+      socket.off("message");
+      socket.off("chat_ended");
     };
-  }, [chatState]);
+  }, [socket]);
 
-
-  const handleOptionClick = (option) => {
-    if (option === "raise_ticket") {
-      setChatState("raise_ticket");
-      setMessages([
-        ...messages,
-        { text: "Please describe your issue.", sender: "bot" },
-      ]);
-    } else if (option === "talk_agent") {
-      setChatState("talk_agent");
-      setMessages([
-        ...messages,
-        { text: "Connecting you to an agent. Please wait...", sender: "bot" },
-      ]);
-    }
+  const handleTalkToAgent = () => {
+    setChatStatus("waiting");
+    const messageData = {
+      senderId: "bot",
+      receiverId: currUsername,
+      content: "Waiting for Agent to accept, please be patient...",
+    };
+    setMessages((prevMessages) => [...prevMessages, messageData]);
+    setInputMessage("");
+    socket.emit("talk_to_agent", { userId: currUsername }); // Replace 'currUsername' with the actual user id
   };
 
-  const handleSendMessage = (event) => {
-    event.preventDefault();
-    let new_messages = [];
-    if (inputMessage.trim()) {
-      new_messages = [
-        ...messages,
-        { text: inputMessage.toString(), sender: "user" },
-      ];
-      setMessages(new_messages);
-      
-      if (chatState === "agent_chat") {
-        socket.emit("sendMessage", inputMessage, roomID);
-      }
-      
+  const handleMessageChange = (e) => {
+    setInputMessage(e.target.value);
+  };
+
+  const handleMessageSubmit = (e) => {
+    e.preventDefault();
+    if (inputMessage.trim() === "") return;
+
+    if (chatStatus === "raised_ticket") {
+      sendEmail(inputMessage, currUsername);
+      const messageData = {
+        senderId: "bot",
+        receiverId: currUsername,
+        content: 
+          "Ticket Raised -  " + inputMessage + "  - Our Agent will reach out to you soon, thank you for your patience.",
+      };
+      setMessages((prevMessages) => [...prevMessages, messageData]);
       setInputMessage("");
-
-      if (chatState === "raise_ticket") {
-        new_messages = [
-          ...new_messages,
-          { text: "Please provide your email address.", sender: "bot" },
-        ];
-
-        setChatState("ask_email");
-        setMessages(new_messages);
-      } else if (chatState === "ask_email") {
-        let email = "";
-        try {
-          email = checkEmail(inputMessage);
-          // Save the ticket as a JSON object
-          const ticket = {
-            issue: messages[messages.length - 2].text,
-            email: inputMessage,
-          };
-          console.log(ticket);
-          new_messages = [
-            ...new_messages,
-            { text: "Thank you. Your ticket has been created.", sender: "bot" },
-          ];
-          setChatState("ticket_created");
-          setMessages(new_messages);
-          setChatState("welcome");
-        } catch (e) {
-          new_messages = [
-            ...new_messages,
-            { text: "Invalid email ID, please re-enter", sender: "bot" },
-          ];
-          setChatState("ask_email");
-          setMessages(new_messages);
-        }
-      }
+      setChatStatus("idle");
+    } else if (chatStatus === "connected") {
+      const messageData = {
+        senderId: currUsername,
+        receiverId: "agent",
+        content: inputMessage,
+      };
+      socket.emit("message", messageData);
+      setMessages((prevMessages) => [...prevMessages, messageData]);
+      setInputMessage("");
     }
+    setInputMessage("");
   };
 
-  const Message = ({ message }) => (
-
-    <div
-      className={`chatbot__message ${message.sender === currentUser ? "user" : "bot"}`}
-    >
-      {message.text}
-      {message.sender === "agent" && (
-        <span className="chatbot__agent-name">Agent</span>
-      )}
-    </div>
-  );
+  const handleRaiseTicket = (e) => {
+    e.preventDefault();
+    setChatStatus("raised_ticket");
+    const messageData = {
+      senderId: "bot",
+      receiverId: currUsername,
+      content: "Please type in your concern...",
+    };
+    setMessages((prevMessages) => [...prevMessages, messageData]);
+    setInputMessage("");
+  };
 
   return (
     <div className="chatbot">
@@ -153,29 +124,36 @@ function ChatBot() {
           </button>
           <div className="chatbot__messages">
             {messages.map((message, index) => (
-              <Message key={index} message={message} />
+              <div
+                key={index}
+                className={`chatbot__message ${
+                  message.senderId === currUsername ? "user" : "bot"
+                }`}
+              >
+                {message.content}
+              </div>
             ))}
-            {chatState === "welcome" && (
+            {chatStatus === "idle" && (
               <div className="chatbot__options">
-                <button onClick={() => handleOptionClick("raise_ticket")}>
-                  Raise a Ticket
-                </button>
-                <button onClick={() => handleOptionClick("talk_agent")}>
-                  Talk to an Agent
-                </button>
+                <button onClick={handleTalkToAgent}>Talk to an Agent</button>
+                <button onClick={handleRaiseTicket}>Raise Ticket</button>
               </div>
             )}
-            <form className="chatbot__input" onSubmit={handleSendMessage}>
-              <input
-                type="text"
-                placeholder="Type your message"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-              />
-              <button type="submit" className="sendButton">
-                <Send />
-              </button>
-            </form>
+            {(chatStatus === "connected" ||
+              chatStatus === "raised_ticket" ||
+              chatStatus === "raise_issue") && (
+              <form className="chatbot__input" onSubmit={handleMessageSubmit}>
+                <input
+                  type="text"
+                  placeholder="Type your message"
+                  value={inputMessage}
+                  onChange={handleMessageChange}
+                />
+                <button type="submit" className="sendButton">
+                  <Send />
+                </button>
+              </form>
+            )}
           </div>
         </div>
       ) : (
@@ -185,6 +163,6 @@ function ChatBot() {
       )}
     </div>
   );
-}
+};
 
-export default ChatBot;
+export default Chatbot;
