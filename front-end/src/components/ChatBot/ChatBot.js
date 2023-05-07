@@ -1,34 +1,8 @@
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
-import "../ChatBot/ChatBot.css";
-import emailjs from "emailjs-com";
-import { checkEmail } from "../../helpers";
-
-function sendEmail(jsonData, username) {
-  emailjs.init("hjkkL6TtpBRBqKNxZ");
-
-  const { email, content } = jsonData;
-
-  const serviceID = "service_mbg89ee";
-  const templateID = "template_orx5zxh";
-
-  const emailParams = {
-    from_name: username,
-    from_email: email,
-    subject: "StockScope Ticket",
-    message: content,
-  };
-
-  return emailjs
-    .send(serviceID, templateID, emailParams)
-    .then((response) => {
-      console.log("Email sent successfully", response.status, response.text);
-    })
-    .catch((err) => {
-      console.error("Email sending failed", err);
-    });
-}
+import "./ChatBot.css";
+import sendEmail from "./RaiseTicket";
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,8 +11,6 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const currUsername = "naveenrenji";
-  let email = "";
-  let content = "";
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -108,48 +80,17 @@ const Chatbot = () => {
     if (inputMessage.trim() === "") return;
 
     if (chatStatus === "raised_ticket") {
-      try {
-        email = checkEmail(inputMessage);
-        email=inputMessage;
-        let messageData = {
-          senderId: "bot",
-          receiverId: currUsername,
-          content: inputMessage,
-        };
-        setMessages((prevMessages) => [...prevMessages, messageData]);
-         messageData = {
-          senderId: "bot",
-          receiverId: currUsername,
-          content:
-            "Please type in your concern...",
-        };
-        setMessages((prevMessages) => [...prevMessages, messageData]);
-        setChatStatus("raise_issue");
-        setInputMessage("");
-      } catch (e) {
-        const messageData = {
-          senderId: "bot",
-          receiverId: currUsername,
-          content: "Invalid email ID, please re-enter",
-        };
-        setMessages((prevMessages) => [...prevMessages, messageData]);
-        setInputMessage("");
-      }
-    }
-    else if (chatStatus==="raise_issue"){
-      content=inputMessage.trim();
-      sendEmail({ email: email, content: content });
+      sendEmail(inputMessage, currUsername);
       const messageData = {
         senderId: "bot",
         receiverId: currUsername,
-        content:
-          "Ticket Raised. Our Agent will reach out to you soon, thank you for your patience.",
+        content: 
+          "Ticket Raised -  " + inputMessage + "  - Our Agent will reach out to you soon, thank you for your patience.",
       };
       setMessages((prevMessages) => [...prevMessages, messageData]);
       setInputMessage("");
       setChatStatus("idle");
-    }
-    else if (chatStatus==="connected") {
+    } else if (chatStatus === "connected") {
       const messageData = {
         senderId: currUsername,
         receiverId: "agent",
@@ -168,7 +109,7 @@ const Chatbot = () => {
     const messageData = {
       senderId: "bot",
       receiverId: currUsername,
-      content: "Enter Email ID for this ticket",
+      content: "Please type in your concern...",
     };
     setMessages((prevMessages) => [...prevMessages, messageData]);
     setInputMessage("");
@@ -198,7 +139,9 @@ const Chatbot = () => {
                 <button onClick={handleRaiseTicket}>Raise Ticket</button>
               </div>
             )}
-            {(chatStatus === "connected" || chatStatus === "raised_ticket" || chatStatus === "raise_issue") && (
+            {(chatStatus === "connected" ||
+              chatStatus === "raised_ticket" ||
+              chatStatus === "raise_issue") && (
               <form className="chatbot__input" onSubmit={handleMessageSubmit}>
                 <input
                   type="text"
