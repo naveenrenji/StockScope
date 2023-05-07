@@ -30,7 +30,7 @@ const MarketNewsComponent = () => {
                 <h1>Market News</h1>
                 <div class="wrapper">
                     <div class="searchBar">
-                        <input id="searchInput" type="text" name="searchInput" placeholder="Search for News" value={newsName} onChange={handleNewsChange} />
+                        <input id="searchInput" type="text" name="searchInput" placeholder="Search for News" value={newsName} onChange={handleNewsChange} aria-label="Search for News"/>
                         <button id="searchSubmit" type="submit" name="searchSubmit" onClick="" disabled>
                             <Search color='#FF919D' />
                         </button>

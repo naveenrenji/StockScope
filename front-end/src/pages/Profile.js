@@ -72,8 +72,6 @@ function Profile() {
                 // ...
                 console.log("uid", uid);
             } else {
-                // User is signed out
-                // ...
                 console.log("user is logged out");
                 alert("You are not Logged in");
                 navigate('/');
@@ -92,9 +90,9 @@ function Profile() {
                     <Row>
                         <Col className="profileRow1">
                             {avatar ? (
-                                <Image className="profileImage" src={avatar} />
+                                <Image className="profileImage" src={avatar} alt="profile_image"/>
                             ) : (
-                                <Image className="profileImage" src={img4} />
+                                <Image className="profileImage" src={img4} alt="profile_image"/>
                             )}
                             <div>
                                 <h2>{formData.name ? formData.name : "StockScope App"}</h2>
@@ -114,7 +112,7 @@ function Profile() {
                             <h3>About</h3>
                             <p>{formData.about ? formData.about : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."}</p>
                             <h3>Info</h3>
-                            <h5>Email : <span>{formData.email ? formData.email : "support@stockscope.app"}</span></h5>
+                            <h4>Email : <span>{formData.email ? formData.email : "support@stockscope.app"}</span></h4>
                         </div>
                     </Row>
                     <Row>
@@ -130,7 +128,7 @@ function Profile() {
                     <Modal.Body>
                         {/* {user.providerId === "google.com" ? <Alert className="profile-alert">You have used Google Sign In so only about info can be edited!</Alert> : ""} */}
                         <input type="file" id="avatar" name="avatar" style={{ display: "none" }} onChange={profileImageChange} />
-                        {avatar ? <Image className="profileImage" src={avatar} /> : <Image className="profileImage" src={img4} />}
+                        {avatar ? <Image className="profileImage" src={avatar} alt="profile_image"/> : <Image className="profileImage" src={img4} alt="profile_image"/>}
                         <button type="button" onClick={() => document.getElementById("avatar").click()} className="authButton">
                             Upload Image
                         </button>

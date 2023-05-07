@@ -7,7 +7,7 @@
             #ffe1bc 29.63%,
             #ffcfd1 51.55%,
             #f3c6f1 90.85%);
-    color: var(--black);
+    color: var(--white);
     display: flex;
     font-family: 'Roboto', sans-serif;
     justify-content: center;
@@ -45,7 +45,7 @@
 }
 
 .container-404 a {
-    color: var(--pink);
+    color: var(--stockscope-purple);
     text-decoration: none;
 }
 

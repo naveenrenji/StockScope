@@ -79,7 +79,7 @@ const Sidebar = () => {
               className={selected === index ? "menuItem active" : "menuItem"}
               to={link}
               onClick={() => setSelected(index)}
-              aria-label={index}
+              aria-label={heading}
             >
               {icon}
               <span>{heading}</span>
@@ -90,7 +90,7 @@ const Sidebar = () => {
               className={selected === index ? "menuItem active" : "menuItem"}
               to={link}
               onClick={() => setSelected(index)}
-              aria-label={index}
+              aria-label={heading}
             >
               {icon}
               <span>{heading}</span>

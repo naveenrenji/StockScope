@@ -49,7 +49,7 @@
     padding: auto;
     margin: 5px;
     font-weight: 200;
-    color: var(--pink);
+    color: var(--stockscope-purple);
 }
 
 .profileContainer .profileRow2 {
@@ -78,7 +78,7 @@
 
 .profileContainer .profileDiv h5 span {
     font-weight: 200;
-    color: var(--pink);
+    color: var(--stockscope-purple);
 }
 
 .box {
@@ -98,7 +98,7 @@
 
 .box:hover {
     background: #ffffffc1;
-    border: 1px solid var(--pink);
+    border: 1px solid var(--stockscope-purple);
 }
 
 .modal-content {
@@ -128,7 +128,7 @@
 }
 
 .modal-content .modal-body .profile-alert {
-    color: var(--black);
+    color: var(--white);
     background: rgba(255, 255, 255, 0.307);
     border: 1px solid rgba(255, 255, 255, 0.899);
 }

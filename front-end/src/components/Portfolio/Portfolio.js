@@ -169,8 +169,8 @@ export default function Portfolio() {
                     <h1>Portfolio</h1>
                     <div className="wrapper">
                         <div className="searchBar">
-                            <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} />
-                            <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick}>
+                            <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} aria-label="Search for Stocks"/>
+                            <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick} aria-label='Search button'>
                                 <Search color='#FF919D' />
                             </button>
                         </div>
@@ -212,9 +212,9 @@ export default function Portfolio() {
                         </Col>
                     </Row>
 
-                    <h3 className="mt-3">
-                        MY PORTFOLIOS
-                    </h3>
+                    <h2 className="mt-3">
+                        My Portfolios
+                    </h2>
                     <Table>
                         <thead>
                             <tr>
@@ -243,16 +243,16 @@ export default function Portfolio() {
                     <div className='mt-3 container'>
                         <div className='d-flex justify-content-between'>
                             <h3>Total Market Value</h3>
-                            <h5>$16,146.00</h5>
+                            <h4>$16,146.00</h4>
                         </div>
                         <div className='d-flex justify-content-between'>
                             <h3>Day Gain</h3>
-                            <h5>-319.00(-1.92%)</h5>
+                            <h4>-319.00(-1.92%)</h4>
                         </div>
 
                         <div className='d-flex justify-content-between'>
                             <h3>Total Gain</h3>
-                            <h5>+4150.00(+33.54%)</h5>
+                            <h4>+4150.00(+33.54%)</h4>
                         </div>
                     </div>
                 </Container >
