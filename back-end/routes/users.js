@@ -19,6 +19,7 @@ router.post("/createUser", async (req, res) => {
   }
   const user = new User({
     name: req.body.name,
+    username: "",
     email: req.body.email,
     type: "user",
     photoUrl: "",
@@ -51,6 +52,7 @@ router.post("/editUser", async (req, res) => {
   }
   const user = new User({
     name: req.body.name,
+    username: "",
     email: req.body.email,
     type: "user",
     photoUrl: "",

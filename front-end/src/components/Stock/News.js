@@ -74,7 +74,7 @@ const StockNews = (props) => {
 
                                 return (
                                     <Card className="mt-4 mr-4"  >
-                                        <Card.Img src={data.image.length > 0 ? data.image : noImage} aria-label="News-Image"/>
+                                        <Card.Img src={data.image.length > 0 ? data.image : noImage} aria-label="News-Image" />
                                         <Card.Body>
                                             <Card.Title> <a href={data.url} target="_blank"> {data.headline.length > 0 ? data.headline : 'No headline'}</a></Card.Title>
                                             <Card.Text>
