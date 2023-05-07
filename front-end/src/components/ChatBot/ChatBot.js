@@ -3,6 +3,8 @@ import io from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 import "./ChatBot.css";
 import sendEmail from "./RaiseTicket";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../firebase/firebaseConfiguration";
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,11 +12,28 @@ const Chatbot = () => {
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const currUsername = "naveenrenji";
+  const [user, setUser] = useState("");
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser({
+          displayName: user.displayName,
+          email: user.email,
+        });
+      } else {
+        console.log("user is logged out");
+        setUser("");
+      }
+    });
+    return unsubscribe;
+  }, [])
+
+  const currUsername = user.displayName ? user.displayName : "StockScope User";
 
   useEffect(() => {
     const newSocket = io("http://localhost:3001");
@@ -84,7 +103,7 @@ const Chatbot = () => {
       const messageData = {
         senderId: "bot",
         receiverId: currUsername,
-        content: 
+        content:
           "Ticket Raised -  " + inputMessage + "  - Our Agent will reach out to you soon, thank you for your patience.",
       };
       setMessages((prevMessages) => [...prevMessages, messageData]);
@@ -126,9 +145,8 @@ const Chatbot = () => {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`chatbot__message ${
-                  message.senderId === currUsername ? "user" : "bot"
-                }`}
+                className={`chatbot__message ${message.senderId === currUsername ? "user" : "bot"
+                  }`}
               >
                 {message.content}
               </div>
@@ -142,18 +160,18 @@ const Chatbot = () => {
             {(chatStatus === "connected" ||
               chatStatus === "raised_ticket" ||
               chatStatus === "raise_issue") && (
-              <form className="chatbot__input" onSubmit={handleMessageSubmit}>
-                <input
-                  type="text"
-                  placeholder="Type your message"
-                  value={inputMessage}
-                  onChange={handleMessageChange}
-                />
-                <button type="submit" className="sendButton">
-                  <Send />
-                </button>
-              </form>
-            )}
+                <form className="chatbot__input" onSubmit={handleMessageSubmit}>
+                  <input
+                    type="text"
+                    placeholder="Type your message"
+                    value={inputMessage}
+                    onChange={handleMessageChange}
+                  />
+                  <button type="submit" className="sendButton">
+                    <Send />
+                  </button>
+                </form>
+              )}
           </div>
         </div>
       ) : (

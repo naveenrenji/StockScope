@@ -1,0 +1,89 @@
+.portal {
+    display: grid;
+    height: 97%;
+    width: 97%;
+    background: rgba(255, 255, 255, 0.337);
+    border-radius: 2rem;
+    gap: 16px;
+    grid-template-rows: 5rem auto;
+    overflow: hidden;
+}
+
+.portal-title {
+    padding-top: 15px;
+    padding-left: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgba(255, 255, 255, 0.438);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.agentPortal {
+    display: grid;
+    border-radius: 2rem;
+    gap: 5pxpx;
+    grid-template-columns: 20rem 20rem auto;
+    overflow: hidden;
+}
+
+.agent-Sidebar,
+.agent-middlebar {
+    padding: 1rem;
+    margin: 1rem;
+    background: var(--glass);
+    border-radius: 30px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.agent-Sidebar p,
+.agent-middlebar p {
+    text-align: center;
+    font-size: 20px;
+}
+
+.agent-Sidebar li,
+.agent-middlebar li {
+    margin-top: 2rem;
+    font-size: 16px;
+    text-decoration: none;
+    list-style-type: decimal;
+    color: var(--black);
+    transition: all 0.3s ease;
+}
+
+.agent-Sidebar li button,
+.agent-middlebar li button {
+    background-color: var(--glass);
+    color: var(--black);
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    border: 1px solid var(--pink);
+    padding: 5px;
+    z-index: 2;
+}
+
+.agent-Sidebar li:hover,
+.agent-middlebar li:hover {
+    color: var(--pink);
+    cursor: pointer;
+}
+
+.customer-chat {
+    justify-content: center;
+}
+
+
+.relief {
+    position: absolute;
+    top: 50%;
+    left: 60%;
+    text-align: center;
+    font-size: 25px;
+}

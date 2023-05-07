@@ -14,8 +14,6 @@ import { useNavigate } from "react-router-dom";
 function Profile() {
     const [modal, setModal] = useState(false);
     const [avatar, setAvatar] = useState("");
-    const [user, setUser] = useState(null);
-    const [isSocialSignIn, setIsSocialSignIn] = useState(false);
 
     const navigate = useNavigate();
 
@@ -68,12 +66,11 @@ function Profile() {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                setUser({
-                    displayName: user.displayName,
-                    email: user.email,
-                    photoURL: user.photoURL,
-                    isSocialSignIn: user.providerData.length > 0 && user.providerData[0].providerId === "google.com",
-                });
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+                // ...
+                console.log("uid", uid);
             } else {
                 // User is signed out
                 // ...
@@ -94,10 +91,10 @@ function Profile() {
                     <h1>Profile</h1>
                     <Row>
                         <Col className="profileRow1">
-                            {isSocialSignIn  ? (
-                                <Image className="profileImage" src={user.photoURL} />
+                            {avatar ? (
+                                <Image className="profileImage" src={avatar} />
                             ) : (
-                                avatar? <Image className="profileImage" src={avatar} /> : <Image className="profileImage" src={img4} />
+                                <Image className="profileImage" src={img4} />
                             )}
                             <div>
                                 <h2>{formData.name ? formData.name : "StockScope App"}</h2>
