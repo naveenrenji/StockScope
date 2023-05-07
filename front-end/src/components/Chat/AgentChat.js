@@ -40,7 +40,6 @@ const Agent = () => {
     socket.emit('accept_request', { userId });
     setActiveChats((prevChats) => [...prevChats, userId]);
     setCurrentChat(userId);
-    setMessages([]);
     setPendingRequests((prevRequests) => prevRequests.filter((id) => id !== userId));
   };
 

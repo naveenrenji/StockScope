@@ -11,8 +11,7 @@ import StockSummary from './components/Stock/Summary';
 import StockNews from './components/Stock/News';
 import NotFoundPage from './pages/404';
 import HistoricalData from './components/Stock/HistoricalData';
-import Agent from "./components/Agent/Agent";
-
+import Agent from './components/Agent/Agent';
 
 function App() {
   return (

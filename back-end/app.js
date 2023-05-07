@@ -40,59 +40,45 @@ configRoutes(app);
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
+const users = {}; // Store users and their socket ids
+const pendingRequests = []; // Store pending chat requests
 
-let agentRequests = [];
-let agentRooms = {};
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
 
-const userNamespace = io.of("/user");
-const agentNamespace = io.of("/agent");
-
-userNamespace.on("connection", (socket) => {
-  console.log("New user client connected");
-
-  socket.on("requestAgent", (user) => {
-    agentRequests.push(user);
-    agentNamespace.emit("requestsUpdated", agentRequests);
+  socket.on('new_user', (data) => {
+    users[data.userId] = socket.id;
+    console.log('New user:', data.userId, socket.id);
   });
 
-  socket.on("disconnect", () => {
-    console.log("User client disconnected");
+  socket.on('talk_to_agent', (data) => {
+    pendingRequests.push(data.userId);
+    io.to(users['agent']).emit('request_received', data);
+    console.log('Request sent from:', data.userId);
   });
 
-  socket.onAny((event, ...args) => {
-    console.log("user : ",event, args);
-  });
-});
-
-agentNamespace.on("connection", (socket) => {
-  console.log("New agent client connected");
-
-  socket.emit("requestsUpdated", agentRequests);
-
-  socket.on("acceptRequest", (user) => {
-    const roomId = `room_${user}_${Date.now()}`;
-    agentRooms[user] = roomId;
-    socket.join(roomId);
-
-    socket.emit("roomCreated", { user, roomId });
-    userNamespace.to(user).emit("roomCreated", roomId);
+  socket.on('accept_request', (data) => {
+    const userToAccept = pendingRequests.shift();
+    io.to(users[userToAccept]).emit('request_accepted', { agentId: 'agent' });
+    console.log('Request accepted for:', userToAccept);
   });
 
-  socket.on("sendMessage", (message, room) => {
-    socket.to(room).emit("message", { text: message, room: room });
+  socket.on('message', (data) => {
+    io.to(users[data.receiverId]).emit('message', data);
+    console.log('Message sent from', data.senderId, 'to', data.receiverId);
   });
 
-  socket.on("endChat", (roomId) => {
-    userNamespace.to(roomId).emit("chatEnded");
-    socket.leave(roomId);
+  socket.on('end_chat', (data) => {
+    io.to(users[data.receiverId]).emit('chat_ended', { agentId: 'agent' });
+    console.log('Chat ended with', data.receiverId);
   });
 
-  socket.onAny((event, ...args) => {
-    console.log("Agent : ",event, args);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Agent client disconnected");
+  socket.on('disconnect', () => {
+    const disconnectedUser = Object.keys(users).find(
+      (key) => users[key] === socket.id
+    );
+    delete users[disconnectedUser];
+    console.log('User disconnected:', disconnectedUser);
   });
 });
 
