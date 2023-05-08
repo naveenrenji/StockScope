@@ -71,6 +71,11 @@ function Login() {
         password
       );
       const user = userCredential.user;
+      if (user.email === "stockscope2023@gmail.com") {
+        navigate("/agent");
+      } else {
+        navigate("/");
+      }
       console.log(user);
       navigate("/");
     } catch (error) {
