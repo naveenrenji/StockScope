@@ -7,7 +7,7 @@ import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
 import protobuf from 'protobufjs';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, reauthenticateWithRedirect } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfiguration';
 import { useNavigate } from 'react-router-dom';
 const { Buffer } = require('buffer/');
@@ -33,42 +33,110 @@ export default function Portfolio() {
     //This state is used to save all the stocks that user has subscribed
     const [allStocks, setAllStocks] = useState([]);
 
+    //Get all the details of the user. This includes all the details such as stock names, portfolios etc.
+    const [userInfo, setUserInfo] = useState({});
+
+    //This state is used to check if we found the data or not
+    const [userdataFound, setUserDataFound] = useState(false);
+
+    //This state is used to store the recent prices of the symbols of the portfolio user has
+    const [symbolPrice, setsymbolPrice] = useState({});
+
+    //THis state is used to store the total MarketValue of the portfolio
+
+
     const navigate = useNavigate();
+
+    //Get the Info of the user
+    useEffect(() => {
+
+        async function fetchData() {
+
+            try {
+
+                setUserDataFound(false);
+                let { data } = await axios.get("http://localhost:3001/users/getUserPortfolios/sagara@gmail.com");
+                setUserInfo(data);
+                setUserDataFound(true);
+
+            }
+
+            catch (error) {
+                console.log(error);
+                setUserDataFound(false);
+            }
+        }
+
+        fetchData();
+    }, [modalShow])
 
     //This useEffect is used to get the live data
     useEffect(() => {
-        const ws = new WebSocket('wss://streamer.finance.yahoo.com');
-        protobuf.load(protoFile, (error, root) => {
 
-            if (error) {
-                return console.log(error);
+
+
+        async function fetchData() {
+
+            try {
+
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentDay = now.getDay();
+
+                if (Object.keys(userInfo).length > 0 && currentHour >= 9 && currentHour <= 16 && currentDay !== 0 && currentDay !== 6) {
+                    const ws = new WebSocket('wss://streamer.finance.yahoo.com');
+                    protobuf.load(protoFile, (error, root) => {
+
+                        if (error) {
+                            return console.log(error);
+                        }
+
+                        const Yaticker = root.lookupType("yaticker");
+
+                        ws.onopen = function open() {
+                            console.log('connected');
+
+                            // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
+                            let porfolios = userInfo["portfolios"];
+
+                            console.log("Printing portfolio list");
+
+                            console.log(porfolios)
+
+                            let symbols = getSymbols(porfolios);
+                            console.log(symbols);
+
+                            ws.send(JSON.stringify({
+                                subscribe: symbols
+                            }));
+
+                        };
+
+                        ws.onclose = function close() {
+                            console.log('disconnected');
+                        };
+
+                        ws.onmessage = function incoming(message) {
+                            console.log('coming message');
+
+                            let data = Yaticker.decode(new Buffer(message.data, 'base64'));
+                            setsymbolPrice((prevData) => {
+
+                                let temp = { ...prevData, [data.id]: parseFloat([data.price]).toFixed(2) };
+                                return temp;
+                            })
+                            console.log(data);
+                        };
+                    });
+                }
             }
+            catch (error) {
 
-            const Yaticker = root.lookupType("yaticker");
+                console.log(error);
+            }
+        }
 
-            ws.onopen = function open() {
-                console.log('connected');
-
-                // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
-                const symbols = ['AAPL', 'TSLA', 'NVDA', 'GOOGL', 'AMZN', 'SNOW', 'COKE']
-
-                ws.send(JSON.stringify({
-                    subscribe: symbols
-                }));
-
-            };
-
-            ws.onclose = function close() {
-                console.log('disconnected');
-            };
-
-            ws.onmessage = function incoming(message) {
-                console.log('coming message');
-
-                let data = Yaticker.decode(new Buffer(message.data, 'base64'));
-                console.log(data);
-            };
-        });
+        fetchData();
 
     });
 
@@ -112,6 +180,28 @@ export default function Portfolio() {
             console.log("Error occured");
             console.log(e);
         }
+    }
+
+    //function to get all the symbols of the portfolios
+
+    function getSymbols(portfolios) {
+
+        if (!portfolios)
+            return [];
+
+        let data = new Set();
+        for (let i = 0; i < portfolios.length; i++) {
+
+            let stocks = portfolios[i].stocks;
+            for (let j = 0; j < stocks.length; j++) {
+
+                let temp = stocks[j].symbol;
+                data.add(temp);
+            }
+        }
+
+        let symbolArray = [...data];
+        return symbolArray;
     }
 
     //Event Triggered when user hits the search button
@@ -161,103 +251,163 @@ export default function Portfolio() {
         }
     }
 
-    return (
-        <>
+    //Get the total number of symbols in the portfolio
+    function noOfSymbols(portfolio) {
 
-            <div className='PortfolioDash'>
-                <Container>
-                    <h1>Portfolio</h1>
-                    <div className="wrapper">
-                        <div className="searchBar">
-                            <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} aria-label="Search for Stocks"/>
-                            <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick} aria-label='Search button'>
-                                <Search color='#FF919D' />
-                            </button>
+        if (!portfolio)
+            return 0;
+
+        return portfolio.stocks.length;
+    }
+
+    //Get the total change Percent
+    function calculateChangePercent(portfolio) {
+
+        if (!userdataFound || !portfolio)
+            return 0;
+
+        let stocks = portfolio.stocks;
+
+        let changePercent = 0;
+
+        for (let i = 0; i < stocks.length; i++) {
+
+            let symbol = stocks[i].symbol;
+            let avg_price = stocks[i].avg_buy_price;
+            if (symbol in symbolPrice)
+                changePercent += (symbolPrice[symbol] - avg_price) / avg_price;
+        }
+
+        changePercent = (changePercent * 100).toFixed(2);
+        return changePercent;
+    }
+
+    //Get the total change
+    function calculateChange(portfolio) {
+
+        if (!userdataFound || !portfolio)
+            return 0;
+
+        let stocks = portfolio.stocks;
+
+        let change = 0;
+
+        for (let i = 0; i < stocks.length; i++) {
+
+            let symbol = stocks[i].symbol;
+            let avg_price = stocks[i].avg_buy_price;
+            let number_of_shares = stocks[i].no_of_shares
+            if (symbol in symbolPrice)
+                change += number_of_shares * (symbolPrice[symbol] - avg_price);
+        }
+
+        change = parseFloat(change).toFixed(2);
+        return change;
+    }
+
+
+    if (userdataFound) {
+
+        return (
+            <>
+
+                <div className='PortfolioDash'>
+                    <Container>
+                        <h1>Portfolio</h1>
+                        <div className="wrapper">
+                            <div className="searchBar">
+                                <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} aria-label="Search for Stocks" />
+                                <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick} aria-label='Search button'>
+                                    <Search color='#FF919D' />
+                                </button>
+                            </div>
+                            {bestResults && bestResults.length > 0 ? (
+                                <ListGroup className="mt-3 liststyle">
+                                    {bestResults.map((item) => {
+                                        let type = item["3. type"];
+                                        let region = item["4. region"];
+
+                                        if (type === "Equity" && region === "United States") {
+                                            let symbol = item["1. symbol"];
+                                            let name = item["2. name"];
+                                            return (
+                                                <ListGroup.Item
+                                                    key={symbol}
+                                                    action
+                                                    onClick={showModal}
+                                                    className="liststyleItem"
+                                                >
+                                                    {symbol} - {name}
+                                                </ListGroup.Item>
+                                            );
+                                        } else {
+                                            return null;
+                                        }
+                                    })}
+                                </ListGroup>
+                            ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
+                                <p className='mt-3 label text-center'>No stock of that symbol found. Please try again</p> :
+                                <p className='mt-3 label text-center'>Search to add the stock in your portfolio</p>}
                         </div>
-                        {bestResults && bestResults.length > 0 ? (
-                            <ListGroup className="mt-3 liststyle">
-                                {bestResults.map((item) => {
-                                    let type = item["3. type"];
-                                    let region = item["4. region"];
+                        <Row>
+                            <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
+                                <PortfolioModal
+                                    name={modalStock}
+                                    show={modalShow}
+                                    onHide={hideModal}
+                                    portfolioName={userInfo.portfolios}
+                                    email={userInfo.email}
+                                />
+                            </Col>
+                        </Row>
 
-                                    if (type === "Equity" && region === "United States") {
-                                        let symbol = item["1. symbol"];
-                                        let name = item["2. name"];
-                                        return (
-                                            <ListGroup.Item
-                                                key={symbol}
-                                                action
-                                                onClick={showModal}
-                                                className="liststyleItem"
-                                            >
-                                                {symbol} - {name}
-                                            </ListGroup.Item>
-                                        );
-                                    } else {
-                                        return null;
-                                    }
-                                })}
-                            </ListGroup>
-                        ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
-                            <p className='mt-3 label text-center'>No stock of that symbol found. Please try again</p> :
-                            <p className='mt-3 label text-center'>Search to add the stock in your portfolio</p>}
-                    </div>
-                    <Row>
-                        <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
-                            <PortfolioModal
-                                name={modalStock}
-                                show={modalShow}
-                                onHide={hideModal}
-                            />
-                        </Col>
-                    </Row>
-
-                    <h2 className="mt-3">
-                        My Portfolios
-                    </h2>
-                    <Table>
-                        <thead>
-                            <tr>
-                                <th>Portfolio Name</th>
-                                <th>Change (in %)</th>
-                                <th>No. of Symbols</th>
-                                <th>Total Gain</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {stocks.map((stock) => (
-                                <tr key={stock.symbol}>
-                                    <td style={{ padding: "15px" }}>{stock.name}</td>
-                                    <td style={{ padding: "15px" }}>
-                                        <span className="change" style={makeStyle(stock.change)}>{stock.change}%</span>
-                                    </td>
-                                    <td style={{ padding: "15px" }}>{stock.symbol}</td>
-                                    <td style={{ padding: "15px" }}>
-                                        <span className="change" style={makeStyle(stock.gain)}>${stock.gain.toLocaleString("en-US")}</span>
-                                    </td>
+                        <h2 className="mt-3">
+                            My Portfolios
+                        </h2>
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <th>Portfolio Name</th>
+                                    <th>Change (in %)</th>
+                                    <th>No. of Symbols</th>
+                                    <th>Total Gain</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </Table>
+                            </thead>
+                            <tbody>
+                                {userInfo.portfolios.map((portfolio) => (
+                                    <tr key={portfolio._id}>
+                                        <td style={{ padding: "15px" }}>{portfolio.name}</td>
+                                        <td style={{ padding: "15px" }}>
+                                            <span className="change" style={makeStyle(calculateChangePercent(portfolio))}>{calculateChangePercent(portfolio)}%</span>
+                                        </td>
+                                        <td style={{ padding: "15px" }}>{noOfSymbols(portfolio)}</td>
+                                        <td style={{ padding: "15px" }}>
+                                            <span className="change" style={makeStyle(calculateChange(portfolio))}>${calculateChange(portfolio).toLocaleString("en-US")}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
 
-                    <div className='mt-3 container'>
-                        <div className='d-flex justify-content-between'>
-                            <h3>Total Market Value</h3>
-                            <h4>$16,146.00</h4>
-                        </div>
-                        <div className='d-flex justify-content-between'>
-                            <h3>Day Gain</h3>
-                            <h4>-319.00(-1.92%)</h4>
-                        </div>
+                        <div className='mt-3 container'>
+                            <div className='d-flex justify-content-between'>
+                                <h3>Total Market Value</h3>
+                                <h4>$16,146.00</h4>
+                            </div>
+                            <div className='d-flex justify-content-between'>
+                                <h3>Day Gain</h3>
+                                <h4>-319.00(-1.92%)</h4>
+                            </div>
 
-                        <div className='d-flex justify-content-between'>
-                            <h3>Total Gain</h3>
-                            <h4>+4150.00(+33.54%)</h4>
+                            <div className='d-flex justify-content-between'>
+                                <h3>Total Gain</h3>
+                                <h4>+4150.00(+33.54%)</h4>
+                            </div>
                         </div>
-                    </div>
-                </Container >
-            </div>
+                    </Container >
+                </div>
 
-        </>
-    )
+            </>
+        )
+    }
 }
