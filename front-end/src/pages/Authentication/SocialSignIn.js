@@ -1,15 +1,14 @@
 import React from 'react';
-
-import google_img from "../../assets/imgs/google-signup-img.png";
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfiguration';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../../firebase/firebaseConfiguration';
+import google_img from "../../assets/imgs/google-signup-img.png";
 
 
 const SocialSignIn = () => {
   // Login with Google
   const navigate = useNavigate();
-  
+
   const onGoogleSignIn = (e) => {
     signInWithPopup(auth, new GoogleAuthProvider())
       .then((result) => {

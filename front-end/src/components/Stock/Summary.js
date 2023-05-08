@@ -9,6 +9,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import RightSide from '../RigtSide/RightSide';
 import StockScopeNavbar from '../StockScopeNavbar/StockScopeNavbar';
 import './Stocks.css';
+import Chatbot from '../ChatBot/ChatBot';
 
 const { Buffer } = require('buffer/');
 
@@ -87,7 +88,7 @@ const Summary = (props) => {
 
     return (
         <div className='Home'>
-            <div className='HomeGlass'>
+            <div className='stocksGlass'>
                 <Sidebar />
                 <div className='summaryContainer'>
                     <StockScopeNavbar />
@@ -139,7 +140,7 @@ const Summary = (props) => {
                         </Table>
                     </Container>
                 </div>
-                <RightSide />
+                <Chatbot />
             </div>
         </div>
     );

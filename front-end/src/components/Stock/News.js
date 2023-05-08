@@ -9,6 +9,7 @@ import RightSide from "../RigtSide/RightSide";
 import StockScopeNavbar from "../StockScopeNavbar/StockScopeNavbar";
 import Sidebar from "../Sidebar/Sidebar";
 import './Stocks.css';
+import Chatbot from "../ChatBot/ChatBot";
 
 
 const StockNews = (props) => {
@@ -35,7 +36,7 @@ const StockNews = (props) => {
 
     return (
         <div className='Home'>
-            <div className='HomeGlass'>
+            <div className='stocksGlass'>
                 <Sidebar />
                 <div className='summaryContainer'>
                     <StockScopeNavbar />
@@ -91,7 +92,7 @@ const StockNews = (props) => {
                         </Row>
                     </Container >
                 </div>
-                <RightSide />
+                <Chatbot />
             </div>
         </div>
     );
