@@ -7,6 +7,8 @@ import { PersonCircle } from "react-bootstrap-icons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfiguration";
 import { Col, Row } from "react-bootstrap";
+import env from '../../config/env.json'
+import axios from "axios";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -59,33 +61,26 @@ function Signup() {
       }); */
 
       try {
-        // create the user in Firebase authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         console.log(user);
     
-        // send a POST request to the backend to create the user in MongoDB
-        const response = await fetch('http://localhost:3001/createUser', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: name,
-            username: username,
-            email: email
-          })
-        });
-        const data = await response.json();
-        console.log(data);
+        const userObj = {
+          uid: user.uid,
+          name: user.displayName,
+          username: user.username,
+          email: user.email,
+          about: ""
+        };
     
-        // redirect to the login page
-        navigate('/login');
+        const res = await axios.post(env.backend + "users/createuser", userObj);
+        console.log(res.data);
+        navigate("/login");
+    
       } catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
-        alert(errorMessage);
       }
   }
   return (
