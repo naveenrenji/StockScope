@@ -66,7 +66,7 @@ function ExpandedCard({ param, setExpanded }) {
         top: 0,
         left: 0,
         blur: 3,
-        color: "#000",
+        color: "#ffffff",
         opacity: 0.35,
       },
 
@@ -120,9 +120,9 @@ function ExpandedCard({ param, setExpanded }) {
       layoutId="expandableCard"
     >
       <div style={{ alignSelf: "flex-end", cursor: "pointer", color: "white" }}>
-        <XCircleFill onClick={setExpanded} size={30}/>
+        <XCircleFill onClick={setExpanded} size={30} />
       </div>
-        <span>{param.title}</span>
+      <span>{param.title}</span>
       <div className="chartContainer">
         <Chart options={data.options} series={param.series} type="area" />
       </div>
