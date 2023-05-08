@@ -16,7 +16,6 @@
   backdrop-filter: blur(6.7px);
   -webkit-backdrop-filter: blur(6.7px);
   border: 1px solid var(--pink);
-  /* Add styles for your chat icon */
 }
 
 .chatbot__icon svg {
@@ -46,9 +45,13 @@
 }
 
 .chatbot__options button {
-  background-color: #7880975b;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6.7px);
+  -webkit-backdrop-filter: blur(6.7px);
+  border: 1px solid var(--black);
   color: var(--black);
-  border: none;
   border-radius: 15px;
   cursor: pointer;
   padding: 5px 10px;
@@ -121,13 +124,29 @@
 }
 
 .chatbot__messages {
+  display: flex;
+  flex-direction: column;
   margin-top: 50px;
   width: 300px;
   height: 250px;
   overflow: auto;
 }
 
-.chatbot__message {
+.chatbot__message.user {
+  align-self: flex-end;
+  color: var(--black);
+  max-width: max-content;
+  top: 50px;
+  margin: 8px;
+  border: 1px solid var(--black);
+  border-width: max-content;
+  border-radius: 15px;
+  padding: 6px;
+  transition: all 0.3s ease;
+}
+
+.chatbot__message.bot {
+  align-self: flex-start;
   color: var(--black);
   max-width: max-content;
   top: 50px;
@@ -137,8 +156,4 @@
   border-radius: 15px;
   padding: 6px;
   transition: all 0.3s ease;
-}
-
-.chatbot__message:hover {
-  border: 1px solid var(--black);
 }

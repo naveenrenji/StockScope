@@ -1,7 +1,7 @@
 //require express and express router as shown in lecture code
 const express = require("express");
 const router = express.Router();
-
+const helper = require("../helpers");
 const User = require("../models/User");
 
 router.post("/createUser", async (req, res) => {
@@ -11,10 +11,19 @@ router.post("/createUser", async (req, res) => {
     res.status(200).json({ Error: "User already exists" });
     return;
   }
+  try {
+    helper.checkName(req.body.name);
+    helper.checkEmail(req.body.email);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
   const user = new User({
     name: req.body.name,
+    username: "",
     email: req.body.email,
     type: "user",
+    photoUrl: "",
+    about: "",
     portfolios: [
       {
         name: "default",
@@ -32,7 +41,46 @@ router.post("/createUser", async (req, res) => {
   }
 });
 
+router.post("/editUser", async (req, res) => {
+  const tempUser = await User.findOne({ email: req.body.email });
+  console.log(tempUser);
+  try {
+    helper.checkName(req.body.name);
+    helper.checkEmail(req.body.email);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  const user = new User({
+    name: req.body.name,
+    username: "",
+    email: req.body.email,
+    type: "user",
+    photoUrl: "",
+    about: "",
+    portfolios: [
+      {
+        name: "default",
+        net_profit_loss: 0,
+        stocks: [],
+      },
+    ],
+  });
+  try {
+    const savedUser = await user.save();
+    res.status(200).json(savedUser);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(e);
+  }
+});
+
+
 router.get("/getUserPortfolios/:email", async (req, res) => {
+  try {
+    helper.checkEmail(req.params.email);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
   try {
     let user = await User.findOne({ email: req.params.email });
     return res.status(200).json(user);
@@ -42,6 +90,12 @@ router.get("/getUserPortfolios/:email", async (req, res) => {
 });
 
 router.post("/createNewPortfolio", async (req, res) => {
+  try {
+    helper.checkEmail(req.body.email);
+    helper.checkString(req.body.portfolioName, "Portfolio Name");
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
   try {
     let user = await User.findOne({ email: req.body.email });
     for (let portfolio of user.portfolios) {
@@ -62,6 +116,12 @@ router.post("/createNewPortfolio", async (req, res) => {
 });
 
 router.post("/deletePortfolio", async (req, res) => {
+  try {
+    helper.checkEmail(req.body.email);
+    helper.checkId(req.body.portfolioId, "Portfolio ID");
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
   try {
     let user = await User.findOne({ email: req.body.email });
     console.log(user);
@@ -84,6 +144,15 @@ router.post("/deletePortfolio", async (req, res) => {
 });
 
 router.post("/addStockToPortfolio", async (req, res) => {
+  try {
+    helper.checkEmail(req.body.email);
+    helper.checkString(req.body.portfolioName, "Portfolio Name");
+    helper.checkString(req.body.stockName, "Stock Name");
+    helper.checkPosNumber(req.body.no_of_shares, "Stock quantity");
+    helper.checkPosNumber(reqq.body.price);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
   try {
     let user = await User.findOne({ email: req.body.email });
     // console.log(user);
@@ -125,8 +194,8 @@ router.post("/addStockToPortfolio", async (req, res) => {
           },
         ],
       });
-    }//If stock already exists, add it to the lots list and update the average buying price
-     else {
+    } //If stock already exists, add it to the lots list and update the average buying price
+    else {
       user.portfolios[portfolioIndex].stocks[stockIndex].lots.push({
         shares: req.body.shares,
         price: req.body.price,
@@ -166,6 +235,14 @@ router.post("/addStockToPortfolio", async (req, res) => {
 
 router.post("/deleteStock", async (req, res) => {
   try {
+    helper.checkEmail(req.body.email);
+    helper.checkId(req.body.portfolioId, "Portfolio ID");
+    helper.checkId(req.body.stockId, "Stock ID");
+    helper.checkId(req.body.lotId, "Lot ID");
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
     let user = await User.findOne({ email: req.body.email });
 
     let stockIndex = -1;
@@ -188,7 +265,7 @@ router.post("/deleteStock", async (req, res) => {
       }
     }
     console.log(portfolioIndex, stockIndex);
-    
+
     if (portfolioIndex === -1) {
       return res.status(400).json({ error: "Portfolio does not exist" });
     } else if (stockIndex === -1) {
@@ -217,7 +294,7 @@ router.post("/deleteStock", async (req, res) => {
           );
           let sum = 0;
           let numOfShares = 0;
-            
+
           //Update the buying price and the stock count
           for (let unit of user.portfolios[portfolioIndex].stocks[stockIndex]
             .lots) {
@@ -256,6 +333,14 @@ router.post("/deleteStock", async (req, res) => {
 });
 
 router.post("/sellStock", async (req, res) => {
+  try {
+    helper.checkEmail(req.body.email);
+    helper.checkId(req.body.portfolioId, "Portfolio ID");
+    helper.checkId(req.body.stockId, "Stock ID");
+    helper.checkId(req.body.lotId, "Lot ID");
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
   try {
     let user = await User.findOne({ email: req.body.email });
     let stockIndex = -1;
@@ -320,8 +405,6 @@ router.post("/sellStock", async (req, res) => {
           );
           user.portfolios[portfolioIndex].net_profit_loss +=
             Number(profit_loss);
-          
-          
         }
       } else {
         let profit_loss = 0;

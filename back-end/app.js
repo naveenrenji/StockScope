@@ -1,22 +1,16 @@
-// Setup server, session and middleware here.
 const express = require("express");
 const app = express();
 const session = require("express-session");
 const configRoutes = require("./routes");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const { Server } = require("socket.io");
 const http = require("http");
-const socketio = require("socket.io");
-const {mongoConfig} = require("./config/settings.json");
-
-const server = http.createServer(app);
-const io = socketio(server);
-
-let count = {};
+const { mongoConfig } = require("./config/settings.json");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 const connectMongo = async () => {
   try {
@@ -42,33 +36,52 @@ app.use(
     cookie: { maxAge: 86400000 },
   })
 );
+configRoutes(app);
 
-//socket.io
-io.on("connection", (socket) => {
-  console.log("New client connected");
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+const users = {}; // Store users and their socket ids
+const pendingRequests = []; // Store pending chat requests
 
-  socket.on("join", ({ username, room }) => {
-    socket.join(room);
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
 
-    socket.emit("message", {
-      text: `Welcome ${username}, you are connected to ${room}`,
-    });
-
-    socket.broadcast.to(room).emit("message", {
-      text: `${username} has joined the chat`,
-    });
+  socket.on('new_user', (data) => {
+    users[data.userId] = socket.id;
+    console.log('New user:', data.userId, socket.id);
   });
 
-  socket.on("sendMessage", (message, room) => {
-    io.to(room).emit("message", { text: message });
+  socket.on('talk_to_agent', (data) => {
+    pendingRequests.push(data.userId);
+    io.to(users['agent']).emit('request_received', data);
+    console.log('Request sent from:', data.userId);
   });
 
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
+  socket.on('accept_request', (data) => {
+    const userToAccept = pendingRequests.shift();
+    io.to(users[userToAccept]).emit('request_accepted', { agentId: 'agent' });
+    console.log('Request accepted for:', userToAccept);
+  });
+
+  socket.on('message', (data) => {
+    io.to(users[data.receiverId]).emit('message', data);
+    console.log('Message sent from', data.senderId, 'to', data.receiverId);
+  });
+
+  socket.on('end_chat', (data) => {
+    io.to(users[data.receiverId]).emit('chat_ended', { agentId: 'agent' });
+    console.log('Chat ended with', data.receiverId);
+  });
+
+  socket.on('disconnect', () => {
+    const disconnectedUser = Object.keys(users).find(
+      (key) => users[key] === socket.id
+    );
+    delete users[disconnectedUser];
+    console.log('User disconnected:', disconnectedUser);
   });
 });
 
-configRoutes(app);
 
 server.listen(3001, () => {
   console.log("We've now got a server!");

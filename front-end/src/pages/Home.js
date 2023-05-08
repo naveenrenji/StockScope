@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import '../assets/css/style.css';
 
 function Home() {
+
   return (
     <div className="Home">
       <div className="HomeGlass">
