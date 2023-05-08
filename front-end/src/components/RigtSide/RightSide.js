@@ -12,7 +12,7 @@ const RightSide = () => {
         <Updates />
       </div>
       <div>
-        <h3>Your Stocks Graph</h3>
+        <h3>S&P 100</h3>
         <CustomerReview />
       </div>
       <ChatBot />

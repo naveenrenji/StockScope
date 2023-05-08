@@ -1,9 +1,16 @@
 import React from "react";
 import Chart from "react-apexcharts";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 
 const CustomerReview = () => {
-  const data = {
+
+  const [indexData, setIndexData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [renderCount, setRenderCount] = useState(0);
+
+  let data = {
     series: [
       {
         name: "Review",
@@ -38,13 +45,13 @@ const CustomerReview = () => {
       xaxis: {
         type: "datetime",
         categories: [
-          "2018-09-19T00:00:00.000Z",
-          "2018-09-19T01:30:00.000Z",
-          "2018-09-19T02:30:00.000Z",
-          "2018-09-19T03:30:00.000Z",
-          "2018-09-19T04:30:00.000Z",
-          "2018-09-19T05:30:00.000Z",
-          "2018-09-19T06:30:00.000Z",
+          "2018-09-19 00:00:00.000",
+          "2018-09-19 01:30:00.000",
+          "2018-09-19 02:30:00.000",
+          "2018-09-19 03:30:00.000",
+          "2018-09-19 04:30:00.000",
+          "2018-09-19 05:30:00.000",
+          "2018-09-19 06:30:00.000",
         ],
       },
       yaxis: {
@@ -55,6 +62,47 @@ const CustomerReview = () => {
       }
     },
   };
+
+  useEffect(()=>{
+    const interval = setInterval(() => {
+      setRenderCount((prevCount) => prevCount + 1);
+    }, (60*60*60000)); // 60 seconds
+
+    async function fetchData(){
+      try {
+        let {data} = await axios.get('http://localhost:3001/screener/index-data');
+        setIndexData(data);
+        setLoading(false)
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+
+    return () => {
+      clearInterval(interval);
+    };
+  },[data, renderCount]);
+
+  if (loading) {
+    return (
+      <div className='CustomerReview'>
+        <h3>Loading....</h3>
+      </div>
+    );
+  }
+
+  if(indexData){
+    let copyData = {...indexData};
+    for(let i=0; i<copyData.prices.length; i++){
+      copyData.prices[i] = Number.parseFloat(copyData.prices[i]).toFixed(2);
+    }
+    data.series[0].data = copyData.prices;
+    data.options.xaxis.categories = copyData.timestamps;
+  }
+
   return <div className="CustomerReview">
         <Chart options={data.options} series={data.series} type="area" />
   </div>;
