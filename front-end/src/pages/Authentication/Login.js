@@ -77,10 +77,12 @@ function Login() {
         navigate("/");
       }
       console.log(user);
+      navigate("/");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
+      alert("Either the email or the password is wrong");
     }
   };
 

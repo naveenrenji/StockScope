@@ -1,9 +1,9 @@
-import React from 'react';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase/firebaseConfiguration';
-import google_img from "../../assets/imgs/google-signup-img.png";
+import React from "react";
 
+import google_img from "../../assets/imgs/google-signup-img.png";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase/firebaseConfiguration";
+import { useNavigate } from "react-router-dom";
 
 const SocialSignIn = () => {
   // Login with Google
@@ -19,6 +19,18 @@ const SocialSignIn = () => {
         const googleuser = result.user;
         navigate("/");
         console.log(googleuser);
+
+        const response = fetch("http://localhost:3001/users/createUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: googleuser.displayName,
+            email: googleuser.email,
+          }),
+        });
+        //const data =  response.json();
         // IdP data available using getAdditionalUserInfo(result)
         // ...
       })
@@ -37,9 +49,10 @@ const SocialSignIn = () => {
   return (
     <>
       <div>
-        <img className="signin-img"
-          onClick={() => onGoogleSignIn('google')}
-          alt='Google signin'
+        <img
+          className="signin-img"
+          onClick={() => onGoogleSignIn("google")}
+          alt="Google signin"
           src={google_img}
           height={50}
           width={50}

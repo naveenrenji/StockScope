@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 function Profile() {
   const [modal, setModal] = useState(false);
   const [avatar, setAvatar] = useState("");
+  const [isGoogle, setIsGoogle] = useState(true);
 
   const navigate = useNavigate();
 
@@ -70,6 +71,20 @@ function Profile() {
         const uid = user.uid;
         // ...
         console.log("uid", uid);
+        let userData = {
+          name: user.displayName,
+          username: "",
+          email: user.email,
+          password: "",
+          about: "",
+        };
+        setFormData(userData);
+        if (user.providerData.providerId === "google.com") {
+          setIsGoogle(true);
+        } else {
+          setIsGoogle(false);
+        }
+        console.log(isGoogle);
       } else {
         console.log("user is logged out");
         alert("You are not Logged in");
@@ -110,7 +125,11 @@ function Profile() {
               </div>
             </Col>
             <Col className="profileRow2">
-              <button className="authButton" onClick={() => setModal(true)}>
+              <button
+                className="authButton"
+                onClick={() => setModal(true)}
+                disabled={isGoogle}
+              >
                 Edit Profile <PencilSquare size="18px" />
               </button>
             </Col>
