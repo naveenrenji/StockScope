@@ -26,11 +26,11 @@ export const SidebarData = [
     heading: 'Portfolio',
     link: "/portfolio"
   },
-  {
-    icon: <PersonVcardFill />,
-    heading: 'View Account',
-    link: "/profile"
-  }
+  // {
+  //   icon: <PersonVcardFill />,
+  //   heading: 'View Account',
+  //   link: "/profile"
+  // }
 ];
 
 //StocksScope Navbar Data
