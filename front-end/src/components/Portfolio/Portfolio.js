@@ -33,7 +33,36 @@ export default function Portfolio() {
     //This state is used to save all the stocks that user has subscribed
     const [allStocks, setAllStocks] = useState([]);
 
+    //Get all the details of the user. This includes all the details such as stock names, portfolios etc.
+    const [userInfo, setUserInfo] = useState({});
+
+    //This state is used to check if we found the data or not
+    const [userdataFound, setUserDataFound] = useState(false);
+
     const navigate = useNavigate();
+
+    //Get the Info of the user
+    useEffect(() => {
+
+        async function fetchData() {
+
+            try {
+
+                setUserDataFound(false);
+                let { data } = await axios.get("http://localhost:3001/users/getUserPortfolios/sagara@gmail.com");
+                setUserInfo(data);
+                setUserDataFound(true);
+
+            }
+
+            catch (error) {
+                console.log(error);
+                setUserDataFound(false);
+            }
+        }
+
+        fetchData();
+    }, [])
 
     //This useEffect is used to get the live data
     useEffect(() => {
@@ -161,103 +190,108 @@ export default function Portfolio() {
         }
     }
 
-    return (
-        <>
+    if (userdataFound) {
 
-            <div className='PortfolioDash'>
-                <Container>
-                    <h1>Portfolio</h1>
-                    <div className="wrapper">
-                        <div className="searchBar">
-                            <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} aria-label="Search for Stocks"/>
-                            <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick} aria-label='Search button'>
-                                <Search color='#FF919D' />
-                            </button>
+        return (
+            <>
+
+                <div className='PortfolioDash'>
+                    <Container>
+                        <h1>Portfolio</h1>
+                        <div className="wrapper">
+                            <div className="searchBar">
+                                <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} aria-label="Search for Stocks" />
+                                <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick} aria-label='Search button'>
+                                    <Search color='#FF919D' />
+                                </button>
+                            </div>
+                            {bestResults && bestResults.length > 0 ? (
+                                <ListGroup className="mt-3 liststyle">
+                                    {bestResults.map((item) => {
+                                        let type = item["3. type"];
+                                        let region = item["4. region"];
+
+                                        if (type === "Equity" && region === "United States") {
+                                            let symbol = item["1. symbol"];
+                                            let name = item["2. name"];
+                                            return (
+                                                <ListGroup.Item
+                                                    key={symbol}
+                                                    action
+                                                    onClick={showModal}
+                                                    className="liststyleItem"
+                                                >
+                                                    {symbol} - {name}
+                                                </ListGroup.Item>
+                                            );
+                                        } else {
+                                            return null;
+                                        }
+                                    })}
+                                </ListGroup>
+                            ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
+                                <p className='mt-3 label text-center'>No stock of that symbol found. Please try again</p> :
+                                <p className='mt-3 label text-center'>Search to add the stock in your portfolio</p>}
                         </div>
-                        {bestResults && bestResults.length > 0 ? (
-                            <ListGroup className="mt-3 liststyle">
-                                {bestResults.map((item) => {
-                                    let type = item["3. type"];
-                                    let region = item["4. region"];
+                        <Row>
+                            <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
+                                <PortfolioModal
+                                    name={modalStock}
+                                    show={modalShow}
+                                    onHide={hideModal}
+                                    portfolioName={userInfo.portfolios}
+                                    email={userInfo.email}
+                                />
+                            </Col>
+                        </Row>
 
-                                    if (type === "Equity" && region === "United States") {
-                                        let symbol = item["1. symbol"];
-                                        let name = item["2. name"];
-                                        return (
-                                            <ListGroup.Item
-                                                key={symbol}
-                                                action
-                                                onClick={showModal}
-                                                className="liststyleItem"
-                                            >
-                                                {symbol} - {name}
-                                            </ListGroup.Item>
-                                        );
-                                    } else {
-                                        return null;
-                                    }
-                                })}
-                            </ListGroup>
-                        ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
-                            <p className='mt-3 label text-center'>No stock of that symbol found. Please try again</p> :
-                            <p className='mt-3 label text-center'>Search to add the stock in your portfolio</p>}
-                    </div>
-                    <Row>
-                        <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
-                            <PortfolioModal
-                                name={modalStock}
-                                show={modalShow}
-                                onHide={hideModal}
-                            />
-                        </Col>
-                    </Row>
-
-                    <h2 className="mt-3">
-                        My Portfolios
-                    </h2>
-                    <Table>
-                        <thead>
-                            <tr>
-                                <th>Portfolio Name</th>
-                                <th>Change (in %)</th>
-                                <th>No. of Symbols</th>
-                                <th>Total Gain</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {stocks.map((stock) => (
-                                <tr key={stock.symbol}>
-                                    <td style={{ padding: "15px" }}>{stock.name}</td>
-                                    <td style={{ padding: "15px" }}>
-                                        <span className="change" style={makeStyle(stock.change)}>{stock.change}%</span>
-                                    </td>
-                                    <td style={{ padding: "15px" }}>{stock.symbol}</td>
-                                    <td style={{ padding: "15px" }}>
-                                        <span className="change" style={makeStyle(stock.gain)}>${stock.gain.toLocaleString("en-US")}</span>
-                                    </td>
+                        <h2 className="mt-3">
+                            My Portfolios
+                        </h2>
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <th>Portfolio Name</th>
+                                    <th>Change (in %)</th>
+                                    <th>No. of Symbols</th>
+                                    <th>Total Gain</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </Table>
+                            </thead>
+                            <tbody>
+                                {stocks.map((stock) => (
+                                    <tr key={stock.symbol}>
+                                        <td style={{ padding: "15px" }}>{stock.name}</td>
+                                        <td style={{ padding: "15px" }}>
+                                            <span className="change" style={makeStyle(stock.change)}>{stock.change}%</span>
+                                        </td>
+                                        <td style={{ padding: "15px" }}>{stock.symbol}</td>
+                                        <td style={{ padding: "15px" }}>
+                                            <span className="change" style={makeStyle(stock.gain)}>${stock.gain.toLocaleString("en-US")}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
 
-                    <div className='mt-3 container'>
-                        <div className='d-flex justify-content-between'>
-                            <h3>Total Market Value</h3>
-                            <h4>$16,146.00</h4>
-                        </div>
-                        <div className='d-flex justify-content-between'>
-                            <h3>Day Gain</h3>
-                            <h4>-319.00(-1.92%)</h4>
-                        </div>
+                        <div className='mt-3 container'>
+                            <div className='d-flex justify-content-between'>
+                                <h3>Total Market Value</h3>
+                                <h4>$16,146.00</h4>
+                            </div>
+                            <div className='d-flex justify-content-between'>
+                                <h3>Day Gain</h3>
+                                <h4>-319.00(-1.92%)</h4>
+                            </div>
 
-                        <div className='d-flex justify-content-between'>
-                            <h3>Total Gain</h3>
-                            <h4>+4150.00(+33.54%)</h4>
+                            <div className='d-flex justify-content-between'>
+                                <h3>Total Gain</h3>
+                                <h4>+4150.00(+33.54%)</h4>
+                            </div>
                         </div>
-                    </div>
-                </Container >
-            </div>
+                    </Container >
+                </div>
 
-        </>
-    )
+            </>
+        )
+    }
 }

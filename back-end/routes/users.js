@@ -148,8 +148,8 @@ router.post("/addStockToPortfolio", async (req, res) => {
     helper.checkEmail(req.body.email);
     helper.checkString(req.body.portfolioName, "Portfolio Name");
     helper.checkString(req.body.stockName, "Stock Name");
-    helper.checkPosNumber(req.body.no_of_shares, "Stock quantity");
-    helper.checkPosNumber(reqq.body.price);
+    // helper.checkPosNumber(req.body.no_of_shares, "Stock quantity"); //Issue with the commented code
+    // helper.checkPosNumber(req.body.price);
   } catch (e) {
     return res.status(400).json({ error: e });
   }

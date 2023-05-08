@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Row, Col, Modal, Dropdown, Form } from 'react-bootstrap';
-import { temp } from './portfolio-data';
 import { checkNumberOfShares, checkBuyingPrice } from '../../helpers';
+import axios from 'axios'
 
 //This component is invoked when user searches for a stock and select it
 export default function PortfolioModal(props) {
+
+    console.log("Inside portfolio modal");
+
+    let portfolios = props.portfolioName;
 
     //State used to set the value from the portfolio dropdown
     const [portfolioValue, setPortfolioValue] = useState('Select Portfolio');
@@ -36,63 +40,49 @@ export default function PortfolioModal(props) {
     //When the user hits submit button this function is invoked
     const handleSubmit = (e) => {
 
-        //Ceck if the user has selected the portfolio or not
-        if (portfolioValue === 'Select Portfolio')
-            alert("Please select portfolio from the drop-down");
+        try {
 
-        else if (checkNumberOfShares(modalData.shares) && checkBuyingPrice(modalData.price)) {
+            //Check if the user has selected the portfolio or not
+            if (portfolioValue === 'Select Portfolio')
+                alert("Please select portfolio from the drop-down");
 
-            //Logic to update the data for a particular user in the database
+            else if (checkNumberOfShares(modalData.shares) && checkBuyingPrice(modalData.price)) {
 
-            //Get the symbol and name 
-            let stockSymbol = props.name.slice(0, props.name.indexOf('-'));
-            stockSymbol = stockSymbol.trim();
-            let stockName = props.name.slice(props.name.indexOf('-') + 1);
-            stockName = stockName.trim();
+                //Logic to update the data for a particular user in the database
 
-            //Iterate over all the portfolios to get the index of the portfolio
-            for (let i = 0; i < temp.Portfolios.length; i++) {
-                if (temp.Portfolios[i].name === portfolioValue) {
+                //Get the symbol and name 
+                let stockSymbol = props.name.slice(0, props.name.indexOf('-'));
+                stockSymbol = stockSymbol.trim();
+                let stockName = props.name.slice(props.name.indexOf('-') + 1);
+                stockName = stockName.trim();
 
-                    let alreadyExist = false;
-                    //Check if the stock is already present in the lot or not. If yes we will add it in the lots array which is already created
-                    for (let j = 0; j < temp.Portfolios[i].stocks.length && !alreadyExist; j++) {
+                let dataBody = {
 
-                        if (temp.Portfolios[i].stocks[j].symbol === stockSymbol) {
-                            let lotData = {
-                                shares: modalData.shares,
-                                price: modalData.price
-                            }
-                            temp.Portfolios[i].stocks[j].lots.push(lotData);
-                            alreadyExist = true;
-                        }
-                    }
-
-                    //Stock is not present. Create the strucutrue of the stock and add the lot in the database
-                    if (!alreadyExist) {
-
-                        let stockObject = {
-                            symbol: stockSymbol,
-                            name: stockName,
-                            lots: []
-                        }
-
-                        let lotData = {
-                            shares: modalData.shares,
-                            price: modalData.price
-                        }
-
-                        temp.Portfolios[i].stocks.push(stockObject);
-                        temp.Portfolios[i].stocks[0].lots.push(lotData);
-                    }
-
-                    //Data is successfully added in the database and we are getting out of the loop
-                    break;
+                    "email": props.email,
+                    "portfolioName": portfolioValue,
+                    "symbol": stockSymbol,
+                    "stockName": stockName,
+                    "shares": modalData.shares,
+                    "price": modalData.price
                 }
-            }
 
-            alert("Stock added successfully");
-            props.onHide();
+                console.log(dataBody);
+
+                let temp = axios.post("http://localhost:3001/users/addstocktoportfolio", dataBody).then(function (response) {
+                    console.log(response);
+                    alert("Stock added successfully");
+                    props.onHide();
+                }).catch(function (error) {
+
+                    console.log(error);
+                });
+            }
+        }
+
+        catch (error) {
+
+            console.log(error);
+            alert(error.message);
         }
     }
 
@@ -109,9 +99,9 @@ export default function PortfolioModal(props) {
                         {portfolioValue}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        {temp.Portfolios.map((data) => {
+                        {portfolios.map((data) => {
                             return (
-                                <Dropdown.Item eventKey={data.name} key={data.name}>{data.name}</Dropdown.Item>
+                                <Dropdown.Item eventKey={data.name} key={data._id}>{data.name}</Dropdown.Item>
                             )
                         })}
                     </Dropdown.Menu>
