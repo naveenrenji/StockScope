@@ -6,8 +6,10 @@ import "../../assets/css/authentication.css";
 import { PersonCircle } from "react-bootstrap-icons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfiguration";
+import { Col, Row } from "react-bootstrap";
 
 function Signup() {
+  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,20 +46,47 @@ function Signup() {
       );
       return;
     }
-    await createUserWithEmailAndPassword(auth, email, password)
+    /* await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
         const user = userCredential.user;
         console.log(user);
         navigate("/login")
-        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
-        // ..
-      });
+      }); */
+
+      try {
+        // create the user in Firebase authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log(user);
+    
+        // send a POST request to the backend to create the user in MongoDB
+        const response = await fetch('http://localhost:3001/createUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name,
+            username: username,
+            email: email
+          })
+        });
+        const data = await response.json();
+        console.log(data);
+    
+        // redirect to the login page
+        navigate('/login');
+      } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        alert(errorMessage);
+      }
   }
   return (
     <div className="authentication-body">
@@ -79,6 +108,36 @@ function Signup() {
                 {errorMessages.username}
               </Form.Text>
             </Form.Group> */}
+            <Row>
+              <Col>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="name"
+                    placeholder="Enter your full name"
+                    value={name}
+                    onChange={(event) => handleInputChange(event, setName)}
+                  />
+                  <Form.Text className="text-danger">
+                    {errorMessages.email}
+                  </Form.Text>
+                </Form.Group>
+              </Col>
+              <Col>
+              <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="username"
+                    placeholder="Choose username"
+                    value={username}
+                    onChange={(event) => handleInputChange(event, setUsername)}
+                  />
+                  <Form.Text className="text-danger">
+                    {errorMessages.email}
+                  </Form.Text>
+                </Form.Group>
+              </Col>
+            </Row>
 
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Email ID</Form.Label>

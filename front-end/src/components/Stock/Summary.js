@@ -92,11 +92,11 @@ const Summary = (props) => {
                 <div className='summaryContainer'>
                     <StockScopeNavbar />
                     <Container>
-                        <h3>{props.symbol} - {props.name}.</h3>
+                        <h1>{props.symbol} - {props.name}.</h1>
 
                         <Chart symbol={props.symbol}></Chart>
 
-                        <h4>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h4>
+                        <h3>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h3>
 
                         <h2>Price: ${parseFloat(stockPrice).toFixed(2)}</h2>
 
@@ -112,7 +112,7 @@ const Summary = (props) => {
                             </span>
                         </p>
 
-                        <h4>Details: </h4>
+                        <h3>Details: </h3>
                         <Table>
                             <tbody>
                                 {Object.keys(stockDetails).map((key, index) => {

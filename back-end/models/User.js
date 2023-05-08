@@ -28,6 +28,7 @@ const PortfolioSchema = new Schema(
 const UserSchema = new Schema(
   {
     name: String,
+    username: String,
     email: String,
     type: String,
     photoUrl: String,

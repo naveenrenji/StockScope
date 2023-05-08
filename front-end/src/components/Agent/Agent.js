@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Send, SlashCircle } from "react-bootstrap-icons";
 import io from 'socket.io-client';
+import './Agent.css';
 
 const Agent = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -69,43 +71,65 @@ const Agent = () => {
     setInputMessage('');
   };
 
+  const handleChatRequest = (e) => { }
+
   return (
-    <div>
-      <h1>Agent Dashboard</h1>
-      <h2>Pending Requests</h2>
-      <ul>
-        {pendingRequests.map((userId, index) => (
-          <li key={index}>
-            {userId} <button onClick={() => handleAcceptRequest(userId)}>Accept</button>
-          </li>
-        ))}
-      </ul>
-      {currentChat && (
-        <div>
-          <h2>Chat with {currentChat}</h2>
-          <ul>
-            {messages.map((message, index) => (
-              <li
-                key={index}
-                style={{
-                  textAlign: message.senderId === 'agent' ? 'right' : 'left',
-                }}
-              >
-                {message.content}
+    <div className='Home'>
+      <div className='portal'>
+        <div className='portal-title'>
+          <h1>Agent Portal</h1>
+        </div>
+        <div className='agentPortal'>
+          <div className='agent-Sidebar'>
+            <p>New Support Requests</p>
+            <ul>
+              {pendingRequests.map((userId, index) => (
+                <li key={index}>
+                  {userId} <button onClick={() => handleAcceptRequest(userId)}>Accept</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className='agent-middlebar'>
+            <p>Ongoing Support Chats</p>
+            {/* Add Code for  ongoing sessions*/}
+            {activeChats.map((userId, index) => (
+              <li key={index}>
+                {userId} <button onClick={() => handleChatRequest(userId)}>Switch</button>
               </li>
             ))}
-          </ul>
-          <form onSubmit={handleMessageSubmit}>
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={handleMessageChange}
-            />
-            <button type="submit">Send</button>
-          </form>
-          <button onClick={handleEndChat}>End Chat</button>
+          </div>
+          <div className='agent-area'>
+            {currentChat ? (
+              <div className='customer-chat'>
+                <h2>Chat with <span>{currentChat}</span></h2>
+                <div className="customer__messages">
+                  {messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={`customer__message ${message.senderId === 'agent' ? "right" : "left"
+                        }`}
+                    >
+                      {message.content}
+                    </div>
+                  ))}
+                </div>
+                <form onSubmit={handleMessageSubmit} className='message-bar'>
+                  <input
+                    type="text"
+                    value={inputMessage}
+                    onChange={handleMessageChange}
+                    aria-label='send-message'
+                  />
+                  <button type="submit">Send <Send /></button>
+                </form>
+                <button onClick={handleEndChat} className='end-chat'>End Chat <SlashCircle /></button>
+              </div>
+            ) : <div>
+              <p className='relief'>Great! No more customer queries 😍😍</p></div>}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
