@@ -39,6 +39,9 @@ export default function Portfolio() {
     //This state is used to check if we found the data or not
     const [userdataFound, setUserDataFound] = useState(false);
 
+    //This state is used to store the recent prices of the symbols of the portfolio user has
+    const [symbolPrice, setsymbolPrice] = useState({});
+
     const navigate = useNavigate();
 
     //Get the Info of the user
@@ -62,42 +65,71 @@ export default function Portfolio() {
         }
 
         fetchData();
-    }, [])
+    }, [modalShow])
 
     //This useEffect is used to get the live data
     useEffect(() => {
-        const ws = new WebSocket('wss://streamer.finance.yahoo.com');
-        protobuf.load(protoFile, (error, root) => {
 
-            if (error) {
-                return console.log(error);
+
+
+        async function fetchData() {
+
+            try {
+
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentDay = now.getDay();
+
+                if (Object.keys(userInfo).length > 0 && currentHour >= 9 && currentHour <= 16 && currentDay !== 0 && currentDay !== 6) {
+                    const ws = new WebSocket('wss://streamer.finance.yahoo.com');
+                    protobuf.load(protoFile, (error, root) => {
+
+                        if (error) {
+                            return console.log(error);
+                        }
+
+                        const Yaticker = root.lookupType("yaticker");
+
+                        ws.onopen = function open() {
+                            console.log('connected');
+
+                            // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
+                            let porfolios = userInfo["portfolios"];
+
+                            console.log("Printing portfolio list");
+
+                            console.log(porfolios)
+
+                            let symbols = getSymbols(porfolios);
+                            console.log(symbols);
+
+                            ws.send(JSON.stringify({
+                                subscribe: symbols
+                            }));
+
+                        };
+
+                        ws.onclose = function close() {
+                            console.log('disconnected');
+                        };
+
+                        ws.onmessage = function incoming(message) {
+                            console.log('coming message');
+
+                            let data = Yaticker.decode(new Buffer(message.data, 'base64'));
+
+                            console.log(data);
+                        };
+                    });
+                }
             }
+            catch (error) {
 
-            const Yaticker = root.lookupType("yaticker");
+                console.log(error);
+            }
+        }
 
-            ws.onopen = function open() {
-                console.log('connected');
-
-                // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
-                const symbols = ['AAPL', 'TSLA', 'NVDA', 'GOOGL', 'AMZN', 'SNOW', 'COKE']
-
-                ws.send(JSON.stringify({
-                    subscribe: symbols
-                }));
-
-            };
-
-            ws.onclose = function close() {
-                console.log('disconnected');
-            };
-
-            ws.onmessage = function incoming(message) {
-                console.log('coming message');
-
-                let data = Yaticker.decode(new Buffer(message.data, 'base64'));
-                console.log(data);
-            };
-        });
+        fetchData();
 
     });
 
@@ -141,6 +173,28 @@ export default function Portfolio() {
             console.log("Error occured");
             console.log(e);
         }
+    }
+
+    //function to get all the symbols of the portfolios
+
+    function getSymbols(portfolios) {
+
+        if (!portfolios)
+            return [];
+
+        let data = new Set();
+        for (let i = 0; i < portfolios.length; i++) {
+
+            let stocks = portfolios[i].stocks;
+            for (let j = 0; j < stocks.length; j++) {
+
+                let temp = stocks[j].symbol;
+                data.add(temp);
+            }
+        }
+
+        let symbolArray = [...data];
+        return symbolArray;
     }
 
     //Event Triggered when user hits the search button
