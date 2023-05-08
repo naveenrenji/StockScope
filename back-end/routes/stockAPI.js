@@ -210,10 +210,6 @@ router.route("/income-statement/:name").get(async (req, res) => {
         final_data["annualReports"] = annual_records;
         final_data["quarterlyReports"] = quarter_records;
 
-        console.log(final_data);
-
-
-
         let stringData = JSON.stringify(final_data);
 
         await client.set(`income-statement:${stockName}`, stringData);
@@ -298,7 +294,6 @@ router.route("/balance-sheet/:name").get(async (req, res) => {
         final_data["annualReports"] = annual_records;
         final_data["quarterlyReports"] = quarter_records;
 
-        console.log(final_data);
 
         let stringData = JSON.stringify(final_data);
 
@@ -383,8 +378,6 @@ router.route("/cash-flow/:name").get(async (req, res) => {
         final_data["symbol"] = data["symbol"];
         final_data["annualReports"] = annual_records;
         final_data["quarterlyReports"] = quarter_records;
-
-        console.log(final_data);
 
         let stringData = JSON.stringify(final_data);
 
