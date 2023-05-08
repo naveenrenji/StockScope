@@ -8,11 +8,11 @@ const RightSide = () => {
   return (
     <div className="RightSide">
       <div>
-        <h3>Recent News</h3>
+        <h2>Recent News</h2>
         <Updates />
       </div>
       <div>
-        <h3>Your Stocks Graph</h3>
+        <h3>S&P 100</h3>
         <CustomerReview />
       </div>
       <ChatBot />

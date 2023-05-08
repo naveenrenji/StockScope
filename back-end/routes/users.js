@@ -55,6 +55,7 @@ router.post("/editUser", async (req, res) => {
   tempUser.email = req.body.email.toLowerCase();
   tempUser.photoUrl = req.body.photoUrl;
   tempUser.about = req.body.about;
+
   try {
     const savedUser = await tempUser.save();
     res.status(200).json(savedUser);

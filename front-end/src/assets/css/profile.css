@@ -76,7 +76,7 @@
     padding: 10px;
 }
 
-.profileContainer .profileDiv h5 span {
+.profileContainer .profileDiv h4 span {
     font-weight: 200;
     color: var(--pink);
 }
@@ -128,7 +128,7 @@
 }
 
 .modal-content .modal-body .profile-alert {
-    color: var(--black);
+    color: var(--white);
     background: rgba(255, 255, 255, 0.307);
     border: 1px solid rgba(255, 255, 255, 0.899);
 }

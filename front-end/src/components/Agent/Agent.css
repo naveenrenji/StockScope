@@ -52,33 +52,116 @@
     font-size: 16px;
     text-decoration: none;
     list-style-type: decimal;
-    color: var(--black);
+    color: var(--white);
     transition: all 0.3s ease;
 }
 
 .agent-Sidebar li button,
-.agent-middlebar li button {
+.agent-middlebar li button,
+.message-bar button {
     background-color: var(--glass);
-    color: var(--black);
+    color: var(--white);
     border-radius: 10px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(9.1px);
     -webkit-backdrop-filter: blur(9.1px);
     border: 1px solid var(--pink);
     padding: 5px;
+    margin-left: 5px;
     z-index: 2;
 }
 
 .agent-Sidebar li:hover,
-.agent-middlebar li:hover {
+.agent-middlebar li:hover,
+.message-bar button:hover,
+.end-chat:hover {
     color: var(--pink);
+    border: 1px solid var(--white);
     cursor: pointer;
 }
 
 .customer-chat {
     justify-content: center;
+    padding-top: 20px;
+    padding-left: 15px;
 }
 
+.customer-chat h2 span {
+    color: rgb(255, 0, 255);
+}
+
+.message-bar {
+    position: fixed;
+    justify-content: end;
+    bottom: 10px;
+}
+
+.message-bar input {
+    width: 620px;
+    height: 35px;
+    color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    border: 1px solid var(--pink);
+}
+
+.customer__messages {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    background-color: var(--glass);
+    width: 90%;
+    height: 550px;
+    overflow: auto;
+}
+
+.customer__message.left {
+    align-self: flex-end;
+    color: var(--white);
+    max-width: max-content;
+    top: 50px;
+    margin: 8px;
+    border: 1px solid var(--white);
+    border-width: max-content;
+    border-radius: 15px;
+    padding: 6px;
+    transition: all 0.3s ease;
+}
+
+.customer__message.right {
+    align-self: flex-start;
+    color: var(--white);
+    max-width: max-content;
+    top: 50px;
+    margin: 8px;
+    border: 1px solid var(--pink);
+    border-width: max-content;
+    border-radius: 15px;
+    padding: 6px;
+    transition: all 0.3s ease;
+}
+
+.end-chat {
+    background-color: var(--glass);
+    color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    border: 1px solid var(--pink);
+    position: absolute;
+    top: 140px;
+    right: 50px;
+    padding: 5px;
+    margin-left: 5px;
+    z-index: 2;
+}
 
 .relief {
     position: absolute;

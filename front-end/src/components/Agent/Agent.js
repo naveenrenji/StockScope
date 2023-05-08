@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Send, SlashCircle } from "react-bootstrap-icons";
 import io from 'socket.io-client';
 import './Agent.css';
 
@@ -70,7 +71,7 @@ const Agent = () => {
     setInputMessage('');
   };
 
-  const handleChatRequest = (e) => {}
+  const handleChatRequest = (e) => { }
 
   return (
     <div className='Home'>
@@ -101,28 +102,28 @@ const Agent = () => {
           <div className='agent-area'>
             {currentChat ? (
               <div className='customer-chat'>
-                <h2>Chat with {currentChat}</h2>
-                <ul>
+                <h2>Chat with <span>{currentChat}</span></h2>
+                <div className="customer__messages">
                   {messages.map((message, index) => (
-                    <li
+                    <div
                       key={index}
-                      style={{
-                        textAlign: message.senderId === 'agent' ? 'right' : 'left',
-                      }}
+                      className={`customer__message ${message.senderId === 'agent' ? "right" : "left"
+                        }`}
                     >
                       {message.content}
-                    </li>
+                    </div>
                   ))}
-                </ul>
-                <form onSubmit={handleMessageSubmit}>
+                </div>
+                <form onSubmit={handleMessageSubmit} className='message-bar'>
                   <input
                     type="text"
                     value={inputMessage}
                     onChange={handleMessageChange}
+                    aria-label='send-message'
                   />
-                  <button type="submit">Send</button>
+                  <button type="submit">Send <Send /></button>
                 </form>
-                <button onClick={handleEndChat}>End Chat</button>
+                <button onClick={handleEndChat} className='end-chat'>End Chat <SlashCircle /></button>
               </div>
             ) : <div>
               <p className='relief'>Great! No more customer queries 😍😍</p></div>}

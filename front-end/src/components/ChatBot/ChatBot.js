@@ -87,7 +87,7 @@ const Chatbot = () => {
     };
     setMessages((prevMessages) => [...prevMessages, messageData]);
     setInputMessage("");
-    socket.emit("talk_to_agent", { userId: currUsername }); // Replace 'currUsername' with the actual user id
+    socket.emit("talk_to_agent", { userId: currUsername }); // TODO: Replace 'currUsername' with the actual user id (DONE)
   };
 
   const handleMessageChange = (e) => {

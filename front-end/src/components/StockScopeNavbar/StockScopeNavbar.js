@@ -24,7 +24,7 @@ const StockScopeNavbar = () => {
               to={item.link}
               key={index}
               onClick={() => setSelected(index)}
-              aria-label={index}
+              aria-label={item.heading}
             >
               <span>{item.heading}</span>
             </Link>

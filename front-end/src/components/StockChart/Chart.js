@@ -175,7 +175,7 @@ const Chart = (props) => {
 
   return (
     <div>
-      <h4>Stock Chart</h4>
+      <h2>Stock Chart</h2>
       <ResponsiveContainer width="100%" height={410}>
         {renderChart()}
       </ResponsiveContainer>
