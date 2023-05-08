@@ -6,6 +6,9 @@ import { auth } from "../../firebase/firebaseConfiguration";
 import { signOut } from "firebase/auth";
 import { Power } from "react-bootstrap-icons";
 import "./Agent.css";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import axios from "axios";
+import env from "../../config/env.json";
 
 const Agent = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -14,6 +17,7 @@ const Agent = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [socket, setSocket] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,8 +25,40 @@ const Agent = () => {
     setSocket(newSocket);
     newSocket.emit("new_user", { userId: "agent" });
 
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.email === "stockscope2023@gmail.com") {
+        console.log(user);
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+        // ...
+        console.log("uid", user);
+      } else {
+        //console.log("user is logged out");
+        //alert("You are not Logged in");
+        navigate("/");
+      }
+    });
+    return unsubscribe;
+
     return () => newSocket.close();
-  }, []);
+  }, [navigate]);
+
+  // useEffect(() => {
+  //   async function getUserData(email) {
+  //     if (!email) {
+  //       return;
+  //     }
+  //     const res = await axios.get(
+  //       env.backend + "users/getUserPortfolios/" + email
+  //     );
+  //     console.log(res.data, res.data.type);
+  //   }
+
+  //   if (userEmail) {
+  //     getUserData(auth.currentUser.email);
+  //   }
+  // }, [userEmail]);
 
   useEffect(() => {
     if (!socket) return;
@@ -77,7 +113,7 @@ const Agent = () => {
         // Sign-out successful.
         console.log("Signed out successfully");
         window.location.reload();
-        navigate('/');
+        navigate("/");
       })
       .catch((error) => {
         // An error happened.
@@ -108,8 +144,9 @@ const Agent = () => {
         <div className="title-and-logout">
           <h1 className="portal-title">Agent Portal</h1>
           <div>
-            <Link className="authButton2" to={'/'}>
-              <Grid1x2 size="18px" style={{ margin: "5px" }} />Dashboard
+            <Link className="authButton2" to={"/"}>
+              <Grid1x2 size="18px" style={{ margin: "5px" }} />
+              Dashboard
             </Link>
             <Link className="authButton2" onClick={handleLogout}>
               <Power size="18px" style={{ margin: "5px" }} /> Logout
@@ -151,8 +188,9 @@ const Agent = () => {
                   {messages.map((message, index) => (
                     <div
                       key={index}
-                      className={`customer__message ${message.senderId === "agent" ? "left" : "right"
-                        }`}
+                      className={`customer__message ${
+                        message.senderId === "agent" ? "left" : "right"
+                      }`}
                     >
                       {message.content}
                     </div>
