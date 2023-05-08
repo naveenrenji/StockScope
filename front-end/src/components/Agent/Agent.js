@@ -51,6 +51,17 @@ const Agent = () => {
     );
   };
 
+  //TODO: Commplete handleChatRequest code below to persist chats once switched
+  const handleChatRequest = (userId) => {
+    setCurrentChat(userId);
+    setMessages([]);
+    socket.emit("ongoing_chats", { room: userId });
+    const previousMessages = activeChats.find((chat) => chat === userId);
+    if (previousMessages && previousMessages.messages) {
+      setMessages(previousMessages.messages);
+    }
+  };  
+
   const handleEndChat = () => {
     socket.emit("end_chat", { receiverId: currentChat });
     setActiveChats((prevChats) => prevChats.filter((id) => id !== currentChat));
@@ -88,8 +99,6 @@ const Agent = () => {
     setInputMessage("");
   };
 
-  const handleChatRequest = (e) => {};
-
   return (
     <div className="Home">
       <div className="portal">
@@ -115,7 +124,6 @@ const Agent = () => {
           </div>
           <div className="agent-middlebar">
             <p>Ongoing Support Chats</p>
-            {/* Add Code for  ongoing sessions*/}
             {activeChats.map((userId, index) => (
               <li key={index}>
                 {userId}{" "}
@@ -136,7 +144,7 @@ const Agent = () => {
                     <div
                       key={index}
                       className={`customer__message ${
-                        message.senderId === "agent" ? "right" : "left"
+                        message.senderId === "agent" ? "left" : "right"
                       }`}
                     >
                       {message.content}
