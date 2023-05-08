@@ -13,10 +13,6 @@
     padding-top: 15px;
     padding-left: 30px;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: rgba(255, 255, 255, 0.438);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     z-index: 1;
 }
 
@@ -170,3 +166,36 @@
     text-align: center;
     font-size: 25px;
 }
+
+.authButton {
+    font-size: 18px;
+    margin-right: 30px;
+    padding: 8px 10px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.38);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.7px);
+    -webkit-backdrop-filter: blur(6.7px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    transition: all 0.3s ease;
+  }
+  
+  .authButton:hover {
+    transition: all 0.3s ease;
+  }
+
+  .title-and-logout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    padding-top: 15px;
+    padding-left: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgba(255, 255, 255, 0.438);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+  }
