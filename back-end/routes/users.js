@@ -5,7 +5,7 @@ const helper = require("../helpers");
 const User = require("../models/User");
 
 router.post("/createUser", async (req, res) => {
-  const tempUser = await User.findOne({ email: req.body.email });
+  const tempUser = await User.findOne({ email: req.body.email.toLowerCase() });
   console.log(tempUser);
   if (tempUser) {
     res.status(200).json({ Error: "User already exists" });
@@ -13,14 +13,13 @@ router.post("/createUser", async (req, res) => {
   }
   try {
     helper.checkName(req.body.name);
-    helper.checkEmail(req.body.email);
+    helper.checkEmail(req.body.email.toLowerCase());
   } catch (e) {
     return res.status(400).json({ error: e });
   }
   const user = new User({
     name: req.body.name,
-    username: "",
-    email: req.body.email,
+    email: req.body.email.toLowerCase().toLowerCase(),
     type: "user",
     photoUrl: "",
     about: "",
@@ -42,31 +41,23 @@ router.post("/createUser", async (req, res) => {
 });
 
 router.post("/editUser", async (req, res) => {
-  const tempUser = await User.findOne({ email: req.body.email });
+  const tempUser = await User.findOne({ email: req.body.email.toLowerCase() });
   console.log(tempUser);
   try {
     helper.checkName(req.body.name);
-    helper.checkEmail(req.body.email);
+    helper.checkEmail(req.body.email.toLowerCase());
+    helper.checkUrl(req.body.photoUrl);
+    helper.checkString(req.body.about);
   } catch (e) {
     return res.status(400).json({ error: e });
   }
-  const user = new User({
-    name: req.body.name,
-    username: "",
-    email: req.body.email,
-    type: "user",
-    photoUrl: "",
-    about: "",
-    portfolios: [
-      {
-        name: "default",
-        net_profit_loss: 0,
-        stocks: [],
-      },
-    ],
-  });
+  tempUser.name = req.body.name;
+  tempUser.email = req.body.email.toLowerCase();
+  tempUser.photoUrl = req.body.photoUrl;
+  tempUser.about = req.body.about;
+
   try {
-    const savedUser = await user.save();
+    const savedUser = await tempUser.save();
     res.status(200).json(savedUser);
   } catch (e) {
     console.log(e);
@@ -74,6 +65,20 @@ router.post("/editUser", async (req, res) => {
   }
 });
 
+router.get("/deleteUser/:email", async (req, res) => {
+  try {
+    helper.checkEmail(req.params.email);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
+    let user = await User.deleteOne({ email: req.params.email });
+    return res.status(200).json({ message: "User account deleted" });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(e);
+  }
+});
 
 router.get("/getUserPortfolios/:email", async (req, res) => {
   try {
@@ -91,13 +96,13 @@ router.get("/getUserPortfolios/:email", async (req, res) => {
 
 router.post("/createNewPortfolio", async (req, res) => {
   try {
-    helper.checkEmail(req.body.email);
+    helper.checkEmail(req.body.email.toLowerCase());
     helper.checkString(req.body.portfolioName, "Portfolio Name");
   } catch (e) {
     return res.status(400).json({ error: e });
   }
   try {
-    let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email.toLowerCase() });
     for (let portfolio of user.portfolios) {
       if (portfolio.name === req.body.portfolioName) {
         return res.status(400).json({ error: "Portfolio already exists" });
@@ -117,13 +122,13 @@ router.post("/createNewPortfolio", async (req, res) => {
 
 router.post("/deletePortfolio", async (req, res) => {
   try {
-    helper.checkEmail(req.body.email);
+    helper.checkEmail(req.body.email.toLowerCase());
     helper.checkId(req.body.portfolioId, "Portfolio ID");
   } catch (e) {
     return res.status(400).json({ error: e });
   }
   try {
-    let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email.toLowerCase() });
     console.log(user);
     let index = -1;
     for (let i in user.portfolios) {
@@ -145,16 +150,17 @@ router.post("/deletePortfolio", async (req, res) => {
 
 router.post("/addStockToPortfolio", async (req, res) => {
   try {
-    helper.checkEmail(req.body.email);
+    console.log(req.body);
+    helper.checkEmail(req.body.email.toLowerCase());
     helper.checkString(req.body.portfolioName, "Portfolio Name");
     helper.checkString(req.body.stockName, "Stock Name");
-    // helper.checkPosNumber(req.body.no_of_shares, "Stock quantity"); //Issue with the commented code
-    // helper.checkPosNumber(req.body.price);
+    req.body.shares = helper.checkPosNumber(req.body.shares, "Stock quantity");
+    req.body.price = helper.checkPosNumber(req.body.price, "Price");
   } catch (e) {
     return res.status(400).json({ error: e });
   }
   try {
-    let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email.toLowerCase() });
     // console.log(user);
 
     let stockIndex = -1;
@@ -235,7 +241,7 @@ router.post("/addStockToPortfolio", async (req, res) => {
 
 router.post("/deleteStock", async (req, res) => {
   try {
-    helper.checkEmail(req.body.email);
+    helper.checkEmail(req.body.email.toLowerCase());
     helper.checkId(req.body.portfolioId, "Portfolio ID");
     helper.checkId(req.body.stockId, "Stock ID");
     helper.checkId(req.body.lotId, "Lot ID");
@@ -243,7 +249,7 @@ router.post("/deleteStock", async (req, res) => {
     return res.status(400).json({ error: e });
   }
   try {
-    let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email.toLowerCase() });
 
     let stockIndex = -1;
     let portfolioIndex = -1;
@@ -334,15 +340,16 @@ router.post("/deleteStock", async (req, res) => {
 
 router.post("/sellStock", async (req, res) => {
   try {
-    helper.checkEmail(req.body.email);
+    helper.checkEmail(req.body.email.toLowerCase());
     helper.checkId(req.body.portfolioId, "Portfolio ID");
     helper.checkId(req.body.stockId, "Stock ID");
     helper.checkId(req.body.lotId, "Lot ID");
+    req.body.sellingPrice = helper.checkPosNumber(req.body.sellingPrice);
   } catch (e) {
     return res.status(400).json({ error: e });
   }
   try {
-    let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email.toLowerCase() });
     let stockIndex = -1;
     let portfolioIndex = -1;
     for (let i in user.portfolios) {
