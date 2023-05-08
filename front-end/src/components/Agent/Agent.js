@@ -71,7 +71,16 @@ const Agent = () => {
     setInputMessage('');
   };
 
-  const handleChatRequest = (e) => { }
+  const handleChatRequest = (userId) => {
+    setCurrentChat(userId);
+    setMessages([]);
+
+    //Load chat history for the selected User
+    socket.emit('load_chat', {receiverId: userId}, (chatHistory) => {
+      setMessages(chatHistory);
+      setInputMessage('');
+    });
+  }
 
   return (
     <div className='Home'>

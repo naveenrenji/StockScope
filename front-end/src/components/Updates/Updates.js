@@ -52,7 +52,7 @@ const Updates = () => {
                   <span><Link to={update.url} target="_blank">{update.name}</Link></span>
                   <p> {update.noti}</p>
                 </div>
-                <p>Last Updated:<span> {update.time}</span></p>
+                <p>Published:<span> {update.time}</span></p>
               </div>
             </div>
           );
