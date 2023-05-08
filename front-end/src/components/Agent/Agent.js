@@ -40,24 +40,7 @@ const Agent = () => {
     });
     return unsubscribe;
 
-    return () => newSocket.close();
   }, [navigate]);
-
-  // useEffect(() => {
-  //   async function getUserData(email) {
-  //     if (!email) {
-  //       return;
-  //     }
-  //     const res = await axios.get(
-  //       env.backend + "users/getUserPortfolios/" + email
-  //     );
-  //     console.log(res.data, res.data.type);
-  //   }
-
-  //   if (userEmail) {
-  //     getUserData(auth.currentUser.email);
-  //   }
-  // }, [userEmail]);
 
   useEffect(() => {
     if (!socket) return;
