@@ -7,7 +7,7 @@ import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
 import protobuf from 'protobufjs';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, reauthenticateWithRedirect } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfiguration';
 import { useNavigate } from 'react-router-dom';
 const { Buffer } = require('buffer/');
@@ -41,6 +41,9 @@ export default function Portfolio() {
 
     //This state is used to store the recent prices of the symbols of the portfolio user has
     const [symbolPrice, setsymbolPrice] = useState({});
+
+    //THis state is used to store the total MarketValue of the portfolio
+
 
     const navigate = useNavigate();
 
@@ -117,7 +120,11 @@ export default function Portfolio() {
                             console.log('coming message');
 
                             let data = Yaticker.decode(new Buffer(message.data, 'base64'));
+                            setsymbolPrice((prevData) => {
 
+                                let temp = { ...prevData, [data.id]: parseFloat([data.price]).toFixed(2) };
+                                return temp;
+                            })
                             console.log(data);
                         };
                     });
@@ -244,6 +251,61 @@ export default function Portfolio() {
         }
     }
 
+    //Get the total number of symbols in the portfolio
+    function noOfSymbols(portfolio) {
+
+        if (!portfolio)
+            return 0;
+
+        return portfolio.stocks.length;
+    }
+
+    //Get the total change Percent
+    function calculateChangePercent(portfolio) {
+
+        if (!userdataFound || !portfolio)
+            return 0;
+
+        let stocks = portfolio.stocks;
+
+        let changePercent = 0;
+
+        for (let i = 0; i < stocks.length; i++) {
+
+            let symbol = stocks[i].symbol;
+            let avg_price = stocks[i].avg_buy_price;
+            if (symbol in symbolPrice)
+                changePercent += (symbolPrice[symbol] - avg_price) / avg_price;
+        }
+
+        changePercent = (changePercent * 100).toFixed(2);
+        return changePercent;
+    }
+
+    //Get the total change
+    function calculateChange(portfolio) {
+
+        if (!userdataFound || !portfolio)
+            return 0;
+
+        let stocks = portfolio.stocks;
+
+        let change = 0;
+
+        for (let i = 0; i < stocks.length; i++) {
+
+            let symbol = stocks[i].symbol;
+            let avg_price = stocks[i].avg_buy_price;
+            let number_of_shares = stocks[i].no_of_shares
+            if (symbol in symbolPrice)
+                change += number_of_shares * (symbolPrice[symbol] - avg_price);
+        }
+
+        change = parseFloat(change).toFixed(2);
+        return change;
+    }
+
+
     if (userdataFound) {
 
         return (
@@ -312,15 +374,15 @@ export default function Portfolio() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {stocks.map((stock) => (
-                                    <tr key={stock.symbol}>
-                                        <td style={{ padding: "15px" }}>{stock.name}</td>
+                                {userInfo.portfolios.map((portfolio) => (
+                                    <tr key={portfolio._id}>
+                                        <td style={{ padding: "15px" }}>{portfolio.name}</td>
                                         <td style={{ padding: "15px" }}>
-                                            <span className="change" style={makeStyle(stock.change)}>{stock.change}%</span>
+                                            <span className="change" style={makeStyle(calculateChangePercent(portfolio))}>{calculateChangePercent(portfolio)}%</span>
                                         </td>
-                                        <td style={{ padding: "15px" }}>{stock.symbol}</td>
+                                        <td style={{ padding: "15px" }}>{noOfSymbols(portfolio)}</td>
                                         <td style={{ padding: "15px" }}>
-                                            <span className="change" style={makeStyle(stock.gain)}>${stock.gain.toLocaleString("en-US")}</span>
+                                            <span className="change" style={makeStyle(calculateChange(portfolio))}>${calculateChange(portfolio).toLocaleString("en-US")}</span>
                                         </td>
                                     </tr>
                                 ))}
