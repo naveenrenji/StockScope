@@ -5,6 +5,8 @@ import SocialSignIn from "./SocialSignIn";
 import {
   fetchSignInMethodsForEmail,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  getAuth,
 } from "firebase/auth";
 
 import "../../assets/css/authentication.css";
@@ -20,6 +22,7 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     if (loading) {
       return;
     }
@@ -44,6 +47,30 @@ function Login() {
     // Password validation regex pattern
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
     return passwordRegex.test(password);
+  };
+
+  const resetPassword = () => {
+    console.log("reset");
+    if (!validateEmail()) {
+      alert("Enter your Email ID first");
+      return;
+    }
+    const auth = getAuth();
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // Password reset email sent!
+        // ..
+        console.log("sent");
+        alert(
+          "Email has been sent to your inbox with a link to reset your password"
+        );
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert("Could not send the email");
+        console.log(error);
+      });
   };
 
   // Login with email and password
@@ -107,7 +134,9 @@ function Login() {
               />
             </Form.Group>
             <span className="authentication-ac">
-              <Link to="">Forgot Password?</Link>
+              <Link to="" onClick={resetPassword}>
+                Forgot Password/ Reset Password?
+              </Link>
             </span>
             <br></br>
             <button className="authButton" onClick={onLogin}>

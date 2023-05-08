@@ -4,7 +4,9 @@
   "description": "CS 554-A Project",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm start"
   },
   "author": "Friendly Neighbourhood webbies",
   "license": "ISC",
