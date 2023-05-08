@@ -10,13 +10,9 @@ import RightSide from '../RigtSide/RightSide';
 const HistoricalData = (props) => {
     //This useEffect is used to get the live data
     const [activeTab, setActiveTab] = useState('income-statement');
-    const [data, setData] = useState([]);
-    const [showAnnual, setShowAnnual] = useState(true);
+    const [data, setData] = useState({});
+    const [showAnnual, setShowAnnual] = useState('annual-records');
     const [dataFound, setDataFound] = useState(false);
-
-
-    let tableData = [];
-
 
     useEffect(() => {
 
@@ -25,10 +21,9 @@ const HistoricalData = (props) => {
             try {
 
                 setDataFound(false);
-                let { data } = await axios.get(`http://localhost:3001/stock/income-statement/${props.symbol}`);
-
-
-                if (showAnnual) {
+                let { data } = await axios.get(`http://localhost:3001/stock/${activeTab}/${props.symbol}`);
+                console.log(data);
+                if (showAnnual === "annual-records") {
 
                     let temp = data.annualReports;
                     setData(temp);
@@ -37,8 +32,7 @@ const HistoricalData = (props) => {
                 else {
 
                     let temp = data.quarterlyReports;
-                    let new_temp = temp.slice(0, 5);
-                    setData(new_temp);
+                    setData(temp);
                 }
 
                 setDataFound(true);
@@ -52,63 +46,74 @@ const HistoricalData = (props) => {
         }
 
         fetchData();
-    }, [showAnnual, activeTab])
+    }, [showAnnual, activeTab, showAnnual])
 
-    if (dataFound && data.length > 0) {
-        console.log(data[0]);
-        let ObjectKeys = Object.keys(data[0]);
 
-        for (let i = 0; i < ObjectKeys.length; i++) {
-            tableData.push(`<tr> <td> ${ObjectKeys[i]} </td> </tr>`);
-        }
+    if (dataFound) {
+
         return (
-            <div className='Home'>
-                <div className='HomeGlass'>
-                    <Sidebar />
-                    <div className='summaryContainer'>
-                        <StockScopeNavbar />
-                        <Container className="mt-4">
-                            <h3>{props.name}</h3>
-                            <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
-                            <Nav variant="pills" activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
-                                <Nav.Item>
-                                    <Nav.Link eventKey="income-statement">Income Statement</Nav.Link>
-                                </Nav.Item>
-                                <Nav.Item>
-                                    <Nav.Link eventKey="balance-sheet">Balance Sheet</Nav.Link>
-                                </Nav.Item>
-                                <Nav.Item>
-                                    <Nav.Link eventKey="cash-flow">Cash Flow</Nav.Link>
-                                </Nav.Item>
-                            </Nav>
 
-                            {tableData &&
-                                <Table>
-                                    <tbody>
-                                        {tableData}
-                                    </tbody>
-                                </Table>
+            <Container className="mt-4">
+
+                <h1>{props.name}</h1>
+                <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
+                <Nav variant="pills" activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
+                    <Nav.Item>
+                        <Nav.Link eventKey="income-statement">Income Statement</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="balance-sheet">Balance Sheet</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="cash-flow">Cash Flow</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+
+                <Nav variant="pills" activeKey={showAnnual} onSelect={(tab) => setShowAnnual(tab)}>
+                    <Nav.Item>
+                        <Nav.Link eventKey="annual-records">Annual Records</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="quarterly-records">Quarterly Records</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+
+
+                {Object.keys(data) && Object.keys(data).length > 0 &&
+                    <Table>
+                        <tbody>
+                            {Object.entries(data).map(([key, value]) => {
+
+                                return (
+                                    <tr>
+                                        <td>{key}</td>
+                                        {value && value.map(data => {
+                                            return (
+                                                <td>{data}</td>
+                                            )
+                                        })}
+                                    </tr>
+                                )
+                            })
                             }
-                        </Container>
-                    </div>
-                    <RightSide />
-                </div>
-            </div>
-        );
-    } else {
-        <div className='Home'>
-            <div className='HomeGlass'>
-                <Sidebar />
-                <div className='summaryContainer'>
-                    <StockScopeNavbar />
-                    <Container>
-                        <h1>Data not Found</h1>
-                    </Container>
-                </div>
-                <RightSide />
-            </div>
-        </div>
-    };
-};
+                        </tbody>
+
+                    </Table>
+                }
+
+
+
+            </Container>
+
+        )
+    }
+
+    else {
+
+        <Container>
+            <h1>Data not Found</h1>
+        </Container>
+    }
+}
 
 export default HistoricalData;
