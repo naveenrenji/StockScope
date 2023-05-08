@@ -66,7 +66,7 @@ const CustomerReview = () => {
   useEffect(()=>{
     const interval = setInterval(() => {
       setRenderCount((prevCount) => prevCount + 1);
-    }, (60*60*60000)); // 60 seconds
+    }, (60*60*60000));
 
     async function fetchData(){
       try {
@@ -84,7 +84,7 @@ const CustomerReview = () => {
     return () => {
       clearInterval(interval);
     };
-  },[data, renderCount]);
+  },[renderCount]);
 
   if (loading) {
     return (
