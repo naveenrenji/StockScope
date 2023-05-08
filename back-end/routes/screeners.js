@@ -29,13 +29,13 @@ router.route("/trending-stocks").get(async (req, res) => {
         const options = {
             method: 'GET',
             url: 'https://yahoo-finance15.p.rapidapi.com/api/yahoo/co/collections/most_actives',
-            params: {start: '0'},
+            params: { start: '0' },
             headers: {
-              'X-RapidAPI-Key': process.env.YAHOO_FINANCE_API_KEY,
-              'X-RapidAPI-Host': process.env.YAHOO_FINANCE_API_HOST
+                'X-RapidAPI-Key': process.env.YAHOO_FINANCE_API_KEY,
+                'X-RapidAPI-Host': process.env.YAHOO_FINANCE_API_HOST
             }
-          };
-          
+        };
+
         let { data } = await axios.request(options);
         //If the data is not present we will throw 404 along with data not found message
         if (Object.keys(data).length === 0) {
@@ -45,7 +45,7 @@ router.route("/trending-stocks").get(async (req, res) => {
             throw error;
         }
 
-        temp = {...data};
+        temp = { ...data };
         temp1 = temp.quotes;
         temp1 = temp1.slice(0, 5);
 
@@ -79,11 +79,11 @@ router.route("/general-news")
     .get(async (req, res) => {
         let newsData = [];
         let temp, temp1;
-            let currentDate = new Date();
-            const formattedDate = currentDate.toLocaleDateString();
+        let currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString();
 
         try {
-            
+
             if (await client.exists(`general-news:${formattedDate}`)) {
                 console.log("Data fetched from redis");
                 let stringData = await client.get(`general-news:${formattedDate}`);
@@ -133,5 +133,58 @@ router.route("/general-news")
 
         return res.status(200).json(newsData);
     });
+
+router.route("/index-data").get(async (req, res) => {
+    let indexData = {
+        prices: [],
+        timestamps: []
+    };
+    let temp, temp1;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString();
+
+    try {
+
+        //Checking if the data is present in the cache or not
+        if (await client.get(`index-data:${formattedDate}`)) {
+
+            console.log("Data fetched from redis");
+            let indexData = await client.get(`index-data:${formattedDate}`);
+            indexData = JSON.parse(indexData);
+            return res.status(200).json(indexData);
+        }
+
+        let { data } = await axios.request(`https://api.twelvedata.com/time_series?apikey=${process.env.TWELVE_DATA_API_KEY}&symbol=SP100&interval=5min&outputsize=5000`);
+
+        //If the data is not present we will throw 404 along with data not found message
+        if (Object.keys(data).length === 0) {
+
+            const error = new Error("Data not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        temp = { ...data };
+        temp1 = temp.values;
+
+        for (const value of temp1) {
+            indexData.prices.push(value.close);
+            indexData.timestamps.push(value.datetime);
+        }
+
+        console.log("Data fetched from api");
+        //convert the data to the string
+        let stringData = JSON.stringify(indexData);
+
+        await client.set(`index-data:${formattedDate}`, stringData);
+    }
+    catch (error) {
+        return res.status(error.statusCode).json({
+            error: error.message
+        })
+    }
+    return res.status(200).json(
+        indexData);
+});
 
 module.exports = router;
