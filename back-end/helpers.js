@@ -139,12 +139,26 @@ const checkName = (strVal) => {
   return strVal;
 };
 
-const checkPosNumber = (num, varName) =>{
-  if (!shares) throw `You must provide ${varName}`;
-  if( typeof shares !== 'Number') throw `${varName} should be a number`;
-  if( shares < 1) throw `${varName} should be a positive number`;
-  return shares;
-}
+const checkPosNumber = (num, varName) => {
+  console.log(num);
+  if (!num) throw `You must provide ${varName}`;
+  num = Number(num);
+  console.log(typeof num === "number");
+  if (typeof num !== "number") throw `${varName} should be a number`;
+  if (num < 1) throw `${varName} should be a positive number`;
+  return num;
+};
+
+const checkUrl = (urlString) => {
+  let flag = true;
+  try {
+    flag = Boolean(new URL(urlString));
+  } catch (e) {
+    flag = false;
+  }
+  if (!flag) throw "Invalid Photo URL";
+  return urlString;
+};
 
 module.exports = {
   checkStockName,
@@ -155,5 +169,6 @@ module.exports = {
   checkId,
   checkString,
   checkEmail,
-  checkPosNumber
+  checkPosNumber,
+  checkUrl,
 };

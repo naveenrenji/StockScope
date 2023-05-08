@@ -209,7 +209,6 @@ router.route("/income-statement/:name").get(async (req, res) => {
         final_data["symbol"] = data["symbol"];
         final_data["annualReports"] = annual_records;
         final_data["quarterlyReports"] = quarter_records;
-
         let stringData = JSON.stringify(final_data);
 
         await client.set(`income-statement:${stockName}`, stringData);

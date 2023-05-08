@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import SocialSignIn from "./SocialSignIn";
-import { fetchSignInMethodsForEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  fetchSignInMethodsForEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
-import '../../assets/css/authentication.css'
+import "../../assets/css/authentication.css";
 import { PersonCircle } from "react-bootstrap-icons";
 import { auth } from "../../firebase/firebaseConfiguration";
 
 export let isLoggedIn = false;
-
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -53,7 +55,7 @@ function Login() {
     }
     if (!validatePassword()) {
       alert(
-        'Please enter a password with at least 8 characters, containing at least one lowercase letter, one uppercase letter, and one number.'
+        "Please enter a password with at least 8 characters, containing at least one lowercase letter, one uppercase letter, and one number."
       );
       return;
     }
@@ -63,14 +65,24 @@ function Login() {
         alert("There is no user with this email. Please sign up first.");
         return;
       }
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-      navigate("/");
+      if (user.email === "stockscope2023@gmail.com") {
+        navigate("/agent");
+      } else {
+        navigate("/");
+      }
       console.log(user);
+      navigate("/");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
+      alert("Either the email or the password is wrong");
     }
   };
 
@@ -84,11 +96,7 @@ function Login() {
           <Form>
             <Form.Group controlId="email">
               <Form.Label>Email ID</Form.Label>
-              <Form.Control
-                type="email"
-                value={email}
-                onChange={handleEmail}
-              />
+              <Form.Control type="email" value={email} onChange={handleEmail} />
             </Form.Group>
             <Form.Group controlId="password">
               <Form.Label>Password</Form.Label>
