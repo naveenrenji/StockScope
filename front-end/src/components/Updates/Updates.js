@@ -3,6 +3,8 @@ import axios from "axios";
 import "./Updates.css";
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
+import noImage from "../../assets/imgs/no-image.png";
+
 
 const Updates = () => {
   const [UpdatesData, setUpdatesData] = useState([]);
@@ -44,7 +46,7 @@ const Updates = () => {
         {UpdatesData.slice(0, 10).map((update, index) => {
           return (
             <div className="update" key={index}>
-              <img src={update.img} alt="profile" />
+              <img src={update.img? update.img : noImage} alt="profile" />
               <div className="details">
                 <div className="info">
                   <span><Link to={update.url} target="_blank">{update.name}</Link></span>
