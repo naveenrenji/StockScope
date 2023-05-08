@@ -66,6 +66,7 @@ function Profile() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log(user);
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         const uid = user.uid;
@@ -84,7 +85,7 @@ function Profile() {
         } else {
           setIsGoogle(false);
         }
-        console.log(isGoogle);
+        console.log(isGoogle, user.providerData.providerId);
       } else {
         console.log("user is logged out");
         alert("You are not Logged in");

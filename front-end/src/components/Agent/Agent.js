@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Send, SlashCircle } from "react-bootstrap-icons";
+import { Link, useNavigate } from "react-router-dom";
+import { Grid1x2, Send, SlashCircle } from "react-bootstrap-icons";
 import io from "socket.io-client";
-import "./Agent.css";
 import { auth } from "../../firebase/firebaseConfiguration";
 import { signOut } from "firebase/auth";
 import { Power } from "react-bootstrap-icons";
+import "./Agent.css";
 
 const Agent = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -13,6 +14,7 @@ const Agent = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [socket, setSocket] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const newSocket = io("http://localhost:3001");
@@ -60,7 +62,7 @@ const Agent = () => {
     if (previousMessages && previousMessages.messages) {
       setMessages(previousMessages.messages);
     }
-  };  
+  };
 
   const handleEndChat = () => {
     socket.emit("end_chat", { receiverId: currentChat });
@@ -75,6 +77,7 @@ const Agent = () => {
         // Sign-out successful.
         console.log("Signed out successfully");
         window.location.reload();
+        navigate('/');
       })
       .catch((error) => {
         // An error happened.
@@ -104,9 +107,14 @@ const Agent = () => {
       <div className="portal">
         <div className="title-and-logout">
           <h1 className="portal-title">Agent Portal</h1>
-          <button className="authButton" onClick={handleLogout}>
-            Logout <Power size="18px" />
-          </button>
+          <div>
+            <Link className="authButton2" to={'/'}>
+              <Grid1x2 size="18px" style={{ margin: "5px" }} />Dashboard
+            </Link>
+            <Link className="authButton2" onClick={handleLogout}>
+              <Power size="18px" style={{ margin: "5px" }} /> Logout
+            </Link>
+          </div>
         </div>
         <div className="agentPortal">
           <div className="agent-Sidebar">
@@ -143,9 +151,8 @@ const Agent = () => {
                   {messages.map((message, index) => (
                     <div
                       key={index}
-                      className={`customer__message ${
-                        message.senderId === "agent" ? "left" : "right"
-                      }`}
+                      className={`customer__message ${message.senderId === "agent" ? "left" : "right"
+                        }`}
                     >
                       {message.content}
                     </div>
