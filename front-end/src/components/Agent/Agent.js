@@ -6,9 +6,8 @@ import { auth } from "../../firebase/firebaseConfiguration";
 import { signOut } from "firebase/auth";
 import { Power } from "react-bootstrap-icons";
 import "./Agent.css";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import axios from "axios";
-import env from "../../config/env.json";
+import { onAuthStateChanged } from "firebase/auth";
+
 
 const Agent = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
