@@ -1,3 +1,13 @@
+.stocksGlass {
+    display: grid;
+  height: 97%;
+  width: 97%;
+  background: var(--glass);
+  border-radius: 2rem;
+  gap: 16px;
+  grid-template-columns: 11rem auto 4rem;
+  overflow: hidden;
+}
 .summaryContainer {
     margin-top: 25px;
     margin-bottom: 25px;
