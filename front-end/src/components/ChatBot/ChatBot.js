@@ -10,7 +10,7 @@ const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [chatStatus, setChatStatus] = useState("idle");
   const [socket, setSocket] = useState(null);
-  const [messages, setMessages] = useState(() => JSON.parse(localStorage.getItem("messages")) || []);
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [user, setUser] = useState("");
 
@@ -20,6 +20,7 @@ const Chatbot = () => {
     if (!isOpen) {
       const newSocket = io("http://localhost:3001");
       setSocket(newSocket);
+      setMessages(() => JSON.parse(localStorage.getItem(user.displayName)) || [])
       newSocket.emit("new_user", { userId: user.displayName });
 
       newSocket.on("request_accepted", () => {
@@ -31,7 +32,7 @@ const Chatbot = () => {
         setMessages((prevMessages) => [...prevMessages, messageData]);
         console.log("connected with agent");
         setChatStatus("connected");
-        localStorage.setItem("messages", JSON.stringify(messages));
+        localStorage.setItem(user.displayName, JSON.stringify(messages));
       });
 
       newSocket.on("No_Agent", () => {
@@ -43,13 +44,13 @@ const Chatbot = () => {
         setMessages((prevMessages) => [...prevMessages, messageData]);
         console.log("No Agent");
         setChatStatus("idle");
-        localStorage.setItem("messages", JSON.stringify(messages));
+        localStorage.setItem(user.displayName, JSON.stringify(messages));
 
       });
 
       newSocket.on("message", (data) => {
         setMessages((prevMessages) => [...prevMessages, data]);
-        localStorage.setItem("messages", JSON.stringify(messages));
+        localStorage.setItem(user.displayName, JSON.stringify(messages));
       });
 
       newSocket.on("chat_ended", () => {
@@ -60,13 +61,13 @@ const Chatbot = () => {
           content: "Agent has ended the chat.",
         };
         setMessages((prevMessages) => [...prevMessages, messageData]);
-        localStorage.setItem("messages", JSON.stringify(messages));
+        localStorage.setItem(user.displayName, JSON.stringify(messages));
 
       });
     } else {
       socket.close();
       setSocket(null);
-      localStorage.setItem("messages", JSON.stringify(messages));
+      localStorage.setItem(user.displayName, JSON.stringify(messages));
     }
   };
 
@@ -128,7 +129,7 @@ const Chatbot = () => {
       };
       socket.emit("message", messageData);
       setMessages((prevMessages) => [...prevMessages, messageData]);
-      localStorage.setItem("messages", JSON.stringify(messages));
+      localStorage.setItem(currUsername, JSON.stringify(messages));
       setInputMessage("");
     }
     setInputMessage("");

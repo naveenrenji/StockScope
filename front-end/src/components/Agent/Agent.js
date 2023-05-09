@@ -16,8 +16,17 @@ const Agent = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [socket, setSocket] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentChat) {
+      const chatHistory = localStorage.getItem(`chat_${currentChat}`);
+      if (chatHistory) {
+        setMessages(JSON.parse(chatHistory));
+      }
+    }
+  }, [currentChat]);
 
   useEffect(() => {
     const newSocket = io("http://localhost:3001");
@@ -47,23 +56,33 @@ const Agent = () => {
     socket.on("request_received", (data) => {
       setPendingRequests((prevRequests) => [...prevRequests, data.userId]);
     });
-
     socket.on("message", (data) => {
       if (data.senderId === currentChat) {
-        setMessages((prevMessages) => [...prevMessages, data]);
+          setMessages((prevMessages) => {
+              const updatedMessages = [...prevMessages, data];
+              localStorage.setItem(`chat_${currentChat}`, JSON.stringify(updatedMessages));
+              return updatedMessages;
+          });
       }
-    });
+  });
+  
 
-    // return () => {
-    //   socket.off("request_received");
-    //   socket.off("message");
-    // };
+    return () => {
+      socket.off("request_received");
+      socket.off("message");
+    };
   }, [socket, currentChat]);
 
   const handleAcceptRequest = (userId) => {
     socket.emit("accept_request", { userId });
-    setActiveChats((prevChats) => [...prevChats, userId]);
-    setCurrentChat(userId);
+    setActiveChats((prevChats) => {
+      if (prevChats.includes(userId)) {
+          return prevChats;
+      } else {
+          return [...prevChats, userId];
+      }
+  });
+      setCurrentChat(userId);
     setMessages([]);
     setPendingRequests((prevRequests) =>
       prevRequests.filter((id) => id !== userId)
@@ -73,7 +92,12 @@ const Agent = () => {
   //TODO: Commplete handleChatRequest code below to persist chats once switched
   const handleChatRequest = (userId) => {
     setCurrentChat(userId);
-    setMessages([]);
+    const chatHistory = localStorage.getItem(`chat_${userId}`);
+    if (chatHistory) {
+        setMessages(JSON.parse(chatHistory));
+    } else {
+        setMessages([]);
+    }
     socket.emit("ongoing_chats", { room: userId });
     const previousMessages = activeChats.find((chat) => chat === userId);
     if (previousMessages && previousMessages.messages) {
@@ -115,7 +139,9 @@ const Agent = () => {
       content: inputMessage,
     };
     socket.emit("message", messageData);
-    setMessages((prevMessages) => [...prevMessages, messageData]);
+    const updatedMessages = [...messages, messageData];
+    setMessages(updatedMessages);
+    localStorage.setItem(`chat_${currentChat}`, JSON.stringify(updatedMessages));  
     setInputMessage("");
   };
 
