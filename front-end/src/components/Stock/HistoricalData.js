@@ -16,6 +16,7 @@ const HistoricalData = () => {
   const [data, setData] = useState({});
   const [showAnnual, setShowAnnual] = useState("annual-records");
   const [dataFound, setDataFound] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { symbol } = useParams();
 
@@ -35,6 +36,7 @@ const HistoricalData = () => {
           setData(temp);
         }
         setDataFound(true);
+        setLoading(false);
       } catch (error) {
         console.log(error);
         setDataFound(false);
@@ -43,90 +45,91 @@ const HistoricalData = () => {
     fetchData();
   }, [showAnnual, activeTab, showAnnual]);
 
-  if (!dataFound) {
+  if (loading) {
     return <div>Loading...</div>;
-  }
-
-  if (dataFound) {
-    return (
-      <div className="Home">
-        <div className="stocksGlass">
-          <Sidebar />
-          <div className="summaryContainer">
-            <Navbar bg="light" expand="lg">
-              <Container>
-                <Navbar.Brand href="/">StockScope</Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                  <Nav className="me-auto">
-                    <Nav.Link href={`/stock/summary/${symbol}`}>Summary</Nav.Link>
-                    <Nav.Link href={`/stock/news/${symbol}`}>News</Nav.Link>
-                    <Nav.Link href={`/stock/historicaldata/${symbol}`}>Historical Data</Nav.Link>
-                  </Nav>
-                </Navbar.Collapse>
-              </Container>
-            </Navbar >
-            <Container className="mt-4">
-              <h1>{symbol}</h1>
-              <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
-              <Nav
-                variant="pills"
-                activeKey={activeTab}
-                onSelect={(tab) => setActiveTab(tab)}
-              >
-                <Nav.Item>
-                  <Nav.Link eventKey="income-statement">
-                    Income Statement
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="balance-sheet">Balance Sheet</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="cash-flow">Cash Flow</Nav.Link>
-                </Nav.Item>
-              </Nav>
-
-              <Nav
-                variant="pills"
-                activeKey={showAnnual}
-                onSelect={(tab) => setShowAnnual(tab)}
-              >
-                <Nav.Item>
-                  <Nav.Link eventKey="annual-records">Annual Records</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="quarterly-records">
-                    Quarterly Records
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-
-              {Object.keys(data) && Object.keys(data).length > 0 && (
-                <Table>
-                  <tbody>
-                    {Object.entries(data).map(([key, value]) => {
-                      return (
-                        <tr key={key}>
-                          <td>{key}</td>
-                          {value &&
-                            value.map((data, index) => {
-                              return <td key={index}>{data}</td>;
-                            })}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              )}
-            </Container>
-          </div>
-          <ChatBot />
-        </div>
-      </div>
-    );
   } else {
-    return (<NotFound />)
+
+    if (dataFound) {
+      return (
+        <div className="Home">
+          <div className="stocksGlass">
+            <Sidebar />
+            <div className="summaryContainer">
+              <Navbar bg="light" expand="lg">
+                <Container>
+                  <Navbar.Brand href="/">StockScope</Navbar.Brand>
+                  <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                  <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="me-auto">
+                      <Nav.Link href={`/stock/summary/${symbol}`}>Summary</Nav.Link>
+                      <Nav.Link href={`/stock/news/${symbol}`}>News</Nav.Link>
+                      <Nav.Link href={`/stock/historicaldata/${symbol}`}>Historical Data</Nav.Link>
+                    </Nav>
+                  </Navbar.Collapse>
+                </Container>
+              </Navbar >
+              <Container className="mt-4">
+                <h1>{symbol}</h1>
+                <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
+                <Nav
+                  variant="pills"
+                  activeKey={activeTab}
+                  onSelect={(tab) => setActiveTab(tab)}
+                >
+                  <Nav.Item>
+                    <Nav.Link eventKey="income-statement">
+                      Income Statement
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="balance-sheet">Balance Sheet</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="cash-flow">Cash Flow</Nav.Link>
+                  </Nav.Item>
+                </Nav>
+
+                <Nav
+                  variant="pills"
+                  activeKey={showAnnual}
+                  onSelect={(tab) => setShowAnnual(tab)}
+                >
+                  <Nav.Item>
+                    <Nav.Link eventKey="annual-records">Annual Records</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="quarterly-records">
+                      Quarterly Records
+                    </Nav.Link>
+                  </Nav.Item>
+                </Nav>
+
+                {Object.keys(data) && Object.keys(data).length > 0 && (
+                  <Table>
+                    <tbody>
+                      {Object.entries(data).map(([key, value]) => {
+                        return (
+                          <tr key={key}>
+                            <td>{key}</td>
+                            {value &&
+                              value.map((data, index) => {
+                                return <td key={index}>{data}</td>;
+                              })}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                )}
+              </Container>
+            </div>
+            <ChatBot />
+          </div>
+        </div>
+      );
+    } else {
+      return (<NotFound />)
+    }
   }
 };
 

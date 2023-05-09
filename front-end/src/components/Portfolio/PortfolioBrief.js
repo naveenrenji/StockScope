@@ -9,6 +9,7 @@ import protobuf from "protobufjs";
 import protoFile from "../../config/YPricingData.proto";
 
 export default function PortfoioBrief() {
+    console.log("Inside portfolio brief");
 
     console.log("Inside portfolio brief");
 

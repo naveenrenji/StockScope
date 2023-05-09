@@ -2,11 +2,10 @@ import React from "react";
 import "./Cards.css";
 import Card from "../Card/Card";
 import { cardsData as defaultCard } from "../../config/config";
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const Cards = () => {
-
   //const [stocksData, setStocksData] = useState([]);
   const [cardsData, setCardsData] = useState([]);
   const [renderCount, setRenderCount] = useState(0);
@@ -23,12 +22,13 @@ const Cards = () => {
 
   const buildCards = (stocksData) => {
     let cards = defaultCard;
-    if (stocksData && stocksData.length>0) {
+    if (stocksData && stocksData.length > 0) {
       cards = [
         {
           title: stocksData[0].name,
+          symbol: stocksData[0].symbol,
           color: {
-            backGround: "linear-gradient(180deg, #bb67ff 0%, #c484f3 100%)",
+            backGround: "linear-gradient(180deg, #6667ff 0%, #8141f3 100%)",
             boxShadow: "0px 10px 20px 0px #e0c6f5",
           },
           barValue: stocksData[0].change.toFixed(2),
@@ -42,6 +42,7 @@ const Cards = () => {
         },
         {
           title: stocksData[1].name,
+          symbol: stocksData[1].symbol,
           color: {
             backGround: "linear-gradient(180deg, #FF919D 0%, #FC929D 100%)",
             boxShadow: "0px 10px 20px 0px #FDC0C7",
@@ -57,6 +58,7 @@ const Cards = () => {
         },
         {
           title: stocksData[2].name,
+          symbol: stocksData[2].symbol,
           color: {
             backGround:
               "linear-gradient(rgb(248, 212, 154) -146.42%, rgb(255 202 113) -46.42%)",
@@ -83,7 +85,9 @@ const Cards = () => {
 
     async function fetchData() {
       try {
-        let { data } = await axios.get('http://localhost:3001/screener/top-gainers');
+        let { data } = await axios.get(
+          "http://localhost:3001/screener/top-gainers"
+        );
         console.log(data);
         //setStocksData(data);
         //console.log(stocksData);
@@ -103,7 +107,7 @@ const Cards = () => {
 
   if (loading) {
     return (
-      <div className='Table'>
+      <div className="Table">
         <h3>Loading....</h3>
       </div>
     );
@@ -112,14 +116,15 @@ const Cards = () => {
       <>
         <h2>Top Gainers</h2>
         <div className="Cards">
-          {cardsData && cardsData.map((card, id) => (
-            <div className="parentContainer" key={id}>
-              <Card {...card} />
-            </div>
-          ))}
+          {cardsData &&
+            cardsData.map((card, id) => (
+              <div className="parentContainer" key={id}>
+                <Card {...card} />
+              </div>
+            ))}
         </div>
       </>
     );
-  };
-}
+  }
+};
 export default Cards;

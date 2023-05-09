@@ -75,11 +75,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message', (data) => {
-    // if(!chats.users[data.receiverId]){
-    //   chats.users[data.receiverId] = [data.content];
-    // }else{
-    //   chats.users[data.receiverId] = [...chats.users[data.receiverId], data.content];
-    // }
     io.to(users[data.receiverId]).emit('message', data);
     console.log('Message sent from', data.senderId, 'to', data.receiverId);
   });
@@ -100,6 +95,7 @@ io.on('connection', (socket) => {
       (key) => users[key] === socket.id
     );
     if(disconnectedUser){
+      io.to(users['agent']).emit('User_closed',disconnectedUser);
       delete users[disconnectedUser];
       console.log('User disconnected:', disconnectedUser);  
     }
