@@ -1,0 +1,55 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo:latest
+    volumes:
+      - ./data:/data/db
+    # networks:
+    #   - app_networks
+
+  redis-server:
+    image: redis
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    environment:
+      - 'API_PORT=6379'
+      - 'NODE_ENV=production'
+    # networks:
+    #   - app_networks
+    command: redis-server --bind 0.0.0.0
+
+  frontend:
+    build: ./front-end
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front-end:/app/front-end
+    depends_on:
+      - backend
+    # networks:
+    #   - app_networks
+
+  backend:
+    build: ./back-end
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./back-end:/app/back-end
+    environment:
+      MONGODB_URI: mongodb+srv://sagarcse19:cs554stockscope@cluster0.oxnej3r.mongodb.net/
+      REDIS_HOST: "redis-server"
+      REDIS_PORT: 6379
+    depends_on:
+      - mongo
+      - redis-server
+    # networks:
+    #   - app_networks
+
+# networks:
+#   app_networks:
+#     driver: bridge

@@ -1,0 +1,100 @@
+.stocksGlass {
+    display: grid;
+  height: 97%;
+  width: 97%;
+  background: var(--glass);
+  border-radius: 2rem;
+  gap: 16px;
+  grid-template-columns: 11rem auto 4rem;
+  overflow: hidden;
+}
+.summaryContainer {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.17);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    z-index: 1;
+    overflow: auto;
+}
+
+.summaryContainer .container {
+    padding-top: 70px;
+}
+
+.summaryContainer h3 {
+    margin: 10px;
+    color: var(--black);
+}
+
+.summaryContainer h2 {
+    margin: 10px;
+    color: var(--black);
+}
+
+.summaryContainer p {
+    margin: 10px;
+    color: var(--black);
+}
+
+.summaryContainer p span {
+    margin: 10px;
+}
+
+.row {
+    gap: 15px;
+    justify-content: center;
+}
+
+.row .card {
+    width: 400px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.249);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+}
+
+.row .card .card-img {
+    margin: 10px;
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.422);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+}
+
+.row .card .card-body a {
+    text-decoration: none;
+    color: var(--black);
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.row .card .card-body a:hover {
+    text-decoration: none;
+    color: var(--pink);
+    font-weight: bold;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .custom-nav .nav-link {
+    color: #333;
+    font-weight: bold;
+    padding: 10px 20px;
+  }
+  
+  .custom-nav .nav-link.active {
+    background-color: #333;
+    color: #fff;
+  }
+  

@@ -8,9 +8,9 @@
 
 3. Akshay Pradeep Pathade - 20009092
 
-4. Naveen Mathews Renji - 20016323
+4. Naveen Mathews Renji -
 
-5. Manudeep Reddy - 20012372
+5. Manudeep Reddy -
 
 **Project Description**
 
@@ -61,7 +61,7 @@ Financial statements are significant to investors because they may reveal much a
 - Install Docker Desktop software
 - Run the below cmd
 
-`docker compose up`
+  `docker compose up`
 
 **Resources**
 MongoDB Server console: https://cloud.mongodb.com/v2/638bc7a8b433235f5269396b#/clusters

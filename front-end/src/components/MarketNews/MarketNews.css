@@ -1,0 +1,89 @@
+.MarketNewsDash {
+    /* padding-top: 1rem; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: auto;
+    height: 100vh
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 31.25rem;
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.NewsContainer {
+    flex: 1;
+    /* Make the container take up all available vertical space */
+    align-self: flex-end;
+}
+
+.label {
+    font-size: .625rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: +1.3px;
+    margin-bottom: 1rem;
+}
+
+.searchBar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#searchInput {
+    width: 100%;
+    height: 2.8rem;
+    background: rgba(255, 255, 255, 0.38);
+    outline: none;
+    border-radius: 16px;
+    padding: 0 3.5rem 0 1.5rem;
+    font-size: 1rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+#searchSubmit {
+    width: 3.5rem;
+    height: 2.8rem;
+    margin-left: -3.5rem;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+#searchSubmit:hover {
+    cursor: pointer;
+}
+
+.liststyle {
+    width: 85%;
+    background: rgba(255, 255, 255, 0.38);
+    border-radius: 16px;
+    padding: 1rem;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+@media screen and (max-width: 1200px) {
+    .MarketNewsDash {
+        justify-content: flex-start;
+        margin-top: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .MarketNewsDash {
+        align-items: center;
+    }
+}

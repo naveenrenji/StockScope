@@ -1,0 +1,140 @@
+.profileContainer {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.17);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    z-index: 1;
+    overflow: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .profileContainer {
+        height: 900px;
+    }
+}
+
+.profileContainer h1 {
+    padding: auto;
+    margin: 20px;
+    text-align: left;
+}
+
+.profileContainer .profileRow1 {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 0.6fr 2fr;
+    column-gap: 5px;
+}
+
+.profileContainer .profileRow1 .profileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+    margin: 5px 20px 0px 10px;
+}
+
+.profileContainer .profileRow1 div h2 {
+    text-align: start;
+    padding: auto;
+    margin: 5px;
+}
+
+.profileContainer .profileRow1 div p {
+    text-align: start;
+    padding: auto;
+    margin: 5px;
+    font-weight: 200;
+    color: var(--pink);
+}
+
+.profileContainer .profileRow2 {
+    padding: 20px;
+    text-align: end;
+}
+
+.profileContainer .profileDiv {
+    justify-items: right;
+    align-items: center;
+    margin: 10px 0px 10px 0px;
+}
+
+.profileContainer .profileDiv h3 {
+    padding: 10px;
+}
+
+.profileContainer .profileDiv p {
+    max-width: 600px;
+    margin-top: 10px;
+}
+
+.profileContainer .profileDiv h5 {
+    padding: 10px;
+}
+
+.profileContainer .profileDiv h4 span {
+    font-weight: 200;
+    color: var(--pink);
+}
+
+.box {
+    cursor: pointer;
+    height: 50px;
+    width: 50px;
+    margin: 15px;
+    display: inline-block;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.17);
+    border-radius: 50px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.1px);
+    -webkit-backdrop-filter: blur(9.1px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.box:hover {
+    background: #ffffffc1;
+    border: 1px solid var(--pink);
+}
+
+.modal-content {
+    max-width: 500px;
+    height: max-content;
+    background: #5d5d5d30;
+    color: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    z-index: 2;
+    overflow: auto;
+}
+
+.modal-content .modal-body .profileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+    margin: 5px 20px 0px 10px;
+    position: relative;
+}
+
+.modal-content .modal-body h4 {
+    padding: 15px;
+}
+
+.modal-content .modal-body .profile-alert {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.307);
+    border: 1px solid rgba(255, 255, 255, 0.899);
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.307);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.899);
+}

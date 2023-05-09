@@ -1,0 +1,65 @@
+.Table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.38);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.Table td,
+.Table th {
+  padding: 10px;
+  text-align: left;
+  border: none !important;
+}
+
+.change {
+  border-radius: 10px;
+}
+
+.Table:first-child {
+  border-radius: 0.7rem !important;
+}
+
+.status {
+  padding: 8px;
+  border-radius: 9px;
+}
+
+.Details {
+  color: #00b5ff !important;
+}
+
+
+
+@media screen and (max-width: 1200px) {
+  .Table {
+    width: 170%;
+    margin-top: 2rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .Table {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 23rem;
+  }
+}
+
+.table-responsive {
+  box-shadow: 0px 13px 20px 0px #80808029;
+}
+
+.table> :not(caption)>*>*,
+.table> :not(caption)>*>*>* {
+  padding: 10px;
+}
+
+.table> :not(caption)>thead>tr>th {
+  font-weight: bold !important;
+}
