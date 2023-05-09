@@ -6,11 +6,13 @@ import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
 import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
+import CreatePortfolioModal from './CreatePortfolioModal';
 import protobuf from 'protobufjs';
 import { onAuthStateChanged, reauthenticateWithRedirect } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfiguration';
 import { useNavigate } from 'react-router-dom';
 const { Buffer } = require('buffer/');
+
 
 
 export default function Portfolio() {
@@ -42,10 +44,36 @@ export default function Portfolio() {
     //This state is used to store the recent prices of the symbols of the portfolio user has
     const [symbolPrice, setsymbolPrice] = useState({});
 
-    //THis state is used to store the total MarketValue of the portfolio
+    //Set user email id for our use
+    const [userEmailId, setuserEmailId] = useState('');
+
+    //Usestate created to check whether to show create portfolio modal or not
+    const [portfoliomodalShow, setportfolioModalShow] = useState(false);
 
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+                // ...
+                console.log("uid", uid);
+                console.log("email address", user.email);
+                setuserEmailId(user.email);
+            } else {
+                // User is signed out
+                // ...
+                console.log("user is logged out");
+                alert("You are not Logged in");
+                navigate('/');
+            }
+        });
+        return unsubscribe;
+    }, [navigate]);
+
 
     //Get the Info of the user
     useEffect(() => {
@@ -54,8 +82,11 @@ export default function Portfolio() {
 
             try {
 
+                console.log("Printing user data");
+
+
                 setUserDataFound(false);
-                let { data } = await axios.get("http://localhost:3001/users/getUserPortfolios/sagara@gmail.com");
+                let { data } = await axios.get(`http://localhost:3001/users/getUserPortfolios/${userEmailId}`);
                 setUserInfo(data);
                 setUserDataFound(true);
 
@@ -66,13 +97,11 @@ export default function Portfolio() {
                 setUserDataFound(false);
             }
         }
-
         fetchData();
-    }, [modalShow])
+    }, [modalShow, userEmailId])
 
     //This useEffect is used to get the live data
     useEffect(() => {
-
 
 
         async function fetchData() {
@@ -83,7 +112,7 @@ export default function Portfolio() {
                 const currentHour = now.getHours();
                 const currentDay = now.getDay();
 
-                if (Object.keys(userInfo).length > 0 && currentHour >= 9 && currentHour <= 16 && currentDay !== 0 && currentDay !== 6) {
+                if (Object.keys(userInfo).length > 0 && currentHour >= 9 && currentHour <= 20 && currentDay !== 0 && currentDay !== 6) {
                     const ws = new WebSocket('wss://streamer.finance.yahoo.com');
                     protobuf.load(protoFile, (error, root) => {
 
@@ -137,27 +166,9 @@ export default function Portfolio() {
         }
 
         fetchData();
-
     });
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in, see docs for a list of available properties
-                // https://firebase.google.com/docs/reference/js/firebase.User
-                const uid = user.uid;
-                // ...
-                console.log("uid", uid);
-            } else {
-                // User is signed out
-                // ...
-                console.log("user is logged out");
-                alert("You are not Logged in");
-                navigate('/');
-            }
-        });
-        return unsubscribe;
-    }, [navigate]);
+
 
     //Function to make the value of the input search and the useState value consistent
     function handleStockChange(e) {
@@ -219,15 +230,23 @@ export default function Portfolio() {
         setModalShow(true);
     }
 
+
     //Event Triggered when user press escape button or when user hits close button in the modal
     function hideModal(e) {
         setModalShow(false);
     }
 
-    const stocks = [
-        { name: "Portfolio 1", change: 1.92, symbol: 2, gain: -34399.06 },
-        { name: "Portfolio 2", change: -1.92, symbol: 1, gain: 34399.06 },
-    ];
+    //Event triggerred when user hits create portfolio buttton
+
+    function showCreatePortfolioModal(e) {
+
+        setportfolioModalShow(true);
+    }
+
+    function hideCreatePortfolioModal(e) {
+
+        setportfolioModalShow(false);
+    }
 
     //Styling for Percent Change
     const makeStyle = (change) => {
@@ -305,9 +324,55 @@ export default function Portfolio() {
         return change;
     }
 
+    function calculateTotalMarketValue(portfolios) {
 
-    if (userdataFound) {
+        if (!userdataFound || !portfolios)
+            return 0;
 
+        let marketValue = 0;
+        for (let i = 0; i < portfolios.length; i++) {
+
+            let stocks = portfolios[i].stocks;
+
+            for (let j = 0; j < stocks.length; j++) {
+
+                let symbol = stocks[j].symbol
+
+                if (symbol in symbolPrice)
+                    marketValue += stocks[j].no_of_shares * symbolPrice[symbol];
+            }
+        }
+
+        marketValue = parseFloat(marketValue).toFixed(2);
+        return marketValue;
+    }
+
+    function calculateTotalGain(portfolios) {
+
+        if (!userdataFound || !portfolios)
+            return 0;
+
+        let totalGain = 0;
+        for (let i = 0; i < portfolios.length; i++) {
+
+            let stocks = portfolios[i].stocks;
+
+            for (let j = 0; j < stocks.length; j++) {
+
+                let symbol = stocks[j].symbol
+
+                if (symbol in symbolPrice)
+                    totalGain += stocks[j].no_of_shares * (symbolPrice[symbol] - stocks[j].avg_buy_price);
+            }
+        }
+
+        totalGain = parseFloat(totalGain).toFixed(2);
+        return totalGain;
+    }
+
+
+
+    if (userdataFound && Object.keys(userInfo).length > 0) {
         return (
             <>
 
@@ -361,9 +426,27 @@ export default function Portfolio() {
                             </Col>
                         </Row>
 
-                        <h2 className="mt-3">
-                            My Portfolios
-                        </h2>
+                        <div className="d-flex justify-content-between">
+
+                            <h2 className="mt-3">
+                                My Portfolios
+                            </h2>
+
+                            <button className="authButton" onClick={showCreatePortfolioModal}>
+                                Create Portfolio
+                            </button>
+
+
+                            <CreatePortfolioModal
+                                show={portfoliomodalShow}
+                                onHide={hideCreatePortfolioModal}
+                                email={userInfo.email}
+                            />
+
+
+                        </div>
+
+
                         <Table>
                             <thead>
                                 <tr>
@@ -392,16 +475,14 @@ export default function Portfolio() {
                         <div className='mt-3 container'>
                             <div className='d-flex justify-content-between'>
                                 <h3>Total Market Value</h3>
-                                <h4>$16,146.00</h4>
+                                <h4>${calculateTotalMarketValue(userInfo.portfolios)}</h4>
                             </div>
-                            <div className='d-flex justify-content-between'>
-                                <h3>Day Gain</h3>
-                                <h4>-319.00(-1.92%)</h4>
-                            </div>
+
+
 
                             <div className='d-flex justify-content-between'>
                                 <h3>Total Gain</h3>
-                                <h4>+4150.00(+33.54%)</h4>
+                                <h4>${calculateTotalGain(userInfo.portfolios)}</h4>
                             </div>
                         </div>
                     </Container >

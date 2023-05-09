@@ -92,11 +92,11 @@ const HistoricalData = (props) => {
                   <tbody>
                     {Object.entries(data).map(([key, value]) => {
                       return (
-                        <tr>
+                        <tr key={key}>
                           <td>{key}</td>
                           {value &&
-                            value.map((data) => {
-                              return <td>{data}</td>;
+                            value.map((data, index) => {
+                              return <td key={index}>{data}</td>;
                             })}
                         </tr>
                       );

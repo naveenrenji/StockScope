@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Grid1x2, Send, SlashCircle } from "react-bootstrap-icons";
+import {  Send, SlashCircle } from "react-bootstrap-icons";
 import io from "socket.io-client";
 import { auth } from "../../firebase/firebaseConfiguration";
 import { signOut } from "firebase/auth";
 import { Power } from "react-bootstrap-icons";
 import "./Agent.css";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import axios from "axios";
-import env from "../../config/env.json";
+import { onAuthStateChanged } from "firebase/auth";
+
 
 const Agent = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -40,24 +39,7 @@ const Agent = () => {
     });
     return unsubscribe;
 
-    return () => newSocket.close();
   }, [navigate]);
-
-  // useEffect(() => {
-  //   async function getUserData(email) {
-  //     if (!email) {
-  //       return;
-  //     }
-  //     const res = await axios.get(
-  //       env.backend + "users/getUserPortfolios/" + email
-  //     );
-  //     console.log(res.data, res.data.type);
-  //   }
-
-  //   if (userEmail) {
-  //     getUserData(auth.currentUser.email);
-  //   }
-  // }, [userEmail]);
 
   useEffect(() => {
     if (!socket) return;
@@ -143,10 +125,6 @@ const Agent = () => {
         <div className="title-and-logout">
           <h1 className="portal-title">Agent Portal</h1>
           <div>
-            <Link className="authButton2" to={"/"}>
-              <Grid1x2 size="18px" style={{ margin: "5px" }} />
-              Dashboard
-            </Link>
             <Link className="authButton2" onClick={handleLogout}>
               <Power size="18px" style={{ margin: "5px" }} /> Logout
             </Link>

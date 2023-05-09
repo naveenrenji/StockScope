@@ -80,3 +80,21 @@
     color: var(--pink);
     font-weight: bold;
 }
+
+.nav-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .custom-nav .nav-link {
+    color: #333;
+    font-weight: bold;
+    padding: 10px 20px;
+  }
+  
+  .custom-nav .nav-link.active {
+    background-color: #333;
+    color: #fff;
+  }
+  
