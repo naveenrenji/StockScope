@@ -74,7 +74,7 @@ io.on('connection', (socket) => {
     console.log('Message sent from', data.senderId, 'to', data.receiverId);
   });
 
-  socket.on('load_chat', (data)=>{
+  socket.on('load_chat', (data) => {
     const chatHistory = chats.users[data.receiverId];
     io.to(users[data.receiverId]).emit('chat_loaded', chatHistory);
     console.log(`Chat history with User: ${data.receiverId} loaded`);
