@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-
-const redis = require("redis");
-const client = redis.createClient();
-client.connect().then(() => {});
-
 require("dotenv").config();
+
+console.log("ENV is", process.env.REDIS_HOST);
+const redis = require("redis");
+let client = redis.createClient({
+  host: process.env.REDIS_HOST || 'redis',
+    port: 6379,
+    url:  process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}:6379`: `redis://localhost:6379`
+});
+client.connect().then(() => {}).catch(err => console.error(err));
 
 //cause dotenv isnt working for some reason.
 const finnhubApiKey = "cgvbft1r01qqk0dog72gcgvbft1r01qqk0dog730";

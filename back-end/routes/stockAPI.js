@@ -1,14 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const redis = require("redis");
+require("dotenv").config();
+
+
 const client = redis.createClient({
-    host: 'redis',
-    port: 6379
+    host: process.env.REDIS_HOST || 'redis',
+    port: 6379,
+    url:  process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}:6379`: `redis://localhost:6379`
 });
-client.connect().then(() => { });
+client.connect().then(() => {
+    console.log("REDIS CONNECTION IS SUCCESSFUL");
+ }).catch(err => {
+    console.log("INSIDE CATCH BLOCK");
+    console.error(err);
+});
+
 const axios = require("axios");
 const helper = require("../helpers");
-require("dotenv").config();
 
 
 router.route("/:name").get(async (req, res) => {

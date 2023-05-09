@@ -2,13 +2,17 @@ const express = require("express");
 const router = express.Router();
 const redis = require("redis");
 const helper = require("../helpers");
-const client = redis.createClient({
-    host: 'redis',
-    port: 6379
-});
-client.connect().then(() => { });
-const axios = require("axios");
 require("dotenv").config();
+
+console.log("ENV is", process.env.REDIS_HOST);
+
+const client = redis.createClient({
+    host: process.env.REDIS_HOST || 'redis',
+    port: 6379,
+    url:  process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}:6379`: `redis://localhost:6379`
+});
+client.connect().then(() => { }).catch(err => console.error(err));
+const axios = require("axios");
 
 const getStockHistoricalData = async (symbol) => {
     let indexData = {
