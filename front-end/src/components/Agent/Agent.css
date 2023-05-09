@@ -117,7 +117,7 @@
   -webkit-backdrop-filter: blur(9.1px);
   background-color: var(--glass);
   width: 90%;
-  height: 90%;
+  height: 500px;
   overflow: auto;
 }
 
