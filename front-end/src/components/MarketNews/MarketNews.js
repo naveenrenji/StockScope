@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./MarketNews.css";
-import { Card, Container, ListGroup } from "react-bootstrap";
+import { Container, ListGroup } from "react-bootstrap";
 import { Search } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import noImage from "../../assets/imgs/no-image.png";
@@ -14,11 +14,8 @@ const MarketNewsComponent = () => {
     const [bestResults, setBestResults] = useState({});
     const [loading, setLoading] = useState(true);
 
-    //State used to determine whether to show modal or not
-    /* const [modalShow, setModalShow] = useState(false); */
-
     //State used for displaying conditional message below the search bar
-    // const [searchStatus, setSearchStatus] = useState(false);
+    const [searchStatus, setSearchStatus] = useState(false);
 
     useEffect(() => {
         //fetch Data from the back-end
@@ -26,6 +23,7 @@ const MarketNewsComponent = () => {
             try {
                 const { data } = await axios.get(`http://localhost:3001/screener/news/${newsName}`);
                 setBestResults(data);
+                setSearchStatus(true);
                 setLoading(false);
             } catch (error) {
                 console.log(error);
@@ -52,7 +50,7 @@ const MarketNewsComponent = () => {
 
         return (
             <div className="MarketNewsDash">
-                <Container>
+                <Container className="NewsContainer">
                     <h1>Market News</h1>
                     <div class="wrapper">
                         <div class="searchBar">
@@ -65,25 +63,23 @@ const MarketNewsComponent = () => {
                             <ListGroup className="mt-3 liststyle">
                                 {bestResults.map((result, index) => {
                                     return (
-                                        <div key={index}>
-                                            <Card className="bg-dark text-white">
-                                                <Card.Img src={result.img ? result.img : noImage} alt="Card image" />
-                                                <Card.ImgOverlay>
-                                                    <Card.Title>
-                                                        <Link to={result.url}>{result.title}</Link>
-                                                    </Card.Title>
-                                                    <Card.Text>
-                                                        {result.summary}
-                                                    </Card.Text>
-                                                    <Card.Text>Published on {result.publishedTime}</Card.Text>
-                                                </Card.ImgOverlay>
-                                            </Card>
+                                        <div className="update" key={index}>
+                                            <img src={result.img ? result.img : noImage} alt="profile" />
+                                            <div className="details">
+                                                <div className="info">
+                                                    <span><Link to={result.url} target="_blank">{result.title}</Link></span>
+                                                    <p> {result.summary}</p>
+                                                </div>
+                                                <p>Published on:<span> {result.publishedTime}</span></p>
+                                            </div>
                                         </div>
                                     );
                                 })}
                             </ListGroup>
                         ) :
-                            <p className='mt-3 label text-center'>No news found. Please try again</p>}
+                        (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
+                        <p className='mt-3 label text-center'>No news found. Please try again</p> :
+                        <p className='mt-3 label text-center'>Search for news</p>}
                     </div>
                 </Container>
             </div>

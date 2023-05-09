@@ -2,14 +2,24 @@
     /* padding-top: 1rem; */
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: space-between;
     overflow: auto;
+    height: 100vh
 }
 
 .wrapper {
     width: 100%;
     max-width: 31.25rem;
     margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.NewsContainer {
+    flex: 1;
+    /* Make the container take up all available vertical space */
+    align-self: flex-end;
 }
 
 .label {
