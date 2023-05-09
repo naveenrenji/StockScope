@@ -54,10 +54,10 @@ const Agent = () => {
       }
     });
 
-    return () => {
-      socket.off("request_received");
-      socket.off("message");
-    };
+    // return () => {
+    //   socket.off("request_received");
+    //   socket.off("message");
+    // };
   }, [socket, currentChat]);
 
   const handleAcceptRequest = (userId) => {

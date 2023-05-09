@@ -50,13 +50,23 @@ io.on('connection', (socket) => {
   socket.on('new_user', (data) => {
     users[data.userId] = socket.id;
     console.log('New user:', data.userId, socket.id);
+    console.log(users);
   });
 
   socket.on('talk_to_agent', (data) => {
+    users[data.userId] = socket.id;
     pendingRequests.push(data.userId);
+    
+    if(!users['agent']){
+      io.to(users[data.userId]).emit('No_Agent');
+      console.log('No agent available for:', data.userId);
+      return; 
+    }
+    
     io.to(users['agent']).emit('request_received', data);
     console.log('Request sent from:', data.userId);
   });
+  
 
   socket.on('accept_request', (data) => {
     const userToAccept = pendingRequests.shift();
@@ -89,8 +99,10 @@ io.on('connection', (socket) => {
     const disconnectedUser = Object.keys(users).find(
       (key) => users[key] === socket.id
     );
-    delete users[disconnectedUser];
-    console.log('User disconnected:', disconnectedUser);
+    if(disconnectedUser){
+      delete users[disconnectedUser];
+      console.log('User disconnected:', disconnectedUser);  
+    }
   });
 });
 

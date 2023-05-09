@@ -10,12 +10,64 @@ const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [chatStatus, setChatStatus] = useState("idle");
   const [socket, setSocket] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => JSON.parse(localStorage.getItem("messages")) || []);
   const [inputMessage, setInputMessage] = useState("");
   const [user, setUser] = useState("");
 
   const toggleChat = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(prevIsOpen => !prevIsOpen);
+
+    if (!isOpen) {
+      const newSocket = io("http://localhost:3001");
+      setSocket(newSocket);
+      newSocket.emit("new_user", { userId: user.displayName });
+
+      newSocket.on("request_accepted", () => {
+        const messageData = {
+          senderId: "bot",
+          receiverId: user.displayName,
+          content: "Agent Connected",
+        };
+        setMessages((prevMessages) => [...prevMessages, messageData]);
+        console.log("connected with agent");
+        setChatStatus("connected");
+        localStorage.setItem("messages", JSON.stringify(messages));
+      });
+
+      newSocket.on("No_Agent", () => {
+        const messageData = {
+          senderId: "bot",
+          receiverId: user.displayName,
+          content: "Sorry, there are no Agents currently available. Please Raise A Ticket and we will get back to you soon",
+        };
+        setMessages((prevMessages) => [...prevMessages, messageData]);
+        console.log("No Agent");
+        setChatStatus("idle");
+        localStorage.setItem("messages", JSON.stringify(messages));
+
+      });
+
+      newSocket.on("message", (data) => {
+        setMessages((prevMessages) => [...prevMessages, data]);
+        localStorage.setItem("messages", JSON.stringify(messages));
+      });
+
+      newSocket.on("chat_ended", () => {
+        setChatStatus("idle");
+        const messageData = {
+          senderId: "bot",
+          receiverId: user.displayName,
+          content: "Agent has ended the chat.",
+        };
+        setMessages((prevMessages) => [...prevMessages, messageData]);
+        localStorage.setItem("messages", JSON.stringify(messages));
+
+      });
+    } else {
+      socket.close();
+      setSocket(null);
+      localStorage.setItem("messages", JSON.stringify(messages));
+    }
   };
 
   useEffect(() => {
@@ -35,48 +87,7 @@ const Chatbot = () => {
 
   const currUsername = user.displayName ? user.displayName : "StockScope User";
 
-  useEffect(() => {
-    const newSocket = io("http://localhost:3001");
-    setSocket(newSocket);
-    newSocket.emit("new_user", { userId: currUsername });
 
-    return () => newSocket.close();
-  }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("request_accepted", () => {
-      const messageData = {
-        senderId: "bot",
-        receiverId: currUsername,
-        content: "Agent Connected",
-      };
-      setMessages((prevMessages) => [...prevMessages, messageData]);
-      console.log("connected with agent");
-      setChatStatus("connected");
-    });
-
-    socket.on("message", (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
-
-    socket.on("chat_ended", () => {
-      setChatStatus("idle");
-      const messageData = {
-        senderId: "bot",
-        receiverId: currUsername,
-        content: "Agent has ended the chat.",
-      };
-      setMessages((prevMessages) => [...prevMessages, messageData]);
-    });
-
-    return () => {
-      socket.off("request_accepted");
-      socket.off("message");
-      socket.off("chat_ended");
-    };
-  }, [socket]);
 
   const handleTalkToAgent = () => {
     setChatStatus("waiting");
@@ -117,6 +128,7 @@ const Chatbot = () => {
       };
       socket.emit("message", messageData);
       setMessages((prevMessages) => [...prevMessages, messageData]);
+      localStorage.setItem("messages", JSON.stringify(messages));
       setInputMessage("");
     }
     setInputMessage("");
