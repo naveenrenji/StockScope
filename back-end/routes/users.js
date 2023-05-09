@@ -94,6 +94,29 @@ router.get("/getUserPortfolios/:email", async (req, res) => {
   }
 });
 
+router.post("/getPortfolioById", async (req, res) => {
+  try {
+    helper.checkEmail(req.body.email);
+    helper.checkId(req.body.portfolioId, "Portfolio ID");
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+  try {
+    let user = await User.findOne({ email: req.body.email });
+    //console.log(user);
+    for (let portfolio of user.portfolios) {
+      console.log(portfolio._id.toString());
+      if (portfolio._id.toString() === req.body.portfolioId) {
+        console.log(portfolio);
+        return res.status(200).json(portfolio);
+      }
+    }
+    return res.status(400).json({ error: "Portfolio not found" });
+  } catch (e) {
+    return res.status(500).json(e);
+  }
+});
+
 router.post("/createNewPortfolio", async (req, res) => {
   try {
     helper.checkEmail(req.body.email.toLowerCase());
