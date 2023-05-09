@@ -7,11 +7,11 @@ require("dotenv").config();
 const client = redis.createClient({
     host: process.env.REDIS_HOST || 'redis',
     port: 6379,
-    url:  process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}:6379`: `redis://localhost:6379`
+    url: process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}:6379` : `redis://localhost:6379`
 });
 client.connect().then(() => {
     console.log("REDIS CONNECTION IS SUCCESSFUL");
- }).catch(err => {
+}).catch(err => {
     console.log("INSIDE CATCH BLOCK");
     console.error(err);
 });

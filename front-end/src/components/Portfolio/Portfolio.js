@@ -46,6 +46,7 @@ export default function Portfolio() {
     const [portfoliomodalShow, setportfolioModalShow] = useState(false);
 
 
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -133,15 +134,13 @@ export default function Portfolio() {
                     }
                 }
             }
-
             catch (error) {
 
                 console.log(error);
                 setUserDataFound(false);
             }
-
-            fetchData();
         }
+        fetchData();
 
     }, []);
 
@@ -212,8 +211,6 @@ export default function Portfolio() {
 
         fetchData();
     });
-
-
 
     //Function to make the value of the input search and the useState value consistent
     function handleStockChange(e) {
@@ -415,7 +412,34 @@ export default function Portfolio() {
         return totalGain;
     }
 
-    function deletePortfolio(portfolioId) {}
+    function deletePortfolio(portfolioId) {
+
+        if (portfolioId && userEmailId.length > 0) {
+
+            try {
+
+                let body = {
+                    email: userEmailId,
+                    portfolioId: portfolioId
+                }
+
+                let data = axios.post("http://localhost:3001/users/deletePortfolio", body).then(function (response) {
+                    console.log(response);
+                    alert("Portfolio deleted successfully");
+                    window.location.reload();
+                }).catch(function (error) {
+                    console.log(error);
+                    alert("Issue occured. Please try again");
+                });
+            }
+
+            catch (error) {
+                alert("Issue occured. Please try again");
+            }
+        }
+
+
+    }
 
 
 
@@ -519,7 +543,7 @@ export default function Portfolio() {
                                             </span>
                                         </td>
                                         <td style={{ padding: "15px" }}>
-                                        
+
                                             {portfolio.name !== "default" && (
                                                 <button onClick={() => deletePortfolio(portfolio._id)} className='authButton'>Delete</button>
                                             )}

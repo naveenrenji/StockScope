@@ -35,9 +35,9 @@ export const SidebarData = [
 
 //StocksScope Navbar Data
 export const StockScopeNavbarData = [
-  { heading: "Summary", link: "/stock/summary"},
-  { heading: "News", link: "/stock/news"},
-  { heading: "Historical Data", link: "/stock/historicaldata"}
+  { heading: "Summary", link: "/stock/summary/:symbol" },
+  { heading: "News", link: "/stock/news/:symbol" },
+  { heading: "Historical Data", link: "/stock/historicaldata/:symbol" }
 ];
 // Analytics Cards Data
 export const cardsData = [

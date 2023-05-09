@@ -1,27 +1,30 @@
 import { React, useState, useEffect } from "react";
-import Nav from "react-bootstrap/Nav";
 import Container from "react-bootstrap/Container";
 import axios from "axios";
-import { Table } from "react-bootstrap";
+import { Navbar, Nav, Table } from "react-bootstrap";
 import Sidebar from "../Sidebar/Sidebar";
 import StockScopeNavbar from "../StockScopeNavbar/StockScopeNavbar";
+import NotFound from '../../pages/404';
 import RightSide from "../RigtSide/RightSide";
 import "./Stocks.css";
 import ChatBot from "../ChatBot/ChatBot";
+import { useParams } from 'react-router-dom';
 
-const HistoricalData = (props) => {
+const HistoricalData = () => {
   //This useEffect is used to get the live data
   const [activeTab, setActiveTab] = useState("income-statement");
   const [data, setData] = useState({});
   const [showAnnual, setShowAnnual] = useState("annual-records");
   const [dataFound, setDataFound] = useState(false);
 
+  const { symbol } = useParams();
+
   useEffect(() => {
     async function fetchData() {
       try {
         setDataFound(false);
         let { data } = await axios.get(
-          `http://localhost:3001/stock/${activeTab}/${props.symbol}`
+          `http://localhost:3001/stock/${activeTab}/${symbol}`
         );
         console.log(data);
         if (showAnnual === "annual-records") {
@@ -50,9 +53,21 @@ const HistoricalData = (props) => {
         <div className="stocksGlass">
           <Sidebar />
           <div className="summaryContainer">
-            <StockScopeNavbar />
+            <Navbar bg="light" expand="lg">
+              <Container>
+                <Navbar.Brand href="/">StockScope</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                  <Nav className="me-auto">
+                    <Nav.Link href={`/stock/summary/${symbol}`}>Summary</Nav.Link>
+                    <Nav.Link href={`/stock/news/${symbol}`}>News</Nav.Link>
+                    <Nav.Link href={`/stock/historicaldata/${symbol}`}>Historical Data</Nav.Link>
+                  </Nav>
+                </Navbar.Collapse>
+              </Container>
+            </Navbar >
             <Container className="mt-4">
-              <h1>{props.name}</h1>
+              <h1>{symbol}</h1>
               <p>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</p>
               <Nav
                 variant="pills"
@@ -111,9 +126,7 @@ const HistoricalData = (props) => {
       </div>
     );
   } else {
-    <Container>
-      <h1>Data not Found</h1>
-    </Container>;
+    return (<NotFound />)
   }
 };
 

@@ -56,18 +56,18 @@ function AuthenticationHandler() {
       />
       <Route
         key="stock_summary"
-        path="/stock/summary"
-        element={<StockSummary symbol="TSLA" name="Tesla, Inc" />}
+        path="/stock/summary/:symbol"
+        element={<StockSummary />}
       />
       <Route
         key="stock_news"
-        path="/stock/news"
-        element={<StockNews symbol="TSLA" name="Tesla, Inc" />}
+        path="/stock/news/:symbol"
+        element={<StockNews />}
       />
       <Route
         key="stock_historical_data"
-        path="/stock/historicaldata"
-        element={<HistoricalData symbol="TSLA" name="Tesla, Inc" />}
+        path="/stock/historicaldata/:symbol"
+        element={<HistoricalData />}
       />
       <Route key="agent" path="/agent" element={<Agent />} />
       <Route path="*" element={<NotFoundPage />} />
