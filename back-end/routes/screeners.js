@@ -32,7 +32,7 @@ const getStockHistoricalData = async (symbol) => {
 
 
 
-    let { data } = await axios.request(`https://api.twelvedata.com/time_series?apikey=${process.env.TWELVE_DATA_API_KEY}&symbol=${symbol}&interval=5min&outputsize=5000`);
+    let { data } = await axios.request(`https://api.twelvedata.com/time_series?apikey=${"361ea598e14f435d815239dcd4cd5115"}&symbol=${symbol}&interval=5min&outputsize=5000`);
 
     //If the data is not present we will throw 404 along with data not found message
     if (Object.keys(data).length === 0) {
@@ -82,8 +82,8 @@ router.route("/trending-stocks").get(async (req, res) => {
             url: 'https://yahoo-finance15.p.rapidapi.com/api/yahoo/co/collections/most_actives',
             params: { start: '0' },
             headers: {
-                'X-RapidAPI-Key': process.env.YAHOO_FINANCE_API_KEY,
-                'X-RapidAPI-Host': process.env.YAHOO_FINANCE_API_HOST
+                'X-RapidAPI-Key': '664c7d5051msh83f2271d33d8054p196cb4jsnbab4df211825',
+                'X-RapidAPI-Host': 'yahoo-finance15.p.rapidapi.com'
             }
         };
 
@@ -118,7 +118,10 @@ router.route("/trending-stocks").get(async (req, res) => {
         await client.expire(`trending-stocks:${formattedDate}`, 100);
     }
     catch (error) {
-        return res.status(error.statusCode).json({
+        if(error.message==='Request failed with status code 429'){
+            return res.status(429).json({error: error.message});
+        }
+        return res.status(500).json({
             error: error.message
         })
     }
@@ -149,8 +152,8 @@ router.route("/top-gainers").get(async (req, res) => {
             url: 'https://yahoo-finance15.p.rapidapi.com/api/yahoo/co/collections/day_gainers',
             params: { start: '0' },
             headers: {
-                'X-RapidAPI-Key': process.env.YAHOO_FINANCE_API_KEY,
-                'X-RapidAPI-Host': process.env.YAHOO_FINANCE_API_HOST
+                'X-RapidAPI-Key': "664c7d5051msh83f2271d33d8054p196cb4jsnbab4df211825",
+                'X-RapidAPI-Host': "yahoo-finance15.p.rapidapi.com"
             }
         };
 
@@ -187,7 +190,7 @@ router.route("/top-gainers").get(async (req, res) => {
         await client.expire(`top-gainers:${formattedDate}`, 100);
     }
     catch (error) {
-        return res.status(error.statusCode).json({
+        return res.status(500).json({
             error: error.message
         })
     }
@@ -212,7 +215,7 @@ router.route("/general-news")
                 return res.status(200).json(newsData);
             }
 
-            let { data } = await axios.get(`https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+            let { data } = await axios.get(`https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey=${"CG1R8C3YO1K5CFYX"}`);
 
             //If the data is not present we will throw 404 along with data not found message
             if (Object.keys(data).length === 0) {
@@ -246,7 +249,10 @@ router.route("/general-news")
             await client.expire(`general-news:${formattedDate}`, 180);
 
         } catch (error) {
-            return res.status(error.statusCode).json({
+            if(error.message==='Request failed with status code 429'){
+                return res.status(429).json({error: error.message});
+            }
+            return res.status(500).json({
                 error: error.message
             })
         }
@@ -261,7 +267,7 @@ router.route("/index-data").get(async (req, res) => {
         indexData = await getStockHistoricalData("SP100");
     }
     catch (error) {
-        return res.status(error.statusCode).json({
+        return res.status(500).json({
             error: error.message
         })
     }
