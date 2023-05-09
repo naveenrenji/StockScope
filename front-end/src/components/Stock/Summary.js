@@ -15,7 +15,6 @@ import { useParams } from 'react-router-dom';
 const { Buffer } = require('buffer/');
 
 
-
 const Summary = () => {
     //This useEffect is used to get the live data
     const now = new Date();

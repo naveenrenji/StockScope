@@ -2,6 +2,7 @@ import './Portfolio.css';
 import protoFile from '../../config/YPricingData.proto';
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import axios from 'axios'
 import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
@@ -123,11 +124,11 @@ export default function Portfolio() {
                     for (let i = 0; i < symbols.length; i++) {
 
                         let { data } = await axios.get(`http://localhost:3001/chart/${symbols[i]}`);
-                        let symbol = symbols[i];
+                        let temp = symbols[i];
 
                         setsymbolPrice((prevData) => {
 
-                            let temp = { ...prevData, symbol: data["c"] };
+                            let temp = { ...prevData, [temp]: [data["c"]] };
                             return temp;
                         });
 
@@ -512,10 +513,7 @@ export default function Portfolio() {
                                 onHide={hideCreatePortfolioModal}
                                 email={userInfo.email}
                             />
-
-
                         </div>
-
 
                         <Table>
                             <thead>
@@ -530,7 +528,7 @@ export default function Portfolio() {
                             <tbody>
                                 {userInfo.portfolios.map((portfolio) => (
                                     <tr key={portfolio._id}>
-                                        <td style={{ padding: "15px" }}>{portfolio.name}</td>
+                                        <td style={{ padding: "15px" }}> <Link to={`/portfolio/:id`}>{portfolio.name}</Link> </td>
                                         <td style={{ padding: "15px" }}>
                                             <span className="change" style={makeStyle(calculateChangePercent(portfolio))}>
                                                 {calculateChangePercent(portfolio)}%
