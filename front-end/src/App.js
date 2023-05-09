@@ -25,9 +25,12 @@ function AuthenticationHandler() {
         console.log(user);
         const uid = user.uid;
         console.log("uid", user);
-        setUser(true);
-      } else {
-        navigate("/");
+        if(user.email === 'stockscope2023@gmail.com'){
+          setUser(true);
+        }
+        else{
+          setUser(false)
+        }
       }
     });
     return unsubscribe;
