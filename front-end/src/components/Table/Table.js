@@ -2,6 +2,7 @@ import { Table } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import './Table.css';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const makeStyle = (change) => {
   if (change > 0) {
@@ -75,7 +76,9 @@ export default function BasicTable() {
           <tbody>
             {stocksData && stocksData.map((stock) => (
               <tr key={stock.symbol}>
-                <td style={{ padding: "15px" }}>{stock.name}</td>
+                <td style={{ padding: "15px" }}>
+                  <span><Link to={`http://localhost:3000/stock/summary/${stock.symbol}`}>{stock.name}</Link></span>
+                  </td>
                 <td style={{ padding: "15px" }}>{stock.symbol}</td>
                 <td style={{ padding: "15px" }}>${stock.price.toFixed(2)}</td>
                 <td style={{ padding: "15px" }}>

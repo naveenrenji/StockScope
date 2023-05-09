@@ -28,6 +28,7 @@ const Summary = () => {
     const [changePercentange, setChangePercentange] = useState(0);
     const [stockDetails, setStockDetails] = useState({});
     const [dataFound, setDataFound] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const { symbol } = useParams();
 
@@ -68,6 +69,7 @@ const Summary = () => {
                     setChangePrice(data.change)
                     setChangePercentange(data.changePercent);
                     setDataFound(true);
+                    setLoading(false);
                 }
             };
         });
@@ -88,6 +90,7 @@ const Summary = () => {
                     setChangePrice(data["Change"])
                     setChangePercentange(data["Percent Change"]);
                     setDataFound(true);
+                    setLoading(false);
                 }
             }
             catch (e) {
@@ -96,86 +99,95 @@ const Summary = () => {
             }
         }
         fetchData();
-    }, [])
+    }, []);
 
-    if (dataFound) {
-
+    if (loading) {
         return (
-            <div className='Home'>
-                <div className='stocksGlass'>
-                    <Sidebar />
-                    <div className='summaryContainer'>
-                        <Navbar bg="light" expand="lg">
-                            <Container>
-                                <Navbar.Brand href="/">StockScope</Navbar.Brand>
-                                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                                <Navbar.Collapse id="basic-navbar-nav">
-                                    <Nav className="me-auto">
-                                        <Nav.Link href={`/stock/summary/${symbol}`}>Summary</Nav.Link>
-                                        <Nav.Link href={`/stock/news/${symbol}`}>News</Nav.Link>
-                                        <Nav.Link href={`/stock/historicaldata/${symbol}`}>Historical Data</Nav.Link>
-                                    </Nav>
-                                </Navbar.Collapse>
-                            </Container>
-                        </Navbar >
-                        <Container>
-                            <h1>{symbol}</h1>
-
-                            {/* <Chart symbol={symbol}></Chart> */}
-
-                            <h3>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h3>
-
-                            <h2>Price: ${parseFloat(stockPrice).toFixed(2)}</h2>
-
-                            <p>
-                                Price Change:
-                                <span style={{ color: changePrice > 0 ? 'green' : 'red' }}>
-                                    ${parseFloat(changePrice).toFixed(2)}
-                                </span>
-
-                                Percent Change:
-                                <span style={{ color: changePercentange > 0 ? 'green' : 'red', paddingLeft: '0.8rem' }}>
-                                    {parseFloat(changePercentange.toFixed(2))}%
-                                </span>
-                            </p>
-
-                            <h3>Details: </h3>
-                            <Table>
-                                <tbody>
-                                    {Object.keys(stockDetails).map((key, index) => {
-                                        let formattedNumber;
-                                        let number = stockDetails[key];
-
-                                        if (!isNaN(number)) {
-                                            number = parseFloat(number);
-                                            formattedNumber = number.toLocaleString(undefined, {
-                                                maximumFractionDigits: 20,
-                                            });
-                                        } else {
-                                            formattedNumber = number;
-                                        }
-
-                                        return (
-                                            <tr key={index}>
-                                                <td> {key} </td>
-                                                <td> {formattedNumber} </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </Table>
-                        </Container>
-                    </div>
-                    <Chatbot />
-                </div>
+            <div className='Table'>
+                <h3>Loading....</h3>
             </div>
         );
-    }
+    } else {
 
-    else {
-        return (
-            <NotFound />
-        )
+        if (dataFound) {
+
+            return (
+                <div className='Home'>
+                    <div className='stocksGlass'>
+                        <Sidebar />
+                        <div className='summaryContainer'>
+                            <Navbar bg="light" expand="lg">
+                                <Container>
+                                    <Navbar.Brand href="/">StockScope</Navbar.Brand>
+                                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                                    <Navbar.Collapse id="basic-navbar-nav">
+                                        <Nav className="me-auto">
+                                            <Nav.Link href={`/stock/summary/${symbol}`}>Summary</Nav.Link>
+                                            <Nav.Link href={`/stock/news/${symbol}`}>News</Nav.Link>
+                                            <Nav.Link href={`/stock/historicaldata/${symbol}`}>Historical Data</Nav.Link>
+                                        </Nav>
+                                    </Navbar.Collapse>
+                                </Container>
+                            </Navbar >
+                            <Container>
+                                <h1>{symbol}</h1>
+
+                                {/* <Chart symbol={symbol}></Chart> */}
+
+                                <h3>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h3>
+
+                                <h2>Price: ${parseFloat(stockPrice).toFixed(2)}</h2>
+
+                                <p>
+                                    Price Change:
+                                    <span style={{ color: changePrice > 0 ? 'green' : 'red' }}>
+                                        ${parseFloat(changePrice).toFixed(2)}
+                                    </span>
+
+                                    Percent Change:
+                                    <span style={{ color: changePercentange > 0 ? 'green' : 'red', paddingLeft: '0.8rem' }}>
+                                        {parseFloat(changePercentange.toFixed(2))}%
+                                    </span>
+                                </p>
+
+                                <h3>Details: </h3>
+                                <Table>
+                                    <tbody>
+                                        {Object.keys(stockDetails).map((key, index) => {
+                                            let formattedNumber;
+                                            let number = stockDetails[key];
+
+                                            if (!isNaN(number)) {
+                                                number = parseFloat(number);
+                                                formattedNumber = number.toLocaleString(undefined, {
+                                                    maximumFractionDigits: 20,
+                                                });
+                                            } else {
+                                                formattedNumber = number;
+                                            }
+
+                                            return (
+                                                <tr key={index}>
+                                                    <td> {key} </td>
+                                                    <td> {formattedNumber} </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </Container>
+                        </div>
+                        <Chatbot />
+                    </div>
+                </div>
+            );
+        }
+
+        else {
+            return (
+                <NotFound />
+            )
+        }
     }
 };
 
