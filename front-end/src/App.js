@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import MarketNews from "./pages/MarketNews";
 import Stocks from "./pages/Stocks";
@@ -16,7 +16,6 @@ import { auth } from "./firebase/firebaseConfiguration";
 
 function AuthenticationHandler() {
   const [userIsAgent, setUserIsAgent] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
