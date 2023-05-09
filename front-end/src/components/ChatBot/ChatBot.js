@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import { ChatFill, Send, XLg } from "react-bootstrap-icons";
 import "./ChatBot.css";
@@ -14,13 +14,17 @@ const Chatbot = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [user, setUser] = useState("");
 
+  const messagesEndRef = useRef(null);
+
   const toggleChat = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
+    setIsOpen((prevIsOpen) => !prevIsOpen);
 
     if (!isOpen) {
       const newSocket = io("http://localhost:3001");
       setSocket(newSocket);
-      setMessages(() => JSON.parse(localStorage.getItem(user.displayName)) || [])
+      setMessages(
+        () => JSON.parse(localStorage.getItem(user.displayName)) || []
+      );
       newSocket.emit("new_user", { userId: user.displayName });
 
       newSocket.on("request_accepted", () => {
@@ -39,13 +43,13 @@ const Chatbot = () => {
         const messageData = {
           senderId: "bot",
           receiverId: user.displayName,
-          content: "Sorry, there are no Agents currently available. Please Raise A Ticket and we will get back to you soon",
+          content:
+            "Sorry, there are no Agents currently available. Please Raise A Ticket and we will get back to you soon",
         };
         setMessages((prevMessages) => [...prevMessages, messageData]);
         console.log("No Agent");
         setChatStatus("idle");
         localStorage.setItem(user.displayName, JSON.stringify(messages));
-
       });
 
       newSocket.on("message", (data) => {
@@ -62,7 +66,6 @@ const Chatbot = () => {
         };
         setMessages((prevMessages) => [...prevMessages, messageData]);
         localStorage.setItem(user.displayName, JSON.stringify(messages));
-
       });
     } else {
       socket.close();
@@ -84,11 +87,14 @@ const Chatbot = () => {
       }
     });
     return unsubscribe;
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    console.log("Messages");
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const currUsername = user.displayName ? user.displayName : "StockScope User";
-
-
 
   const handleTalkToAgent = () => {
     setChatStatus("waiting");
@@ -116,7 +122,9 @@ const Chatbot = () => {
         senderId: "bot",
         receiverId: currUsername,
         content:
-          "Ticket Raised -  " + inputMessage + "  - Our Agent will reach out to you soon, thank you for your patience.",
+          "Ticket Raised -  " +
+          inputMessage +
+          "  - Our Agent will reach out to you soon, thank you for your patience.",
       };
       setMessages((prevMessages) => [...prevMessages, messageData]);
       setInputMessage("");
@@ -158,8 +166,9 @@ const Chatbot = () => {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`chatbot__message ${message.senderId === currUsername ? "user" : "bot"
-                  }`}
+                className={`chatbot__message ${
+                  message.senderId === currUsername ? "user" : "bot"
+                }`}
               >
                 {message.content}
               </div>
@@ -173,18 +182,19 @@ const Chatbot = () => {
             {(chatStatus === "connected" ||
               chatStatus === "raised_ticket" ||
               chatStatus === "raise_issue") && (
-                <form className="chatbot__input" onSubmit={handleMessageSubmit}>
-                  <input
-                    type="text"
-                    placeholder="Type your message"
-                    value={inputMessage}
-                    onChange={handleMessageChange}
-                  />
-                  <button type="submit" className="sendButton">
-                    <Send />
-                  </button>
-                </form>
-              )}
+              <form className="chatbot__input" onSubmit={handleMessageSubmit}>
+                <input
+                  type="text"
+                  placeholder="Type your message"
+                  value={inputMessage}
+                  onChange={handleMessageChange}
+                />
+                <button type="submit" className="sendButton">
+                  <Send />
+                </button>
+              </form>
+            )}
+            <div ref={messagesEndRef}></div>
           </div>
         </div>
       ) : (

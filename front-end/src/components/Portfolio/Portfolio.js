@@ -1,23 +1,20 @@
-import './Portfolio.css';
-import protoFile from '../../config/YPricingData.proto';
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import axios from 'axios'
-import { Search } from 'react-bootstrap-icons'
-import PortfolioModal from './PortfolioModal';
-import CreatePortfolioModal from './CreatePortfolioModal';
-import protobuf from 'protobufjs';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfiguration';
-import { useNavigate } from 'react-router-dom';
-const { Buffer } = require('buffer/');
-
+import "./Portfolio.css";
+import protoFile from "../../config/YPricingData.proto";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, ListGroup, Table } from "react-bootstrap";
+import axios from "axios";
+import { Search } from "react-bootstrap-icons";
+import PortfolioModal from "./PortfolioModal";
+import CreatePortfolioModal from "./CreatePortfolioModal";
+import protobuf from "protobufjs";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../firebase/firebaseConfiguration";
+import { useNavigate } from "react-router-dom";
+const { Buffer } = require("buffer/");
 
 export default function Portfolio() {
-
     //This state is used to store the value of the input search
-    const [stockName, setStockName] = useState('');
+    const [stockName, setStockName] = useState("");
 
     //Storing all the searched results in an Object
     const [bestResults, setBestResults] = useState({});
@@ -41,12 +38,10 @@ export default function Portfolio() {
     const [symbolPrice, setsymbolPrice] = useState({});
 
     //Set user email id for our use
-    const [userEmailId, setuserEmailId] = useState('');
+    const [userEmailId, setuserEmailId] = useState("");
 
     //Usestate created to check whether to show create portfolio modal or not
     const [portfoliomodalShow, setportfolioModalShow] = useState(false);
-
-
 
     const navigate = useNavigate();
 
@@ -65,102 +60,92 @@ export default function Portfolio() {
                 // ...
                 console.log("user is logged out");
                 alert("You are not Logged in");
-                navigate('/');
+                navigate("/");
             }
         });
         return unsubscribe;
     }, [navigate]);
 
-
     //Get the Info of the user
     useEffect(() => {
-
         async function fetchData() {
-
             try {
-
                 console.log("Printing user data");
 
-
                 setUserDataFound(false);
-                let { data } = await axios.get(`http://localhost:3001/users/getUserPortfolios/${userEmailId}`);
+                let { data } = await axios.get(
+                    `http://localhost:3001/users/getUserPortfolios/${userEmailId}`
+                );
                 setUserInfo(data);
                 setUserDataFound(true);
-
-            }
-
-            catch (error) {
+            } catch (error) {
                 console.log(error);
                 setUserDataFound(false);
             }
         }
         fetchData();
-    }, [modalShow, userEmailId])
-
+    }, [modalShow, userEmailId]);
 
     useEffect(() => {
-
         async function fetchData() {
-
             try {
-
                 setUserDataFound(false);
 
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentDay = now.getDay();
 
-                if (Object.keys(userInfo).length > 0 && currentHour >= 16 || currentHour <= 9 || currentDay === 0 && currentDay === 6) {
-
+                if (
+                    (Object.keys(userInfo).length > 0 && currentHour >= 16) ||
+                    currentHour <= 9 ||
+                    (currentDay === 0 && currentDay === 6)
+                ) {
                     // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
                     let porfolios = userInfo["portfolios"];
 
                     console.log("Printing portfolio list");
 
-                    console.log(porfolios)
+                    console.log(porfolios);
 
                     let symbols = getSymbols(porfolios);
 
                     for (let i = 0; i < symbols.length; i++) {
-
-                        let { data } = await axios.get(`http://localhost:3001/chart/${symbols[i]}`);
-                        let temp = symbols[i];
+                        let { data } = await axios.get(
+                            `http://localhost:3001/chart/${symbols[i]}`
+                        );
+                        let symbol = symbols[i];
 
                         setsymbolPrice((prevData) => {
-
-                            let temp = { ...prevData, [temp]: [data["c"]] };
+                            let temp = { ...prevData, symbol: data["c"] };
                             return temp;
                         });
-
                     }
                 }
-            }
-            catch (error) {
-
+            } catch (error) {
                 console.log(error);
                 setUserDataFound(false);
             }
         }
         fetchData();
-
     }, []);
 
     //This useEffect is used to get the live data
     useEffect(() => {
-
-
         async function fetchData() {
-
             try {
-
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentDay = now.getDay();
 
-                if (Object.keys(userInfo).length > 0 && currentHour >= 9 && currentHour <= 16 && currentDay !== 0 && currentDay !== 6) {
-                    const ws = new WebSocket('wss://streamer.finance.yahoo.com');
+                if (
+                    Object.keys(userInfo).length > 0 &&
+                    currentHour >= 9 &&
+                    currentHour <= 16 &&
+                    currentDay !== 0 &&
+                    currentDay !== 6
+                ) {
+                    const ws = new WebSocket("wss://streamer.finance.yahoo.com");
                     protobuf.load(protoFile, (error, root) => {
-
                         if (error) {
                             return console.log(error);
                         }
@@ -168,44 +153,45 @@ export default function Portfolio() {
                         const Yaticker = root.lookupType("yaticker");
 
                         ws.onopen = function open() {
-                            console.log('connected');
+                            console.log("connected");
 
                             // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
                             let porfolios = userInfo["portfolios"];
 
                             console.log("Printing portfolio list");
 
-                            console.log(porfolios)
+                            console.log(porfolios);
 
                             let symbols = getSymbols(porfolios);
                             console.log(symbols);
 
-                            ws.send(JSON.stringify({
-                                subscribe: symbols
-                            }));
-
+                            ws.send(
+                                JSON.stringify({
+                                    subscribe: symbols,
+                                })
+                            );
                         };
 
                         ws.onclose = function close() {
-                            console.log('disconnected');
+                            console.log("disconnected");
                         };
 
                         ws.onmessage = function incoming(message) {
-                            console.log('coming message');
+                            console.log("coming message");
 
-                            let data = Yaticker.decode(new Buffer(message.data, 'base64'));
+                            let data = Yaticker.decode(new Buffer(message.data, "base64"));
                             setsymbolPrice((prevData) => {
-
-                                let temp = { ...prevData, [data.id]: parseFloat([data.price]).toFixed(2) };
+                                let temp = {
+                                    ...prevData,
+                                    [data.id]: parseFloat([data.price]).toFixed(2),
+                                };
                                 return temp;
-                            })
+                            });
                             console.log(data);
                         };
                     });
                 }
-            }
-            catch (error) {
-
+            } catch (error) {
                 console.log(error);
             }
         }
@@ -224,13 +210,12 @@ export default function Portfolio() {
     //Axios call to search the stock when the user enters the stock name and hits enter or search button
     async function searchStock(e) {
         try {
-            const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${stockName}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`
+            const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${stockName}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`;
             const { data } = await axios.get(url);
             const { bestMatches } = data;
             console.log(bestMatches);
             setBestResults(bestMatches);
-        }
-        catch (e) {
+        } catch (e) {
             console.log("Error occured");
             console.log(e);
         }
@@ -239,16 +224,12 @@ export default function Portfolio() {
     //function to get all the symbols of the portfolios
 
     function getSymbols(portfolios) {
-
-        if (!portfolios)
-            return [];
+        if (!portfolios) return [];
 
         let data = new Set();
         for (let i = 0; i < portfolios.length; i++) {
-
             let stocks = portfolios[i].stocks;
             for (let j = 0; j < stocks.length; j++) {
-
                 let temp = stocks[j].symbol;
                 data.add(temp);
             }
@@ -260,7 +241,6 @@ export default function Portfolio() {
 
     //Event Triggered when user hits the search button
     function handleClick(e) {
-
         e.preventDefault();
         console.log("Button is pressed");
         setSearchStatus(true);
@@ -269,10 +249,9 @@ export default function Portfolio() {
 
     //Event Triggered when user Clicks one of the list item in the search bar
     function showModal(e) {
-        setModalStock(e.target.textContent)
+        setModalStock(e.target.textContent);
         setModalShow(true);
     }
-
 
     //Event Triggered when user press escape button or when user hits close button in the modal
     function hideModal(e) {
@@ -282,12 +261,10 @@ export default function Portfolio() {
     //Event triggerred when user hits create portfolio buttton
 
     function showCreatePortfolioModal(e) {
-
         setportfolioModalShow(true);
     }
 
     function hideCreatePortfolioModal(e) {
-
         setportfolioModalShow(false);
     }
 
@@ -295,45 +272,38 @@ export default function Portfolio() {
     const makeStyle = (change) => {
         if (change > 0) {
             return {
-                background: 'rgb(145 254 159 / 47%)',
-                color: 'green',
-            }
-        }
-        else if (change < 0) {
+                background: "rgb(145 254 159 / 47%)",
+                color: "green",
+            };
+        } else if (change < 0) {
             return {
-                background: '#ffadad8f',
-                color: 'red',
-            }
-        }
-        else {
+                background: "#ffadad8f",
+                color: "red",
+            };
+        } else {
             return {
-                background: '#59bfff',
-                color: 'white',
-            }
+                background: "#59bfff",
+                color: "white",
+            };
         }
-    }
+    };
 
     //Get the total number of symbols in the portfolio
     function noOfSymbols(portfolio) {
-
-        if (!portfolio)
-            return 0;
+        if (!portfolio) return 0;
 
         return portfolio.stocks.length;
     }
 
     //Get the total change Percent
     function calculateChangePercent(portfolio) {
-
-        if (!userdataFound || !portfolio)
-            return 0;
+        if (!userdataFound || !portfolio) return 0;
 
         let stocks = portfolio.stocks;
 
         let changePercent = 0;
 
         for (let i = 0; i < stocks.length; i++) {
-
             let symbol = stocks[i].symbol;
             let avg_price = stocks[i].avg_buy_price;
             if (symbol in symbolPrice)
@@ -346,19 +316,16 @@ export default function Portfolio() {
 
     //Get the total change
     function calculateChange(portfolio) {
-
-        if (!userdataFound || !portfolio)
-            return 0;
+        if (!userdataFound || !portfolio) return 0;
 
         let stocks = portfolio.stocks;
 
         let change = 0;
 
         for (let i = 0; i < stocks.length; i++) {
-
             let symbol = stocks[i].symbol;
             let avg_price = stocks[i].avg_buy_price;
-            let number_of_shares = stocks[i].no_of_shares
+            let number_of_shares = stocks[i].no_of_shares;
             if (symbol in symbolPrice)
                 change += number_of_shares * (symbolPrice[symbol] - avg_price);
         }
@@ -368,18 +335,14 @@ export default function Portfolio() {
     }
 
     function calculateTotalMarketValue(portfolios) {
-
-        if (!userdataFound || !portfolios)
-            return 0;
+        if (!userdataFound || !portfolios) return 0;
 
         let marketValue = 0;
         for (let i = 0; i < portfolios.length; i++) {
-
             let stocks = portfolios[i].stocks;
 
             for (let j = 0; j < stocks.length; j++) {
-
-                let symbol = stocks[j].symbol
+                let symbol = stocks[j].symbol;
 
                 if (symbol in symbolPrice)
                     marketValue += stocks[j].no_of_shares * symbolPrice[symbol];
@@ -391,21 +354,19 @@ export default function Portfolio() {
     }
 
     function calculateTotalGain(portfolios) {
-
-        if (!userdataFound || !portfolios)
-            return 0;
+        if (!userdataFound || !portfolios) return 0;
 
         let totalGain = 0;
         for (let i = 0; i < portfolios.length; i++) {
-
             let stocks = portfolios[i].stocks;
 
             for (let j = 0; j < stocks.length; j++) {
-
-                let symbol = stocks[j].symbol
+                let symbol = stocks[j].symbol;
 
                 if (symbol in symbolPrice)
-                    totalGain += stocks[j].no_of_shares * (symbolPrice[symbol] - stocks[j].avg_buy_price);
+                    totalGain +=
+                        stocks[j].no_of_shares *
+                        (symbolPrice[symbol] - stocks[j].avg_buy_price);
             }
         }
 
@@ -414,48 +375,60 @@ export default function Portfolio() {
     }
 
     function deletePortfolio(portfolioId) {
-
         if (portfolioId && userEmailId.length > 0) {
-
             try {
-
                 let body = {
                     email: userEmailId,
-                    portfolioId: portfolioId
-                }
+                    portfolioId: portfolioId,
+                };
 
-                let data = axios.post("http://localhost:3001/users/deletePortfolio", body).then(function (response) {
-                    console.log(response);
-                    alert("Portfolio deleted successfully");
-                    window.location.reload();
-                }).catch(function (error) {
-                    console.log(error);
-                    alert("Issue occured. Please try again");
-                });
-            }
-
-            catch (error) {
+                let data = axios
+                    .post("http://localhost:3001/users/deletePortfolio", body)
+                    .then(function (response) {
+                        console.log(response);
+                        alert("Portfolio deleted successfully");
+                        window.location.reload();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        alert("Issue occured. Please try again");
+                    });
+            } catch (error) {
                 alert("Issue occured. Please try again");
             }
         }
-
-
     }
-
-
 
     if (userdataFound && Object.keys(userInfo).length > 0) {
         return (
             <>
-                <div className='PortfolioDash'>
+                <div className="PortfolioDash">
                     <Container>
                         <h1>Portfolio</h1>
                         <div className="wrapper">
                             <div className="searchBar">
-                                <input id="searchInput" type="text" name="searchInput" placeholder="Search for Stock" value={stockName} onChange={handleStockChange} aria-label="Search for Stocks" />
-                                <button id="searchSubmit" type="submit" name="searchSubmit" onClick={handleClick} aria-label='Search button'>
-                                    <Search color='#FF919D' />
-                                </button>
+                                <form
+                                    onSubmit={handleClick} // handle form submission
+                                    className="searchBar"
+                                >
+                                    <input
+                                        id="searchInput"
+                                        type="text"
+                                        name="searchInput"
+                                        placeholder="Search for Stock"
+                                        value={stockName}
+                                        onChange={handleStockChange}
+                                        aria-label="Search for Stocks"
+                                    />
+                                    <button
+                                        id="searchSubmit"
+                                        type="submit"
+                                        name="searchSubmit"
+                                        aria-label="Search button"
+                                    >
+                                        <Search color="#FF919D" />
+                                    </button>
+                                </form>
                             </div>
                             {bestResults && bestResults.length > 0 ? (
                                 <ListGroup className="mt-3 liststyle">
@@ -481,12 +454,23 @@ export default function Portfolio() {
                                         }
                                     })}
                                 </ListGroup>
-                            ) : (searchStatus && !bestResults) || (searchStatus && bestResults.length === 0) ?
-                                <p className='mt-3 label text-center'>No stock of that symbol found. Please try again</p> :
-                                <p className='mt-3 label text-center'>Search to add the stock in your portfolio</p>}
+                            ) : (searchStatus && !bestResults) ||
+                                (searchStatus && bestResults.length === 0) ? (
+                                <p className="mt-3 label text-center">
+                                    No stock of that symbol found. Please try again
+                                </p>
+                            ) : (
+                                <p className="mt-3 label text-center">
+                                    Search to add the stock in your portfolio
+                                </p>
+                            )}
                         </div>
                         <Row>
-                            <Col xs={{ span: 11 }} md={{ span: 6, offset: 3 }} className="mt-5">
+                            <Col
+                                xs={{ span: 11 }}
+                                md={{ span: 6, offset: 3 }}
+                                className="mt-5"
+                            >
                                 <PortfolioModal
                                     name={modalStock}
                                     show={modalShow}
@@ -498,15 +482,11 @@ export default function Portfolio() {
                         </Row>
 
                         <div className="d-flex justify-content-between">
-
-                            <h2 className="mt-3">
-                                My Portfolios
-                            </h2>
+                            <h2 className="mt-3">My Portfolios</h2>
 
                             <button className="authButton" onClick={showCreatePortfolioModal}>
                                 Create Portfolio
                             </button>
-
 
                             <CreatePortfolioModal
                                 show={portfoliomodalShow}
@@ -528,22 +508,34 @@ export default function Portfolio() {
                             <tbody>
                                 {userInfo.portfolios.map((portfolio) => (
                                     <tr key={portfolio._id}>
-                                        <td style={{ padding: "15px" }}> <Link to={`/portfolio/:id`}>{portfolio.name}</Link> </td>
+                                        <td style={{ padding: "15px" }}>{portfolio.name}</td>
                                         <td style={{ padding: "15px" }}>
-                                            <span className="change" style={makeStyle(calculateChangePercent(portfolio))}>
+                                            <span
+                                                className="change"
+                                                style={makeStyle(calculateChangePercent(portfolio))}
+                                            >
                                                 {calculateChangePercent(portfolio)}%
                                             </span>
                                         </td>
-                                        <td style={{ padding: "15px" }}>{noOfSymbols(portfolio)}</td>
                                         <td style={{ padding: "15px" }}>
-                                            <span className="change" style={makeStyle(calculateChange(portfolio))}>
+                                            {noOfSymbols(portfolio)}
+                                        </td>
+                                        <td style={{ padding: "15px" }}>
+                                            <span
+                                                className="change"
+                                                style={makeStyle(calculateChange(portfolio))}
+                                            >
                                                 ${calculateChange(portfolio).toLocaleString("en-US")}
                                             </span>
                                         </td>
                                         <td style={{ padding: "15px" }}>
-
                                             {portfolio.name !== "default" && (
-                                                <button onClick={() => deletePortfolio(portfolio._id)} className='authButton'>Delete</button>
+                                                <button
+                                                    onClick={() => deletePortfolio(portfolio._id)}
+                                                    className="authButton"
+                                                >
+                                                    Delete
+                                                </button>
                                             )}
                                         </td>
                                     </tr>
@@ -551,24 +543,20 @@ export default function Portfolio() {
                             </tbody>
                         </Table>
 
-
-                        <div className='mt-3 container'>
-                            <div className='d-flex justify-content-between'>
+                        <div className="mt-3 container">
+                            <div className="d-flex justify-content-between">
                                 <h3>Total Market Value</h3>
                                 <h4>${calculateTotalMarketValue(userInfo.portfolios)}</h4>
                             </div>
 
-
-
-                            <div className='d-flex justify-content-between'>
+                            <div className="d-flex justify-content-between">
                                 <h3>Total Gain</h3>
                                 <h4>${calculateTotalGain(userInfo.portfolios)}</h4>
                             </div>
                         </div>
-                    </Container >
+                    </Container>
                 </div>
-
             </>
-        )
+        );
     }
 }
