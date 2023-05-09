@@ -65,16 +65,16 @@ io.on('connection', (socket) => {
   });
 
   socket.on('message', (data) => {
-    if(!chats.users[data.receiverId]){
+    if (!chats.users[data.receiverId]) {
       chats.users[data.receiverId] = [data.content];
-    }else{
+    } else {
       chats.users[data.receiverId] = [...chats.users[data.receiverId], data.content];
     }
     io.to(users[data.receiverId]).emit('message', data);
     console.log('Message sent from', data.senderId, 'to', data.receiverId);
   });
 
-  socket.on('load_chat', (data)=>{
+  socket.on('load_chat', (data) => {
     const chatHistory = chats.users[data.receiverId];
     io.to(users[data.receiverId]).emit('chat_loaded', chatHistory);
     console.log(`Chat history with User: ${data.receiverId} loaded`);
