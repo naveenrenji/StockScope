@@ -92,11 +92,8 @@ function Signup() {
       console.log(user);
 
       const userObj = {
-        uid: user.uid,
-        name: user.displayName,
-        username: user.username,
+        name: name,
         email: user.email,
-        about: "",
       };
 
       const res = await axios.post(env.backend + "users/createuser", userObj);
@@ -143,7 +140,7 @@ function Signup() {
                   </Form.Text>
                 </Form.Group>
               </Col>
-              <Col>
+              {/* <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Username</Form.Label>
                   <Form.Control
@@ -156,7 +153,7 @@ function Signup() {
                     {errorMessages.email}
                   </Form.Text>
                 </Form.Group>
-              </Col>
+              </Col> */}
             </Row>
 
             <Form.Group controlId="formBasicEmail">

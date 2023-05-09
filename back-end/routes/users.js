@@ -20,9 +20,6 @@ router.post("/createUser", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email.toLowerCase().toLowerCase(),
-    type: "user",
-    photoUrl: "",
-    about: "",
     portfolios: [
       {
         name: "default",
