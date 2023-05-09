@@ -547,53 +547,6 @@ export default function Portfolio() {
                                 ))}
                             </tbody>
                         </Table>
-                        <Table>
-                            <thead>
-                                <tr>
-                                    <th>Portfolio Name</th>
-                                    <th>Change (in %)</th>
-                                    <th>No. of Symbols</th>
-                                    <th>Total Gain</th>
-                                    <th>Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {userInfo.portfolios.map((portfolio) => (
-                                    <tr key={portfolio._id}>
-                                        <td style={{ padding: "15px" }}>{portfolio.name}</td>
-                                        <td style={{ padding: "15px" }}>
-                                            <span
-                                                className="change"
-                                                style={makeStyle(calculateChangePercent(portfolio))}
-                                            >
-                                                {calculateChangePercent(portfolio)}%
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "15px" }}>
-                                            {noOfSymbols(portfolio)}
-                                        </td>
-                                        <td style={{ padding: "15px" }}>
-                                            <span
-                                                className="change"
-                                                style={makeStyle(calculateChange(portfolio))}
-                                            >
-                                                ${calculateChange(portfolio).toLocaleString("en-US")}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: "15px" }}>
-                                            {portfolio.name !== "default" && (
-                                                <button
-                                                    onClick={() => deletePortfolio(portfolio._id)}
-                                                    className="authButton"
-                                                >
-                                                    Delete
-                                                </button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
 
                         <div className="mt-3 container">
                             <div className="d-flex justify-content-between">
