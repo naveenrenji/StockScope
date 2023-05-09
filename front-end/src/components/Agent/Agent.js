@@ -206,7 +206,10 @@ const Agent = () => {
                       {message.content}
                     </div>
                   ))}
+                  <div ref={messagesEndRef}></div>
                 </div>
+
+                {/* <div ref={messagesEndRef}></div> */}
 
                 <form onSubmit={handleMessageSubmit} className="message-bar">
                   <input
@@ -223,7 +226,6 @@ const Agent = () => {
                 <button onClick={handleEndChat} className="end-chat">
                   End Chat <SlashCircle />
                 </button>
-                <div ref={messagesEndRef}></div>
               </div>
             ) : (
               <div>
