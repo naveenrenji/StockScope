@@ -72,6 +72,25 @@ const Agent = () => {
       }
     });
 
+    socket.on("User_closed", (data)=>{
+      if (data === currentChat) {
+        setMessages((prevMessages) => {
+          let leftMessage = currentChat+" has left the chat."
+          const messageData = {
+            senderId: currentChat,
+            receiverId: "agent",
+            content: leftMessage,
+          };
+          const updatedMessages = [...prevMessages, messageData];
+          localStorage.setItem(
+            `chat_${currentChat}`,
+            JSON.stringify(updatedMessages)
+          );
+          return updatedMessages;
+        });
+      }
+    });
+
     return () => {
       socket.off("request_received");
       socket.off("message");
