@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
 const { Buffer } = require('buffer/');
 
 
-
 export default function Portfolio() {
 
     //This state is used to store the value of the input search
@@ -103,22 +102,42 @@ export default function Portfolio() {
 
             try {
 
+                setUserDataFound(false);
+
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentDay = now.getDay();
 
-                if (Object.keys(userInfo).length > 0 && currentHour >= 20 || currentHour <= 9 || currentDay === 0 && currentDay === 6) {
+                if (Object.keys(userInfo).length > 0 && currentHour >= 16 || currentHour <= 9 || currentDay === 0 && currentDay === 6) {
 
+                    // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
+                    let porfolios = userInfo["portfolios"];
 
+                    console.log("Printing portfolio list");
+
+                    console.log(porfolios)
+
+                    let symbols = getSymbols(porfolios);
+
+                    for (let i = 0; i < symbols.length; i++) {
+
+                        let { data } = await axios.get(`http://localhost:3001/chart/${symbols[i]}`);
+                        let symbol = symbols[i];
+
+                        setsymbolPrice((prevData) => {
+
+                            let temp = { ...prevData, symbol: data["c"] };
+                            return temp;
+                        });
+
+                    }
                 }
-
-
-
             }
 
             catch (error) {
 
                 console.log(error);
+                setUserDataFound(false);
             }
 
             fetchData();
@@ -138,7 +157,7 @@ export default function Portfolio() {
                 const currentHour = now.getHours();
                 const currentDay = now.getDay();
 
-                if (Object.keys(userInfo).length > 0 && currentHour >= 9 && currentHour <= 20 && currentDay !== 0 && currentDay !== 6) {
+                if (Object.keys(userInfo).length > 0 && currentHour >= 9 && currentHour <= 16 && currentDay !== 0 && currentDay !== 6) {
                     const ws = new WebSocket('wss://streamer.finance.yahoo.com');
                     protobuf.load(protoFile, (error, root) => {
 
@@ -193,9 +212,6 @@ export default function Portfolio() {
 
         fetchData();
     });
-
-
-
 
 
 
