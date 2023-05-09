@@ -51,7 +51,7 @@ function AuthenticationHandler() {
       <Route key="login" path="/login" element={<Login />} />
       <Route
         key="portfolio_brief"
-        path="/portfolio/:name"
+        path="/portfolio/:id"
         element={<PortfolioBrief />}
       />
       <Route
