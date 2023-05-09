@@ -78,36 +78,40 @@ const Sidebar = () => {
       >
         {/* logo */}
         <Link to="/" className="logo" aria-label="logo">
-          <span>
-            St<span>ocks</span>Scope
-          </span>
+          <span>StocksScope</span>
         </Link>
 
         {/* SideBar Section */}
         <div className="menu">
-          {loggedIn ? SidebarData.map(({ link, icon, heading }, index) => (
-            <Link
-              key={link}
-              className={selected === index ? "menuItem active" : "menuItem"}
-              to={link}
-              onClick={() => setSelected(index)}
-              aria-label={heading}
-            >
-              {icon}
-              <span>{heading}</span>
-            </Link>
-          )) : SidebarData.slice(0, 2).map(({ link, icon, heading }, index) => (
-            <Link
-              key={link}
-              className={selected === index ? "menuItem active" : "menuItem"}
-              to={link}
-              onClick={() => setSelected(index)}
-              aria-label={heading}
-            >
-              {icon}
-              <span>{heading}</span>
-            </Link>
-          ))}
+          {loggedIn
+            ? SidebarData.map(({ link, icon, heading }, index) => (
+                <Link
+                  key={link}
+                  className={
+                    selected === index ? "menuItem active" : "menuItem"
+                  }
+                  to={link}
+                  onClick={() => setSelected(index)}
+                  aria-label={heading}
+                >
+                  {icon}
+                  <span>{heading}</span>
+                </Link>
+              ))
+            : SidebarData.slice(0, 2).map(({ link, icon, heading }, index) => (
+                <Link
+                  key={link}
+                  className={
+                    selected === index ? "menuItem active" : "menuItem"
+                  }
+                  to={link}
+                  onClick={() => setSelected(index)}
+                  aria-label={heading}
+                >
+                  {icon}
+                  <span>{heading}</span>
+                </Link>
+              ))}
           <div className="menuItem">
             {loggedIn ? (
               <button className="authButton" onClick={handleLogout}>

@@ -15,7 +15,7 @@ const Card = (props) => {
       {/* {expanded ? (
         <ExpandedCard param={props} setExpanded={() => setExpanded(false)} />
       ) : ( */}
-        <CompactCard param={props} setExpanded={() => setExpanded(false)} />
+      <CompactCard param={props} setExpanded={() => setExpanded(false)} />
       {/* )} */}
     </motion.div>
   );
@@ -48,7 +48,6 @@ function CompactCard({ param, setExpanded }) {
     </motion.div>
   );
 }
-
 
 // Expanded Card
 function ExpandedCard({ param, setExpanded }) {

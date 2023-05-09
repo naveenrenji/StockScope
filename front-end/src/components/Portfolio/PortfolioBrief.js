@@ -1,14 +1,12 @@
-import React from 'react';
+import React from "react";
 
 export default function PortfoioBrief() {
+  console.log("Inside portfolio brief");
 
-    console.log("Inside portfolio brief");
-
-    return (
-        <>
-
-            <h1>Portfolio Brief page is rendered</h1>
-            {/* <Container>
+  return (
+    <>
+      <h1>Portfolio Brief page is rendered</h1>
+      {/* <Container>
                 <div className="d-flex justify-content-between">
 
                     <DropdownButton
@@ -23,7 +21,6 @@ export default function PortfoioBrief() {
 
                 </div>
             </Container> */}
-
-        </>
-    )
+    </>
+  );
 }
