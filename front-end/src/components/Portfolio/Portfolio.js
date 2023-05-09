@@ -81,6 +81,9 @@ export default function Portfolio() {
                 let { data } = await axios.get(
                     `http://localhost:3001/users/getUserPortfolios/${userEmailId}`
                 );
+
+                console.log("Printint user details");
+                console.log(data);
                 setUserInfo(data);
                 setUserDataFound(true);
             } catch (error) {
@@ -94,16 +97,16 @@ export default function Portfolio() {
     useEffect(() => {
         async function fetchData() {
             try {
-                setUserDataFound(false);
+
 
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentDay = now.getDay();
 
                 if (
-                    (Object.keys(userInfo).length > 0 && currentHour >= 16) ||
-                    currentHour <= 9 ||
-                    (currentDay === 0 && currentDay === 6)
+                    (Object.keys(userInfo).length > 0 && currentHour >= 16 ||
+                        currentHour <= 9 ||
+                        currentDay === 0 && currentDay === 6)
                 ) {
                     // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
                     let porfolios = userInfo["portfolios"];
@@ -121,18 +124,18 @@ export default function Portfolio() {
                         let symbol = symbols[i];
 
                         setsymbolPrice((prevData) => {
-                            let temp = { ...prevData, symbol: data["c"] };
+                            let temp = { ...prevData, [symbol]: data["c"] };
                             return temp;
                         });
                     }
                 }
             } catch (error) {
                 console.log(error);
-                setUserDataFound(false);
+
             }
         }
         fetchData();
-    }, []);
+    });
 
     //This useEffect is used to get the live data
     useEffect(() => {
@@ -231,6 +234,7 @@ export default function Portfolio() {
     function getSymbols(portfolios) {
         if (!portfolios) return [];
 
+
         let data = new Set();
         for (let i = 0; i < portfolios.length; i++) {
             let stocks = portfolios[i].stocks;
@@ -304,6 +308,9 @@ export default function Portfolio() {
     function calculateChangePercent(portfolio) {
         if (!userdataFound || !portfolio) return 0;
 
+        console.log("Printing symbol price");
+        console.log(symbolPrice);
+
         let stocks = portfolio.stocks;
 
         let changePercent = 0;
@@ -322,6 +329,9 @@ export default function Portfolio() {
     //Get the total change
     function calculateChange(portfolio) {
         if (!userdataFound || !portfolio) return 0;
+
+        console.log("Printing symbol");
+        console.log(symbolPrice);
 
         let stocks = portfolio.stocks;
 
@@ -404,7 +414,7 @@ export default function Portfolio() {
         }
     }
 
-    if (userdataFound && Object.keys(userInfo).length > 0) {
+    if (userdataFound) {
         return (
             <>
                 <div className="PortfolioDash">
