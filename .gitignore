@@ -1,3 +1,5 @@
 .DS_Store
 socket/package-lock.json
 data/
+/data
+./data
