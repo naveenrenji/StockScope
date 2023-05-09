@@ -32,7 +32,7 @@ router.route("/:name").get(async (req, res) => {
         }
 
         //If the data is not present in the redis cache fetch the data from the api
-        let { data } = await axios.get(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+        let { data } = await axios.get(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${stockName}&apikey=${"CG1R8C3YO1K5CFYX"}`);
 
 
         //If the data is not present we will throw 404 along with data not found message
@@ -46,7 +46,7 @@ router.route("/:name").get(async (req, res) => {
         temp = { ...data };
 
 
-        let finhubb_data = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${stockName}&token=${process.env.FINNHUB_API_KEY}`);
+        let finhubb_data = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${stockName}&token=${"cgvbft1r01qqk0dog72gcgvbft1r01qqk0dog730"}`);
         temp1 = finhubb_data.data;
 
         updatedTemp1["Current Price"] = temp1["c"];
@@ -114,7 +114,7 @@ router.route("/news/:name").get(async (req, res) => {
         const lastWeekDay = String(lastWeek.getDate()).padStart(2, '0');
         const lastWeekDate = `${lastWeekYear}-${lastWeekMonth}-${lastWeekDay}`;
 
-        let { data } = await axios.get(`https://finnhub.io/api/v1/company-news?symbol=${stockName}&from=${lastWeekDate}&to=${currentDate}&token=${process.env.FINNHUB_API_KEY}`);
+        let { data } = await axios.get(`https://finnhub.io/api/v1/company-news?symbol=${stockName}&from=${lastWeekDate}&to=${currentDate}&token=${"cgvbft1r01qqk0dog72gcgvbft1r01qqk0dog730"}`);
 
         //If the data is not present we will throw 404 along with data not found message
         if (Object.keys(data).length === 0) {
@@ -165,7 +165,7 @@ router.route("/income-statement/:name").get(async (req, res) => {
         }
 
         //If the data is not present in the redis cache fetch the data from the api
-        let { data } = await axios.get(`https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+        let { data } = await axios.get(`https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=${stockName}&apikey=${"CG1R8C3YO1K5CFYX"}`);
 
         //If the data is not present we will throw 404 along with data not found message
         if (Object.keys(data).length === 0) {
@@ -249,7 +249,7 @@ router.route("/balance-sheet/:name").get(async (req, res) => {
         }
 
         //If the data is not present in the redis cache fetch the data from the api
-        let { data } = await axios.get(`https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+        let { data } = await axios.get(`https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=${stockName}&apikey=${"CG1R8C3YO1K5CFYX"}`);
 
         //If the data is not present we will throw 404 along with data not found message
         if (Object.keys(data).length === 0) {
@@ -334,7 +334,7 @@ router.route("/cash-flow/:name").get(async (req, res) => {
         }
 
         //If the data is not present in the redis cache fetch the data from the api
-        let { data } = await axios.get(`https://www.alphavantage.co/query?function=CASH_FLOW&symbol=${stockName}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`);
+        let { data } = await axios.get(`https://www.alphavantage.co/query?function=CASH_FLOW&symbol=${stockName}&apikey=${"CG1R8C3YO1K5CFYX"}`);
 
         //If the data is not present we will throw 404 along with data not found message
         if (Object.keys(data).length === 0) {
