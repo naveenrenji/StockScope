@@ -77,7 +77,20 @@ function AuthenticationHandler() {
 function App() {
   return (
     <Router>
-      <AuthenticationHandler />
+      <Routes>
+        <Route key="home" path="/" element={<Home />} />
+        <Route key="market-news" path="/market-news" element={<MarketNews />} />
+        <Route key="portfolio" path="/portfolio" element={<Stocks />} />
+        <Route key="signup" path="/signup" element={<Signup />} />
+        <Route key="login" path="/login" element={<Login />} />
+        <Route key="portfolio_brief" path="/portfolio/:name" element={<PortfolioBrief />} />
+        <Route key="stock_summary" path="/stock/summary" element={<StockSummary symbol="TSLA" name="Tesla, Inc" />} />
+        <Route key="stock_news" path="/stock/news" element={<StockNews symbol="TSLA" name="Tesla, Inc" />} />
+        <Route key="stock_historical_data" path="/stock/historicaldata" element={<HistoricalData symbol="TSLA" name="Tesla, Inc" />} />
+        <Route key="agent" path="/agent" element={<Agent />} />
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </Router>
   );
 }

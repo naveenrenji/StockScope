@@ -65,10 +65,21 @@
     border: 1px solid rgba(255, 255, 255, 0.55);
 }
 
-.list-group-item {
+.list-group {
+    justify-content: center;
+    background-color: var(--glass);
+    color: var(--black);
+}
+
+.list-group .list-group-item {
     background-color: transparent;
     border: none;
     font-size: 14px;
+}
+
+.list-group .list-group-item:hover {
+    background-color: var(--pink);
+    color: #FFFFFF;
 }
 
 th {

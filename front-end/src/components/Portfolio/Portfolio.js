@@ -1,5 +1,4 @@
 import './Portfolio.css';
-import "bootstrap/dist/css/bootstrap.min.css";
 import protoFile from '../../config/YPricingData.proto';
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, ListGroup, Table } from 'react-bootstrap';
@@ -8,7 +7,7 @@ import { Search } from 'react-bootstrap-icons'
 import PortfolioModal from './PortfolioModal';
 import CreatePortfolioModal from './CreatePortfolioModal';
 import protobuf from 'protobufjs';
-import { onAuthStateChanged, reauthenticateWithRedirect } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/firebaseConfiguration';
 import { useNavigate } from 'react-router-dom';
 const { Buffer } = require('buffer/');
@@ -31,9 +30,6 @@ export default function Portfolio() {
 
     //State used to pass the symbol & stockName in the Modal Component
     const [modalStock, setModalStock] = useState({});
-
-    //This state is used to save all the stocks that user has subscribed
-    const [allStocks, setAllStocks] = useState([]);
 
     //Get all the details of the user. This includes all the details such as stock names, portfolios etc.
     const [userInfo, setUserInfo] = useState({});
@@ -375,7 +371,6 @@ export default function Portfolio() {
     if (userdataFound && Object.keys(userInfo).length > 0) {
         return (
             <>
-
                 <div className='PortfolioDash'>
                     <Container>
                         <h1>Portfolio</h1>

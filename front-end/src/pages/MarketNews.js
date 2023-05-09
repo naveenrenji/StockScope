@@ -6,7 +6,7 @@ import MarketNewsComponent from '../components/MarketNews/MarketNews';
 function MarketNews() {
   return (
     <div className="Home">
-      <div className="HomeGlass">
+      <div className="containerGlass">
         <Sidebar />
         <MarketNewsComponent />
       </div>

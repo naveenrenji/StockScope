@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const redis = require("redis");
 const helper = require("../helpers");
-const client = redis.createClient();
+const client = redis.createClient({
+    host: 'redis',
+    port: 6379
+});
 client.connect().then(() => { });
 const axios = require("axios");
 require("dotenv").config();

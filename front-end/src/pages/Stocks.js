@@ -6,7 +6,7 @@ import Portfolio from '../components/Portfolio/Portfolio';
 function Stocks() {
   return (
     <div className="Home">
-      <div className="HomeGlass">
+      <div className="containerGlass">
         <Sidebar />
         <Portfolio />
       </div>
