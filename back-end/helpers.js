@@ -11,6 +11,34 @@ const checkEmail = (email) => {
   return email;
 };
 
+const checkQueryString = (query) => {
+  if (!query) query = "";
+  query = query.trim();
+  return query;
+};
+
+const getPublishedTimeString = (isoString) => {
+  // Create a Date object from the ISO datetime string
+  const date = new Date(isoString);
+
+  // Get the hours, minutes, and seconds in 12-hour format
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours %= 12;
+  hours = hours || 12; // '0' should be converted to '12'
+
+  // Get the month, day, and year in MM/DD/YY format
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const year = date.getFullYear().toString().slice(-2);
+
+  // Construct the formatted date string
+  const dateString = `${hours}:${minutes < 10 ? '0' + minutes : minutes} ${ampm} ${month}/${day}/${year}`;
+
+  return dateString;
+};
+
 const checkStockName = (name) => {
   if (!name) {
     const error = new Error("Please pass the stock name");
@@ -162,6 +190,8 @@ const checkUrl = (urlString) => {
 
 module.exports = {
   checkStockName,
+  checkQueryString,
+  getPublishedTimeString,
   getTimeDifference,
   checkPassword,
   checkUsername,

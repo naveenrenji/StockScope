@@ -266,4 +266,88 @@ router.route("/index-data").get(async (req, res) => {
         indexData);
 });
 
+router.route("/news/:query")
+    .get(async (req, res) => {
+        let newsData = [];
+        let temp, temp1;
+        let currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString();
+
+        try {
+            let query = req.params.query;
+            query = helper.checkQueryString(query);
+
+            if (await client.exists(`${query}-news:${formattedDate}`)) {
+                console.log("Data fetched from redis");
+                let stringData = await client.get(`${query}-news:${formattedDate}`);
+                newsData = JSON.parse(stringData);
+
+                return res.status(200).json(newsData);
+            }
+
+            // const options = {
+            //     method: 'GET',
+            //     url: 'https://bing-news-search1.p.rapidapi.com/news/search',
+            //     params: {
+            //         q: query,
+            //         //count: '50',
+            //         setLang: 'EN',
+            //         freshness: 'Day',
+            //         //originalImg: 'true',
+            //         textFormat: 'Raw',
+            //         safeSearch: 'Off'
+            //     },
+            //     headers: {
+            //         'X-BingApis-SDK': 'true',
+            //         'X-RapidAPI-Key': "664c7d5051msh83f2271d33d8054p196cb4jsnbab4df211825",
+            //         'X-RapidAPI-Host': "bing-news-search1.p.rapidapi.com"
+            //     }
+            // };
+
+            let { data } = await axios.get(`https://bing-news-search1.p.rapidapi.com/news/search?q=${query}&setLang=EN&freshness=Day&textFormat=Raw&safeSearch=Off&originalImg=true&count=50`,{
+                headers:{
+                    'X-BingApis-SDK': 'true',
+                    'X-RapidAPI-Key': "664c7d5051msh83f2271d33d8054p196cb4jsnbab4df211825",
+                    'X-RapidAPI-Host': "bing-news-search1.p.rapidapi.com"
+                }
+            });
+
+            //If the data is not present we will throw 404 along with data not found message
+            if (Object.keys(data).length === 0) {
+
+                const error = new Error("Data not found");
+                error.statusCode = 404;
+                throw error;
+            }
+
+            temp = { ...data };
+            temp1 = temp.value;
+
+            for (const news of temp1) {
+
+                let newsObj = {
+                    title: news.name,
+                    img: news.image && news.image.contentUrl,
+                    summary: news.description,
+                    url: news.url,
+                    publishedTime: helper.getPublishedTimeString(news.datePublished)
+                };
+                newsData.push(newsObj);
+            }
+
+            console.log("Data Fetched from api");
+            let stringData = JSON.stringify(newsData);
+
+            await client.set(`${query}-news:${formattedDate}`, stringData);
+            await client.expire(`${query}-news:${formattedDate}`, 180);
+
+        } catch (error) {
+            return res.json({
+                error: error.message
+            })
+        }
+
+        return res.status(200).json(newsData);
+    });
+
 module.exports = router;
