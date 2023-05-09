@@ -15,7 +15,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/firebaseConfiguration";
 
 function AuthenticationHandler() {
-  const [user, setUser] = useState(false);
+  const [userIsAgent, setUserIsAgent] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,13 +27,18 @@ function AuthenticationHandler() {
           setUser(false)
         }
         console.log("uid", user);
-        setUser(false);
+        if (user.email === 'stockscope2023@gmail.com') {
+          setUserIsAgent(true);
+        }
+        else {
+          setUserIsAgent(false)
+        }
       }
     });
     return unsubscribe;
-  }, [navigate]);
+  }, [auth]);
 
-  return user ? (
+  return userIsAgent ? (
     <Routes>
       <Route key="agent" path="/agent" element={<Agent />} />
       <Route key="signup" path="/signup" element={<Signup />} />
@@ -45,6 +50,7 @@ function AuthenticationHandler() {
       <Route key="home" path="/" element={<Home />} />
       <Route key="market-news" path="/market-news" element={<MarketNews />} />
       <Route key="portfolio" path="/portfolio" element={<Stocks />} />
+      {/* <Route key="profile" path="/profile" element={<Profile />} /> */}
       <Route key="signup" path="/signup" element={<Signup />} />
       <Route key="login" path="/login" element={<Login />} />
       <Route
@@ -68,7 +74,6 @@ function AuthenticationHandler() {
         element={<HistoricalData symbol="TSLA" name="Tesla, Inc" />}
       />
       <Route key="agent" path="/agent" element={<Agent />} />
-
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
