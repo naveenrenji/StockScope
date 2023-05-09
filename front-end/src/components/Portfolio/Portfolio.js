@@ -10,8 +10,6 @@ import protobuf from "protobufjs";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfiguration";
 import { useNavigate } from "react-router-dom";
-import { debounce } from "lodash";
-
 const { Buffer } = require("buffer/");
 
 export default function Portfolio() {
@@ -207,29 +205,12 @@ export default function Portfolio() {
     setSearchStatus(false);
     setStockName(e.target.value);
     setBestResults({});
-    debounceSearchStock(e.target.value);
   }
 
   //Axios call to search the stock when the user enters the stock name and hits enter or search button
-  // async function searchStock(e) {
-  //     try {
-  //         const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${stockName}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`
-  //         const { data } = await axios.get(url);
-  //         const { bestMatches } = data;
-  //         console.log(bestMatches);
-  //         setBestResults(bestMatches);
-  //     }
-  //     catch (e) {
-  //         console.log("Error occured");
-  //         console.log(e);
-  //     }
-  // }
-
-  const debounceSearchStock = debounce((query) => searchStock(query), 500);
-
-  async function searchStock(query) {
+  async function searchStock(e) {
     try {
-      const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`;
+      const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${stockName}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`;
       const { data } = await axios.get(url);
       const { bestMatches } = data;
       console.log(bestMatches);
@@ -259,12 +240,12 @@ export default function Portfolio() {
   }
 
   //Event Triggered when user hits the search button
-//   function handleClick(e) {
-//     e.preventDefault();
-//     console.log("Button is pressed");
-//     setSearchStatus(true);
-//     searchStock(e);
-//   }
+  function handleClick(e) {
+    e.preventDefault();
+    console.log("Button is pressed");
+    setSearchStatus(true);
+    searchStock(e);
+  }
 
   //Event Triggered when user Clicks one of the list item in the search bar
   function showModal(e) {
@@ -426,24 +407,28 @@ export default function Portfolio() {
             <h1>Portfolio</h1>
             <div className="wrapper">
               <div className="searchBar">
-                <input
-                  id="searchInput"
-                  type="text"
-                  name="searchInput"
-                  placeholder="Search for Stock"
-                  value={stockName}
-                  onChange={handleStockChange}
-                  aria-label="Search for Stocks"
-                />
-                <button
-                  id="searchSubmit"
-                  type="submit"
-                  name="searchSubmit"
-                //   onClick={handleClick}
-                  aria-label="Search button"
+                <form
+                  onSubmit={handleClick} // handle form submission
+                  className="searchBar"
                 >
-                  <Search color="#FF919D" />
-                </button>
+                  <input
+                    id="searchInput"
+                    type="text"
+                    name="searchInput"
+                    placeholder="Search for Stock"
+                    value={stockName}
+                    onChange={handleStockChange}
+                    aria-label="Search for Stocks"
+                  />
+                  <button
+                    id="searchSubmit"
+                    type="submit"
+                    name="searchSubmit"
+                    aria-label="Search button"
+                  >
+                    <Search color="#FF919D" />
+                  </button>
+                </form>
               </div>
               {bestResults && bestResults.length > 0 ? (
                 <ListGroup className="mt-3 liststyle">
