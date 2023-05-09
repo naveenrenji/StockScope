@@ -23,9 +23,6 @@ function AuthenticationHandler() {
       if (user) {
         console.log(user);
         const uid = user.uid;
-        if (user.email === "stockscope2023@gmail.com") {
-          setUserIsAgent(false)
-        }
         console.log("uid", user);
         if (user.email === 'stockscope2023@gmail.com') {
           setUserIsAgent(true);
