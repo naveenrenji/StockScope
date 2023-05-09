@@ -229,11 +229,11 @@ export default function Portfolio() {
 
   async function searchStock(query) {
     try {
-      const url =`https://finnhub.io/api/v1/search?q=${query}&token=${process.env.REACT_APP_FINNHUB_API_KEY}`
+      const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`;
       const { data } = await axios.get(url);
-      const { result } = data;
-      console.log(result);
-      setBestResults(result);
+      const { bestMatches } = data;
+      console.log(bestMatches);
+      setBestResults(bestMatches);
     } catch (e) {
       console.log("Error occured");
       console.log(e);
@@ -448,25 +448,25 @@ export default function Portfolio() {
               {bestResults && bestResults.length > 0 ? (
                 <ListGroup className="mt-3 liststyle">
                   {bestResults.map((item) => {
-                    // let type = item["3. type"];
-                    // let region = item["4. region"];
+                    let type = item["3. type"];
+                    let region = item["4. region"];
 
-                    // if (type === "Equity" && region === "United States") {
-                    //   let symbol = item["1. symbol"];
-                    //   let name = item["2. name"];
+                    if (type === "Equity" && region === "United States") {
+                      let symbol = item["1. symbol"];
+                      let name = item["2. name"];
                       return (
                         <ListGroup.Item
-                          key={item.displaySymbol}
+                          key={symbol}
                           action
                           onClick={showModal}
                           className="liststyleItem"
                         >
-                          {item.displaySymbol} - {item.description}
+                          {symbol} - {name}
                         </ListGroup.Item>
                       );
-                    // } else {
-                    //   return null;
-                    // }
+                    } else {
+                      return null;
+                    }
                   })}
                 </ListGroup>
               ) : (searchStatus && !bestResults) ||
