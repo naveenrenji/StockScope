@@ -1,9 +1,9 @@
 import "./Portfolio.css";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import protoFile from "../../config/YPricingData.proto";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Table } from "react-bootstrap";
-import NotFound from '../../pages/404';
+import NotFound from "../../pages/404";
 import axios from "axios";
 import { Search } from "react-bootstrap-icons";
 import PortfolioModal from "./PortfolioModal";
@@ -14,8 +14,6 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfiguration";
 import { useNavigate } from "react-router-dom";
 const { Buffer } = require("buffer/");
-
-
 
 export default function Portfolio() {
     //This state is used to store the value of the input search
@@ -81,9 +79,6 @@ export default function Portfolio() {
                 let { data } = await axios.get(
                     `http://localhost:3001/users/getUserPortfolios/${userEmailId}`
                 );
-
-                console.log("Printint user details");
-                console.log(data);
                 setUserInfo(data);
                 setUserDataFound(true);
             } catch (error) {
@@ -97,16 +92,16 @@ export default function Portfolio() {
     useEffect(() => {
         async function fetchData() {
             try {
-
+                setUserDataFound(false);
 
                 const now = new Date();
                 const currentHour = now.getHours();
                 const currentDay = now.getDay();
 
                 if (
-                    (Object.keys(userInfo).length > 0 && currentHour >= 16 ||
-                        currentHour <= 9 ||
-                        currentDay === 0 && currentDay === 6)
+                    (Object.keys(userInfo).length > 0 && currentHour >= 16) ||
+                    currentHour <= 9 ||
+                    (currentDay === 0 && currentDay === 6)
                 ) {
                     // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
                     let porfolios = userInfo["portfolios"];
@@ -124,18 +119,18 @@ export default function Portfolio() {
                         let symbol = symbols[i];
 
                         setsymbolPrice((prevData) => {
-                            let temp = { ...prevData, [symbol]: data["c"] };
+                            let temp = { ...prevData, symbol: data["c"] };
                             return temp;
                         });
                     }
                 }
             } catch (error) {
                 console.log(error);
-
+                setUserDataFound(false);
             }
         }
         fetchData();
-    });
+    }, []);
 
     //This useEffect is used to get the live data
     useEffect(() => {
@@ -234,7 +229,6 @@ export default function Portfolio() {
     function getSymbols(portfolios) {
         if (!portfolios) return [];
 
-
         let data = new Set();
         for (let i = 0; i < portfolios.length; i++) {
             let stocks = portfolios[i].stocks;
@@ -291,7 +285,7 @@ export default function Portfolio() {
             };
         } else {
             return {
-                background: "#59bfff",
+                background: "#007eb3",
                 color: "white",
             };
         }
@@ -307,9 +301,6 @@ export default function Portfolio() {
     //Get the total change Percent
     function calculateChangePercent(portfolio) {
         if (!userdataFound || !portfolio) return 0;
-
-        console.log("Printing symbol price");
-        console.log(symbolPrice);
 
         let stocks = portfolio.stocks;
 
@@ -329,9 +320,6 @@ export default function Portfolio() {
     //Get the total change
     function calculateChange(portfolio) {
         if (!userdataFound || !portfolio) return 0;
-
-        console.log("Printing symbol");
-        console.log(symbolPrice);
 
         let stocks = portfolio.stocks;
 
@@ -414,7 +402,7 @@ export default function Portfolio() {
         }
     }
 
-    if (userdataFound) {
+    if (userdataFound && Object.keys(userInfo).length > 0) {
         return (
             <>
                 <div className="PortfolioDash">
@@ -523,7 +511,11 @@ export default function Portfolio() {
                             <tbody>
                                 {userInfo.portfolios.map((portfolio) => (
                                     <tr key={portfolio._id}>
-                                        <td style={{ padding: "15px" }}><Link to={`/portfolio/${portfolio._id}`}>{portfolio.name}</Link></td>
+                                        <td style={{ padding: "15px" }}>
+                                            <Link to={`/portfolio/${portfolio._id}`}>
+                                                {portfolio.name}
+                                            </Link>
+                                        </td>
                                         <td style={{ padding: "15px" }}>
                                             <span
                                                 className="change"
