@@ -12,11 +12,11 @@ const Card = (props) => {
   const [expanded, setExpanded] = useState(false);
   return (
     <motion.div layout>
-      {expanded ? (
+      {/* {expanded ? (
         <ExpandedCard param={props} setExpanded={() => setExpanded(false)} />
-      ) : (
-        <CompactCard param={props} setExpanded={() => setExpanded(true)} />
-      )}
+      ) : ( */}
+        <CompactCard param={props} setExpanded={() => setExpanded(false)} />
+      {/* )} */}
     </motion.div>
   );
 };
