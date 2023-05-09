@@ -18,6 +18,8 @@ function AuthenticationHandler() {
   const [userIsAgent, setUserIsAgent] = useState(false);
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(false);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
