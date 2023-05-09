@@ -109,9 +109,9 @@ function Signup() {
     <div className="authentication-body">
       <div className="authentication-container">
         <div className="authentication-container-wrapper">
-          <h3 className="authentication-login-text">
+          <h1 className="authentication-login-text">
             <PersonCircle /> Signup
-          </h3>
+          </h1>
           <Form>
             {/* <Form.Group controlId="formBasicUsername">
               <Form.Label>Email</Form.Label>

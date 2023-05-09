@@ -272,17 +272,17 @@ export default function Portfolio() {
   const makeStyle = (change) => {
     if (change > 0) {
       return {
-        background: "rgb(145 254 159 / 47%)",
+        background: "rgb(200 254 159 / 47%)",
         color: "green",
       };
     } else if (change < 0) {
       return {
-        background: "#ffadad8f",
-        color: "red",
+        background: "#ffefef",
+        color: "#ff0044",
       };
     } else {
       return {
-        background: "#59bfff",
+        background: "#3939ff",
         color: "white",
       };
     }

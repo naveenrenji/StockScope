@@ -13,7 +13,7 @@ const makeStyle = (change) => {
   } else if (change < 0) {
     return {
       background: "#ffefef",
-      color: "#ff0044",
+      color: "#e00000",
     };
   } else {
     return {
