@@ -272,7 +272,7 @@ export default function Portfolio() {
   const makeStyle = (change) => {
     if (change > 0) {
       return {
-        background: "rgb(145 254 159 / 75%)",
+        background: "rgb(145 254 159 / 47%)",
         color: "green",
       };
     } else if (change < 0) {
@@ -282,7 +282,7 @@ export default function Portfolio() {
       };
     } else {
       return {
-        background: "#3939ff",
+        background: "#59bfff",
         color: "white",
       };
     }

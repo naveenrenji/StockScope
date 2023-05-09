@@ -71,6 +71,7 @@ const Chatbot = () => {
       socket.close();
       setSocket(null);
       localStorage.setItem(user.displayName, JSON.stringify(messages));
+      setChatStatus("idle");
     }
   };
 
@@ -105,7 +106,7 @@ const Chatbot = () => {
     };
     setMessages((prevMessages) => [...prevMessages, messageData]);
     setInputMessage("");
-    socket.emit("talk_to_agent", { userId: currUsername }); // TODO: Replace 'currUsername' with the actual user id (DONE)
+    socket.emit("talk_to_agent", { userId: currUsername });
   };
 
   const handleMessageChange = (e) => {
