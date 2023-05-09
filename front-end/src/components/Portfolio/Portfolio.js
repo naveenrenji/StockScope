@@ -100,6 +100,36 @@ export default function Portfolio() {
         fetchData();
     }, [modalShow, userEmailId])
 
+
+    useEffect(() => {
+
+        async function fetchData() {
+
+            try {
+
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentDay = now.getDay();
+
+                if (Object.keys(userInfo).length > 0 && currentHour >= 20 || currentHour <= 9 || currentDay === 0 && currentDay === 6) {
+
+
+                }
+
+
+
+            }
+
+            catch (error) {
+
+                console.log(error);
+            }
+
+            fetchData();
+        }
+
+    }, []);
+
     //This useEffect is used to get the live data
     useEffect(() => {
 
@@ -167,6 +197,9 @@ export default function Portfolio() {
 
         fetchData();
     });
+
+
+
 
 
 
