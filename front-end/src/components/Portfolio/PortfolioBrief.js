@@ -23,9 +23,10 @@ export default function PortfoioBrief() {
 
   const [dataFound, setdataFound] = useState(false);
 
-  function getSymbols(stocks) {
-    if (!stocks) return [];
+  function getSymbols(portfolios) {
+    if (!portfolios) return [];
 
+    let stocks = portfolios.stocks;
     let data = new Set();
 
     for (let i = 0; i < stocks.length; i++) {
@@ -107,7 +108,7 @@ export default function PortfoioBrief() {
             ws.onopen = function open() {
               console.log("connected");
 
-              let symbols = getSymbols(portfolioData.stocks);
+              let symbols = getSymbols(portfolioData);
               console.log(symbols);
 
               ws.send(
@@ -143,6 +144,53 @@ export default function PortfoioBrief() {
     fetchData();
   });
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentDay = now.getDay();
+
+        if (
+          (Object.keys(portfolioData).length > 0 && currentHour >= 16 ||
+            currentHour <= 9 ||
+            currentDay === 0 && currentDay === 6)
+        ) {
+          // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
+          let porfolios = portfolioData
+
+          console.log("Printing portfolio list");
+
+          console.log(porfolios);
+
+          let symbols = getSymbols(porfolios);
+
+          console.log("Printing symbol");
+          console.log(symbols);
+
+
+          for (let i = 0; i < symbols.length; i++) {
+            let { data } = await axios.get(
+              `http://localhost:3001/chart/${symbols[i]}`
+            );
+            let symbol = symbols[i];
+
+            setsymbolPrice((prevData) => {
+              let temp = { ...prevData, [symbol]: data["c"] };
+              return temp;
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, []);
+
+
+
   const makeStyle = (change) => {
     if (change > 0) {
       return {
@@ -169,81 +217,30 @@ export default function PortfoioBrief() {
   }
 
   //Get the total change Percent
-  function calculateChangePercent(stocks) {
-    if (!dataFound || !stocks) return 0;
+  function calculateChangePercent(symbol, avg_price) {
+    if (!dataFound || !symbol) return 0;
 
     let changePercent = 0;
-
-    for (let i = 0; i < stocks.length; i++) {
-      let symbol = stocks[i].symbol;
-      let avg_price = stocks[i].avg_buy_price;
-      if (symbol in symbolPrice)
-        changePercent += (symbolPrice[symbol] - avg_price) / avg_price;
-    }
+    if (symbol in symbolPrice)
+      changePercent = (symbolPrice[symbol] - avg_price) / avg_price;
 
     changePercent = (changePercent * 100).toFixed(2);
     return changePercent;
   }
 
   //Get the total change
-  function calculateChange(portfolio) {
-    if (!dataFound || !portfolio) return 0;
+  function calculateChange(symbol, avg_price, number_of_shares) {
+    if (!dataFound || !symbol) return 0;
 
-    let stocks = portfolio.stocks;
 
     let change = 0;
 
-    for (let i = 0; i < stocks.length; i++) {
-      let symbol = stocks[i].symbol;
-      let avg_price = stocks[i].avg_buy_price;
-      let number_of_shares = stocks[i].no_of_shares;
-      if (symbol in symbolPrice)
-        change += number_of_shares * (symbolPrice[symbol] - avg_price);
-    }
-
+    if (symbol in symbolPrice)
+      change = number_of_shares * (symbolPrice[symbol] - avg_price);
     change = parseFloat(change).toFixed(2);
     return change;
   }
 
-  function calculateTotalMarketValue(portfolios) {
-    if (!dataFound || !portfolios) return 0;
-
-    let marketValue = 0;
-    for (let i = 0; i < portfolios.length; i++) {
-      let stocks = portfolios[i].stocks;
-
-      for (let j = 0; j < stocks.length; j++) {
-        let symbol = stocks[j].symbol;
-
-        if (symbol in symbolPrice)
-          marketValue += stocks[j].no_of_shares * symbolPrice[symbol];
-      }
-    }
-
-    marketValue = parseFloat(marketValue).toFixed(2);
-    return marketValue;
-  }
-
-  function calculateTotalGain(portfolios) {
-    if (!dataFound || !portfolios) return 0;
-
-    let totalGain = 0;
-    for (let i = 0; i < portfolios.length; i++) {
-      let stocks = portfolios[i].stocks;
-
-      for (let j = 0; j < stocks.length; j++) {
-        let symbol = stocks[j].symbol;
-
-        if (symbol in symbolPrice)
-          totalGain +=
-            stocks[j].no_of_shares *
-            (symbolPrice[symbol] - stocks[j].avg_buy_price);
-      }
-    }
-
-    totalGain = parseFloat(totalGain).toFixed(2);
-    return totalGain;
-  }
 
   function getSymbols(stocks) {
     if (!stocks) return [];
@@ -257,24 +254,6 @@ export default function PortfoioBrief() {
 
     let symbolArray = [...data];
     return symbolArray;
-  }
-
-  function calculateTotalMarketValue(p) {
-    if (Object.keys(portfolioData).length === 0 || !dataFound) return 0;
-
-    let marketValue = 0;
-
-    let stocks = portfolioData.stocks;
-
-    for (let i = 0; i < stocks.length; i++) {
-      let symbol = stocks[i].symbol;
-
-      if (symbol in symbolPrice)
-        marketValue += stocks[i].no_of_shares * symbolPrice[symbol];
-    }
-
-    marketValue = parseFloat(marketValue).toFixed(2);
-    return marketValue;
   }
 
   if (loading) {
@@ -309,43 +288,15 @@ export default function PortfoioBrief() {
                   <td style={{ padding: "15px" }}>{stock.symbol}</td>
                   <td style={{ padding: "15px" }}>{stock.no_of_shares}</td>
                   <td style={{ padding: "15px" }}>{stock.avg_buy_price}</td>
-                  <td style={{ padding: "15px" }}>{stock.avg_buy_price}</td>
-                  <td style={{ padding: "15px" }}>
-                    <span
-                      className="change"
-                      style={makeStyle(calculateChangePercent(stock))}
-                    >
-                      {calculateChangePercent(stock)}%
-                    </span>
-                  </td>
-                  <td style={{ padding: "15px" }}>{noOfSymbols(stock)}</td>
-                  <td style={{ padding: "15px" }}>
-                    <span
-                      className="change"
-                      style={makeStyle(calculateChange(stock))}
-                    >
-                      ${calculateChange(stock).toLocaleString("en-US")}
-                    </span>
-                  </td>
+                  <td style={{ padding: "15px" }}>{symbolPrice[stock.symbol]}</td>
+                  <td style={{ padding: "15px" }}>{calculateChange(stock.symbol, stock.avg_buy_price, stock.no_of_shares)}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
-
-          <div className="mt-3 container">
-            <div className="d-flex justify-content-between">
-              <h3>Total Market Value</h3>
-              <h4>${calculateTotalMarketValue(portfolioData.stocks)}</h4>
-            </div>
-
-            <div className="d-flex justify-content-between">
-              <h3>Total Gain</h3>
-              <h4>${calculateTotalGain(portfolioData.stocks)}</h4>
-            </div>
-          </div>
         </Container>
       </div>
-      <h3>{calculateTotalMarketValue()}</h3>
+
     </>
   );
 }
