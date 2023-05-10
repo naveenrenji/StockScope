@@ -14,22 +14,32 @@ let client = redis.createClient({
 });
 client
   .connect()
-  .then(() => {})
+  .then(() => { })
   .catch((err) => console.error(err));
 
 //cause dotenv isnt working for some reason.
 const finnhubApiKey = "cgvbft1r01qqk0dog72gcgvbft1r01qqk0dog730";
 
 router.route("/:symbol/:resolution/:from/:to").get(async (req, res) => {
+  let stockData;
   const { symbol, resolution, from, to } = req.params;
   let url = `https://finnhub.io/api/v1//stock/candle?symbol=${symbol}&resolution=${resolution}&from=${from}&to=${to}&token=${finnhubApiKey}`;
 
   try {
-    let data = await axios.get(url);
-    await client.set(`company-overview:${stockName}`, stringData);
-    await client.expire(`company-overview:${stockName}`, 100);
-    return res.status(200).json(data.data);
+    if (await client.exists(`chart-data:${symbol}`)) {
+      let stringData = await client.get(`chart-data:${symbol}`);
+      stockData = JSON.parse(stringData);
+    }
+    else {
+      const { data } = await axios.get(url);
+      stockData = data;
+      let stringData = JSON.stringify(stockData);
+      await client.set(`chart-data:${symbol}`, stringData);
+      await client.expire(`chart-data:${symbol}`, 100);
+    }
+    return res.status(200).json(stockData);
   } catch (error) {
+    console.log(error);
     return res.status(error.statusCode).json({
       error: error.message,
     });

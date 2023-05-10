@@ -142,7 +142,7 @@ const Summary = () => {
               <Container>
                 <h1>{symbol}</h1>
 
-                {/* <Chart symbol={symbol}></Chart> */}
+                <Chart symbol={symbol}></Chart>
 
                 <h2>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h2>
 
@@ -160,7 +160,7 @@ const Summary = () => {
                       paddingLeft: "0.8rem",
                     }}
                   >
-                    {parseFloat(changePercentange.toFixed(2))}%
+                    {parseFloat(changePercentange).toFixed(2)}%
                   </span>
                 </p>
 
