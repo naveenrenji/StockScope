@@ -23,8 +23,8 @@ http://stockscope.vi-sh.tech/
 
 **Agent credentials**
 
-stockscope2023@gmail.com
-StockScope@2023
+Email: stockscope2023@gmail.com
+Password: StockScope@2023
 
 **Project Description**
 
