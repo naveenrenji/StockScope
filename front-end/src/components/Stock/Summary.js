@@ -131,7 +131,7 @@ const Summary = () => {
                             <Container>
                                 <h1>{symbol}</h1>
 
-                                {/* <Chart symbol={symbol}></Chart> */}
+                                <Chart symbol={symbol}></Chart>
 
                                 <h3>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h3>
 
@@ -145,7 +145,7 @@ const Summary = () => {
 
                                     Percent Change:
                                     <span style={{ color: changePercentange > 0 ? 'green' : 'red', paddingLeft: '0.8rem' }}>
-                                        {parseFloat(changePercentange.toFixed(2))}%
+                                        {parseFloat(changePercentange).toFixed(2)}%
                                     </span>
                                 </p>
 
