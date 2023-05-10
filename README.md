@@ -39,17 +39,17 @@ Financial statements are significant to investors because they may reveal much a
 
 **Independent Technologies**
 
-1.  Digital Ocean: We have deployed our application to the Digital Ocean environment. We have used this because it's free. We hadn't listed Digital Ocean in the initial project proposal, but it's very similar to the ones we have listed.
+1.  Netlify: We have deployed our application to Netlify cloud server. We have also used Digital Ocean environment as a backup server.
 2.  Docker: We have created a container using Docker. This container can be run in the local machine or used to deploy to any environment.
     Note: We have used two of the four listed independent technologies.
 
 **Few things to note before grading the project**
 
 1. All the HTML validation errors we are encountering in our application are either from Bootstrap, CSS, or React.
-2. The finance API we are listening to through the web socket closes at 8 pm every day. So, if you want to get live updates for the stocks in the portfolio, use the application when the stock market is open, that is from 9 am to 4 pm. You'll be able to use the application outside this timeframe as well, but you'll not be getting live data.
-3. DO NOT USE STEVENS-GUEST WIFI OR ANY OTHER NETWORK THAT HAS RESTRICTED ACCESS TO THE INTERNET. Some restricted networks may timeout the Mongo connection. If you face this issue, try with a different network.
+2. **The finance API we are listening to through the web socket closes at 4 pm every day. So, if you want to get live updates for the stocks in the portfolio, use the application when the stock market is open, that is from 9 am to 4 pm.**
+3. **DO NOT USE STEVENS-GUEST WIFI OR ANY OTHER NETWORK THAT HAS RESTRICTED ACCESS TO THE INTERNET.** Some restricted networks may timeout the Mongo connection. If you face this issue, try with a different network.
 4. Do not create a user account directly from the Firebase console and use that user credentials to use the application. On signup, we have a dependency with one more API to create a user object on the MongoDB collection. Only create users from the application.
-5. As we have rate limits on the external APIs we are using, please use the application at a reasonably slow pace so that those rate limits are not reached.
+5. **As we have rate limits on the external APIs we are using, please use the application at a reasonably slow pace so that those rate limits are not reached.**
 
 **Instructions to run the project on your local machine**
 
@@ -75,11 +75,10 @@ Financial statements are significant to investors because they may reveal much a
 - Install Docker Desktop software
 - Run the below cmd
 
-`docker compose up`
+`docker compose build --no-cache
+docker compose up`
 
 **Resources**
 MongoDB Server console: https://cloud.mongodb.com/v2/638bc7a8b433235f5269396b#/clusters
 
 Firebase Console: https://console.firebase.google.com/u/1/project/stocksscope/overview
-
-You'll have access to both the consoles.
