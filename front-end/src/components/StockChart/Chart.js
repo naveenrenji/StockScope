@@ -23,6 +23,7 @@ const Chart = (props) => {
   const [chartType, setChartType] = useState("line");
   const [resolution, setResolution] = useState("W");
   const [timeframe, setTimeframe] = useState("1y");
+  const [loading, setLoading] = useState(true);
 
   const getResolutionOptions = () => {
     switch (timeframe) {
@@ -95,6 +96,7 @@ const Chart = (props) => {
               price: data.c[index],
             }))
           );
+          setLoading(false);
         } else {
           console.error("Error fetching stock graph data");
         }
@@ -116,87 +118,95 @@ const Chart = (props) => {
     setTimeframe(event.target.value);
   };
 
-  return (
-    <div>
-      <h2>Stock Chart</h2>
-      <ResponsiveContainer width="100%" height={410}>
-        {chartType === "line" ? (
-          <LineChart {...{
-            data: chartData,
-            margin: { top: 5, right: 20, bottom: 5, left: 0 },
-          }}>
-            <Line type="monotone" dataKey="price" stroke="#8884d8" yAxisId={0} />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <CartesianGrid stroke="#f5f5f5" />
-          </LineChart>
-        ) : chartType === "bar" ? (
-          <BarChart {...{
-            data: chartData,
-            margin: { top: 5, right: 20, bottom: 5, left: 0 },
-          }}>
-            <Bar dataKey="price" fill="#8884d8" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <CartesianGrid stroke="#f5f5f5" />
-          </BarChart>
-        ) : chartType === "area" ? (
-          <AreaChart {...{
-            data: chartData,
-            margin: { top: 5, right: 20, bottom: 5, left: 0 },
-          }}>
-            <defs>
-              <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <Area
-              type="monotone"
-              dataKey="price"
-              stroke="#000000"
-              fill="url(#colorUv)"
-            />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <CartesianGrid stroke="#f5f5f5" />
-          </AreaChart>
-        ) : (
-          "area"
-        )}
-      </ResponsiveContainer>
-      <label>
-        Chart Type:
-        <select value={chartType} onChange={handleChartTypeChange}>
-          <option value="line">Line</option>
-          <option value="bar">Bar</option>
-          <option value="area">Area</option>
-        </select>
-      </label>
-      <label>
-        Resolution:
-        <select value={resolution} onChange={handleResolutionChange}>
-          {getResolutionOptions().map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Timeframe:
-        <select value={timeframe} onChange={handleTimeframeChange}>
-          <option value="1w">1 week</option>
-          <option value="1m">1 month</option>
-          <option value="6m">6 months</option>
-          <option value="1y">1 year</option>
-        </select>
-      </label>
-    </div>
-  );
-};
+  if (loading) {
+    return (
+      <div>
+        <h3>Loading....</h3>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h2>Stock Chart</h2>
+        <ResponsiveContainer width="100%" height={410}>
+          {chartType === "line" ? (
+            <LineChart {...{
+              data: chartData,
+              margin: { top: 5, right: 20, bottom: 5, left: 0 },
+            }}>
+              <Line type="monotone" dataKey="price" stroke="#8884d8" yAxisId={0} />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <CartesianGrid stroke="#f5f5f5" />
+            </LineChart>
+          ) : chartType === "bar" ? (
+            <BarChart {...{
+              data: chartData,
+              margin: { top: 5, right: 20, bottom: 5, left: 0 },
+            }}>
+              <Bar dataKey="price" fill="#8884d8" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <CartesianGrid stroke="#f5f5f5" />
+            </BarChart>
+          ) : chartType === "area" ? (
+            <AreaChart {...{
+              data: chartData,
+              margin: { top: 5, right: 20, bottom: 5, left: 0 },
+            }}>
+              <defs>
+                <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <Area
+                type="monotone"
+                dataKey="price"
+                stroke="#000000"
+                fill="url(#colorUv)"
+              />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <CartesianGrid stroke="#f5f5f5" />
+            </AreaChart>
+          ) : (
+            "area"
+          )}
+        </ResponsiveContainer>
+        <label>
+          Chart Type:
+          <select value={chartType} onChange={handleChartTypeChange}>
+            <option value="line">Line</option>
+            <option value="bar">Bar</option>
+            <option value="area">Area</option>
+          </select>
+        </label>
+        <label>
+          Resolution:
+          <select value={resolution} onChange={handleResolutionChange}>
+            {getResolutionOptions().map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Timeframe:
+          <select value={timeframe} onChange={handleTimeframeChange}>
+            <option value="1w">1 week</option>
+            <option value="1m">1 month</option>
+            <option value="6m">6 months</option>
+            <option value="1y">1 year</option>
+          </select>
+        </label>
+      </div>
+    );
+  };
+}
 
 export default Chart;
