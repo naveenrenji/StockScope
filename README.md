@@ -22,6 +22,7 @@ https://stockscope.netlify.app/
 http://stockscope.vi-sh.tech/
 
 **Agent credentials**
+
 stockscope2023@gmail.com
 StockScope@2023
 
