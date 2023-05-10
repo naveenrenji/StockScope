@@ -15,6 +15,9 @@
 **GitHub URL**
 https://github.com/naveenrenji/StockScope
 
+**Digital Ocean URL**
+http://stockscope.vi-sh.tech/
+
 **Project Description**
 
 Financial statements are significant to investors because they may reveal much about a company's income, costs, profitability, debt burden, and capacity to pay short- and long-term financial commitments. That's why we plan to build a website that provides investors with real-time data, news, analysis, tools, and stock insights to help them make informed investment decisions. Our application will have a landing page containing vital information, for example, top gains, which will provide a list of all the stocks that tend to close with a higher price than what they opened with/their previous close price in an intraday market. Similarly, top losers will do the opposite, i.e., it will display all the stock that lends to close with a lower price than what they opened with/their previous close price in an intraday market. Our landing page will also display the latest news related to the market. There will be a search bar that will allow users to search for the stocks. When the user searches for a particular stock and selects it, all the financial insights about the stock, such as its market open price, close price, volume, balance sheet, cash flow, earnings, etc., will be displayed to the user. There will be a user profile that will allow the user to display and modify his details. Users can also create their portfolios by adding or removing stocks. Users can see their up-to-date profits/losses with this feature. Registered Users can chat with financial experts to get tips related to the stock market.
