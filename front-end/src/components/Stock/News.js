@@ -41,6 +41,7 @@ const StockNews = () => {
             catch (error) {
                 console.log(error);
                 setDataFound(false);
+                setLoading(false);
             }
         }
         fetchData();

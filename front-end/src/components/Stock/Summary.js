@@ -104,6 +104,7 @@ const Summary = () => {
       } catch (e) {
         console.log(e);
         setDataFound(false);
+        setLoading(false);
       }
     }
     fetchData();
@@ -132,9 +133,6 @@ const Summary = () => {
                         Summary
                       </Nav.Link>
                       <Nav.Link href={`/stock/news/${symbol}`}>News</Nav.Link>
-                      <Nav.Link href={`/stock/historicaldata/${symbol}`}>
-                        Historical Data
-                      </Nav.Link>
                     </Nav>
                   </Navbar.Collapse>
                 </Container>
@@ -142,7 +140,7 @@ const Summary = () => {
               <Container>
                 <h1>{symbol}</h1>
 
-                {/* <Chart symbol={symbol}></Chart> */}
+                <Chart symbol={symbol}></Chart>
 
                 <h2>NasdaqGS - NasdaqGS Real Time Price. Currency in USD</h2>
 
@@ -160,7 +158,7 @@ const Summary = () => {
                       paddingLeft: "0.8rem",
                     }}
                   >
-                    {parseFloat(changePercentange.toFixed(2))}%
+                    {parseFloat(changePercentange).toFixed(2)}%
                   </span>
                 </p>
 
