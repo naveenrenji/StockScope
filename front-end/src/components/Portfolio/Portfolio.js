@@ -99,9 +99,9 @@ export default function Portfolio() {
                 const currentDay = now.getDay();
 
                 if (
-                    (Object.keys(userInfo).length > 0 && currentHour >= 16 ||
+                    (Object.keys(userInfo).length > 0 && (currentHour >= 16 ||
                         currentHour <= 9 ||
-                        currentDay === 0 && currentDay === 6)
+                        currentDay === 0 || currentDay === 6))
                 ) {
                     // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
                     let porfolios = userInfo["portfolios"];
@@ -109,8 +109,12 @@ export default function Portfolio() {
                     console.log("Printing portfolio list");
 
                     console.log(porfolios);
-
                     let symbols = getSymbols(porfolios);
+                    console.log("Printing symbols");
+                    console.log(symbols);
+
+                    console.log("Printining symbol price");
+                    console.log(symbolPrice);
 
                     for (let i = 0; i < symbols.length; i++) {
                         let { data } = await axios.get(
@@ -118,10 +122,18 @@ export default function Portfolio() {
                         );
                         let symbol = symbols[i];
 
+                        let body = {
+                            [symbol]: data["c"]
+                        }
+
                         setsymbolPrice((prevData) => {
-                            let temp = { ...prevData, [symbol]: data["c"] };
+                            let temp = { ...prevData, body };
                             return temp;
                         });
+
+                        console.log("Inside for")
+                        console.log("Printing symbol price");
+                        console.log(symbolPrice);
                     }
                 }
             } catch (error) {
@@ -130,7 +142,7 @@ export default function Portfolio() {
             }
         }
         fetchData();
-    }, []);
+    }, [userInfo]);
 
     //This useEffect is used to get the live data
     useEffect(() => {
@@ -574,6 +586,8 @@ export default function Portfolio() {
                         </div>
                     </Container>
                 </div>
+
+
             </>
         );
     }
