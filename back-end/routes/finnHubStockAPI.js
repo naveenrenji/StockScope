@@ -26,17 +26,8 @@ router.route("/:symbol/:resolution/:from/:to").get(async (req, res) => {
   let url = `https://finnhub.io/api/v1//stock/candle?symbol=${symbol}&resolution=${resolution}&from=${from}&to=${to}&token=${finnhubApiKey}`;
 
   try {
-    if (await client.exists(`chart-data:${symbol}`)) {
-      let stringData = await client.get(`chart-data:${symbol}`);
-      stockData = JSON.parse(stringData);
-    }
-    else {
       const { data } = await axios.get(url);
       stockData = data;
-      let stringData = JSON.stringify(stockData);
-      await client.set(`chart-data:${symbol}`, stringData);
-      await client.expire(`chart-data:${symbol}`, 100);
-    }
     return res.status(200).json(stockData);
   } catch (error) {
     console.log(error);

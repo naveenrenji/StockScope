@@ -104,6 +104,7 @@ const Summary = () => {
       } catch (e) {
         console.log(e);
         setDataFound(false);
+        setLoading(false);
       }
     }
     fetchData();
@@ -132,9 +133,6 @@ const Summary = () => {
                         Summary
                       </Nav.Link>
                       <Nav.Link href={`/stock/news/${symbol}`}>News</Nav.Link>
-                      <Nav.Link href={`/stock/historicaldata/${symbol}`}>
-                        Historical Data
-                      </Nav.Link>
                     </Nav>
                   </Navbar.Collapse>
                 </Container>
