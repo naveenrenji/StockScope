@@ -160,7 +160,7 @@ const Summary = () => {
                       paddingLeft: "0.8rem",
                     }}
                   >
-                    {parseFloat(changePercentange.toFixed(2))}%
+                    {parseFloat(changePercentange).toFixed(2)}%
                   </span>
                 </p>
 
