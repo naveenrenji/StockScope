@@ -15,8 +15,8 @@
 **GitHub URL**
 https://github.com/naveenrenji/StockScope
 
-**Digital Ocean URL**
-http://stockscope.vi-sh.tech/
+**Cloud URL(Netflify)**
+https://stockscope.netlify.app/
 
 **Project Description**
 
