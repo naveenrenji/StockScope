@@ -1,12 +1,15 @@
 import "./Portfolio.css";
+import { Link } from "react-router-dom";
 import protoFile from "../../config/YPricingData.proto";
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, ListGroup, Table } from "react-bootstrap";
+import NotFound from "../../pages/404";
 import axios from "axios";
 import { Search } from "react-bootstrap-icons";
 import PortfolioModal from "./PortfolioModal";
 import CreatePortfolioModal from "./CreatePortfolioModal";
 import protobuf from "protobufjs";
+
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfiguration";
 import { useNavigate } from "react-router-dom";
@@ -96,9 +99,9 @@ export default function Portfolio() {
                 const currentDay = now.getDay();
 
                 if (
-                    (Object.keys(userInfo).length > 0 && currentHour >= 16) ||
-                    currentHour <= 9 ||
-                    (currentDay === 0 && currentDay === 6)
+                    (Object.keys(userInfo).length > 0 && currentHour >= 16 ||
+                        currentHour <= 9 ||
+                        currentDay === 0 && currentDay === 6)
                 ) {
                     // Database logic to get the list of symbols . Use hashset to store the symbols and then convert hashset to array
                     let porfolios = userInfo["portfolios"];
@@ -116,7 +119,7 @@ export default function Portfolio() {
                         let symbol = symbols[i];
 
                         setsymbolPrice((prevData) => {
-                            let temp = { ...prevData, symbol: data["c"] };
+                            let temp = { ...prevData, [symbol]: data["c"] };
                             return temp;
                         });
                     }
@@ -282,7 +285,7 @@ export default function Portfolio() {
             };
         } else {
             return {
-                background: "#59bfff",
+                background: "#007eb3",
                 color: "white",
             };
         }
@@ -303,6 +306,9 @@ export default function Portfolio() {
 
         let changePercent = 0;
 
+        console.log("Printing symbol price")
+        console.log(symbolPrice);
+
         for (let i = 0; i < stocks.length; i++) {
             let symbol = stocks[i].symbol;
             let avg_price = stocks[i].avg_buy_price;
@@ -322,6 +328,9 @@ export default function Portfolio() {
 
         let change = 0;
 
+        console.log("Printing symbol price")
+        console.log(symbolPrice);
+
         for (let i = 0; i < stocks.length; i++) {
             let symbol = stocks[i].symbol;
             let avg_price = stocks[i].avg_buy_price;
@@ -338,8 +347,13 @@ export default function Portfolio() {
         if (!userdataFound || !portfolios) return 0;
 
         let marketValue = 0;
+
+        console.log("Printing symbol price")
+        console.log(symbolPrice);
         for (let i = 0; i < portfolios.length; i++) {
             let stocks = portfolios[i].stocks;
+
+
 
             for (let j = 0; j < stocks.length; j++) {
                 let symbol = stocks[j].symbol;
@@ -399,7 +413,7 @@ export default function Portfolio() {
         }
     }
 
-    if (userdataFound && Object.keys(userInfo).length > 0) {
+    if (Object.keys(userInfo).length > 0) {
         return (
             <>
                 <div className="PortfolioDash">
@@ -508,7 +522,11 @@ export default function Portfolio() {
                             <tbody>
                                 {userInfo.portfolios.map((portfolio) => (
                                     <tr key={portfolio._id}>
-                                        <td style={{ padding: "15px" }}>{portfolio.name}</td>
+                                        <td style={{ padding: "15px" }}>
+                                            <Link to={`/portfolio/${portfolio._id}`}>
+                                                {portfolio.name}
+                                            </Link>
+                                        </td>
                                         <td style={{ padding: "15px" }}>
                                             <span
                                                 className="change"

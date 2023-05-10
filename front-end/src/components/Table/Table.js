@@ -1,32 +1,29 @@
-import { Table } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
-import './Table.css';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Table } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import "./Table.css";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 const makeStyle = (change) => {
   if (change > 0) {
     return {
-      background: 'rgb(145 254 159 / 47%)',
-      color: 'green',
-    }
-  }
-  else if (change < 0) {
+      background: "rgb(200 254 159 / 47%)",
+      color: "green",
+    };
+  } else if (change < 0) {
     return {
-      background: '#ffadad8f',
-      color: 'red',
-    }
-  }
-  else {
+      background: "#ffefef",
+      color: "#e00000",
+    };
+  } else {
     return {
-      background: '#59bfff',
-      color: 'white',
-    }
+      background: "#3939ff",
+      color: "white",
+    };
   }
-}
+};
 
 export default function BasicTable() {
-
   const [stocksData, setStocksData] = useState([]);
   const [renderCount, setRenderCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -38,7 +35,9 @@ export default function BasicTable() {
 
     async function fetchData() {
       try {
-        let { data } = await axios.get('http://localhost:3001/screener/trending-stocks');
+        let { data } = await axios.get(
+          "http://localhost:3001/screener/trending-stocks"
+        );
         setStocksData(data);
         setLoading(false);
       } catch (error) {
@@ -53,10 +52,9 @@ export default function BasicTable() {
     };
   }, [renderCount]);
 
-
   if (loading) {
     return (
-      <div className='Table'>
+      <div className="Table">
         <h3>Loading....</h3>
       </div>
     );
@@ -74,18 +72,27 @@ export default function BasicTable() {
             </tr>
           </thead>
           <tbody>
-            {stocksData && stocksData.map((stock) => (
-              <tr key={stock.symbol}>
-                <td style={{ padding: "15px" }}>
-                  <span><Link to={`http://localhost:3000/stock/summary/${stock.symbol}`}>{stock.name}</Link></span>
+            {stocksData &&
+              stocksData.map((stock) => (
+                <tr key={stock.symbol}>
+                  <td style={{ padding: "15px" }}>
+                    <span>
+                      <Link
+                        to={`http://localhost:3000/stock/summary/${stock.symbol}`}
+                      >
+                        {stock.name}
+                      </Link>
+                    </span>
                   </td>
-                <td style={{ padding: "15px" }}>{stock.symbol}</td>
-                <td style={{ padding: "15px" }}>${stock.price.toFixed(2)}</td>
-                <td style={{ padding: "15px" }}>
-                  <span className="change" style={makeStyle(stock.change)}>{stock.change.toFixed(2)}%</span>
-                </td>
-              </tr>
-            ))}
+                  <td style={{ padding: "15px" }}>{stock.symbol}</td>
+                  <td style={{ padding: "15px" }}>${stock.price.toFixed(2)}</td>
+                  <td style={{ padding: "15px" }}>
+                    <span className="change" style={makeStyle(stock.change)}>
+                      {stock.change.toFixed(2)}%
+                    </span>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </Table>
       </div>

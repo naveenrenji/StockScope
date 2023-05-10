@@ -22,7 +22,6 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
     if (loading) {
       return;
     }
@@ -117,9 +116,9 @@ function Login() {
     <div className="authentication-body">
       <div className="authentication-container">
         <div className="authentication-container-wrapper">
-          <h3 className="authentication-login-text">
+          <h1 className="authentication-login-text">
             <PersonCircle /> Login
-          </h3>
+          </h1>
           <Form>
             <Form.Group controlId="email">
               <Form.Label>Email ID</Form.Label>
@@ -143,9 +142,9 @@ function Login() {
               Login
             </button>
           </Form>
-          <h4>
+          <h2>
             <span>Social Login</span>
-          </h4>
+          </h2>
           <div className="authentication-social-media">
             <SocialSignIn />
           </div>

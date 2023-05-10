@@ -9,10 +9,9 @@ import { XCircleFill } from "react-bootstrap-icons";
 // parent Card
 
 const Card = (props) => {
-
   return (
     <motion.div layout>
-        <CompactCard param={props} />
+      <CompactCard param={props} />
     </motion.div>
   );
 };
@@ -27,7 +26,9 @@ function CompactCard({ param }) {
         boxShadow: param.color.boxShadow,
       }}
       layoutId={`expandableCard-${param.id}`}
-      onClick={() => window.location.href = `http://localhost:3000/stock/summary/${param.symbol}`}
+      onClick={() =>
+        (window.location.href = `http://localhost:3000/stock/summary/${param.symbol}`)
+      }
     >
       <div className="radialBar">
         <CircularProgressbar
@@ -43,7 +44,6 @@ function CompactCard({ param }) {
     </motion.div>
   );
 }
-
 
 // // Expanded Card
 // function ExpandedCard({ param, setExpanded }) {
